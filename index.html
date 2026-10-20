@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>유소명 - P5 CHAT</title>
+  <title>유소명 - P5X CHAT</title>
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -51,7 +51,7 @@
       transition: opacity 0.3s ease;
     }
 
-    /* 2. 메인 컨테이너 (완전 투명) */
+    /* 2. 메인 컨테이너 */
     #app {
       position: relative;
       z-index: 3;
@@ -164,10 +164,20 @@
       box-shadow: 1px 1px 0 #000;
     }
 
-    .btn-p5-bgm.playing {
-      background: #ffdd59;
-      color: #000;
-      box-shadow: 0 0 8px rgba(255, 221, 89, 0.8), 2px 2px 0 #000;
+    /* P5X BGM 헤더 버튼 */
+    .btn-p5-music-badge {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: #111;
+      color: #5ce1e6;
+      border: 2px solid #5ce1e6;
+    }
+    .btn-p5-music-badge.playing {
+      background: #e60012;
+      color: #fff;
+      border-color: #fff;
+      box-shadow: 0 0 8px rgba(230, 0, 18, 0.8), 2px 2px 0 #000;
       animation: bgmPulse 1.8s infinite alternate;
     }
 
@@ -212,7 +222,7 @@
       animation: p5FadeIn 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     }
 
-    /* 소명이(AI) 메시지: 왼쪽 정렬 */
+    /* 소명이(AI) 메시지 */
     .ai-group {
       align-items: flex-start;
       position: relative;
@@ -323,7 +333,7 @@
       font-weight: 700;
     }
 
-    /* 상황 나레이션: 투명 자막 */
+    /* ★ 상황 나레이션: 띄어쓰기 및 줄바꿈 보존 (white-space: pre-wrap) */
     .narration {
       color: #ffdd59;
       font-size: 0.9rem;
@@ -337,6 +347,8 @@
       border: none;
       box-shadow: none;
       transform: none;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
     .ai-group .narration { text-align: left; }
     .user-group .narration { text-align: right; }
@@ -405,7 +417,7 @@
       padding: 20px;
     }
     .modal-content {
-      background: #111;
+      background: #0d0d14;
       border: 3px solid #e60012;
       box-shadow: 6px 6px 0 #000;
       border-radius: 4px;
@@ -427,6 +439,9 @@
       font-weight: 900;
       font-size: 1.05rem;
       box-shadow: 2px 2px 0 #000;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .modal-content label { font-size: 0.8rem; color: #5ce1e6; font-weight: 800; }
     .modal-content input, .modal-content select, .modal-content textarea {
@@ -440,21 +455,38 @@
       font-weight: 600;
     }
     .btn-save { padding: 10px; background: #e60012; border: 2px solid #fff; color: #fff; font-weight: 900; cursor: pointer; transform: skewX(-8deg); }
-    .btn-cancel { padding: 10px; background: #333; border: 2px solid #888; color: #fff; cursor: pointer; transform: skewX(-8deg); }
+    .btn-cancel { padding: 10px; background: #222; border: 2px solid #666; color: #fff; cursor: pointer; transform: skewX(-8deg); }
     .btn-sync {
       flex: 1; padding: 8px 6px; background: #000; border: 2px solid #5ce1e6;
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
     }
 
-    /* P5 뮤직 플레이어 디자인 */
-    .player-card {
-      background: #181824;
-      border: 2px solid #5ce1e6;
-      padding: 12px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    /* ★ P5X 스타일 오디오 플레이어 UI */
+    .p5x-player-card {
+      background: #14141e;
+      border: 2.5px solid #5ce1e6;
+      box-shadow: 4px 4px 0 #000, inset 0 0 15px rgba(0,0,0,0.9);
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      position: relative;
+    }
+    .p5x-tape-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid rgba(92, 225, 230, 0.3);
+      padding-bottom: 6px;
+    }
+    .p5x-tape-tag {
+      background: #e60012;
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 2px 6px;
+      transform: skewX(-12deg);
+      letter-spacing: -0.5px;
     }
     .track-title-display {
       font-size: 1rem;
@@ -463,8 +495,11 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      text-shadow: 0 0 6px rgba(255, 221, 89, 0.4);
+      text-shadow: 0 0 8px rgba(255, 221, 89, 0.4);
+      padding: 2px 0;
     }
+
+    /* P5X SP 게이지 스타일 탐색바 */
     .seek-container {
       display: flex;
       align-items: center;
@@ -473,56 +508,105 @@
     .seek-slider {
       flex: 1;
       -webkit-appearance: none;
-      height: 6px;
-      background: #333;
+      height: 7px;
+      background: #222;
       outline: none;
-      border-radius: 3px;
+      border: 1px solid #444;
+      box-shadow: inset 0 0 4px #000;
     }
     .seek-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 18px;
       background: #5ce1e6;
       border: 2px solid #000;
-      border-radius: 50%;
+      transform: skewX(-14deg);
       cursor: pointer;
-      box-shadow: 0 0 6px #5ce1e6;
+      box-shadow: 0 0 8px #5ce1e6;
     }
     .time-text {
-      font-size: 0.72rem;
-      color: #bbb;
+      font-size: 0.74rem;
+      color: #5ce1e6;
       font-family: monospace;
-      width: 38px;
+      font-weight: 700;
+      width: 36px;
       text-align: center;
     }
 
-    .player-controls {
+    /* P5X 컨트롤 패널 */
+    .p5x-controls {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 0;
+      padding-top: 4px;
     }
-    .ctrl-btn {
+    .btn-p5x-ctrl {
       background: #000;
       color: #fff;
-      border: 2px solid #5ce1e6;
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      font-weight: 900;
+      border: 2px solid #fff;
+      box-shadow: 2.5px 2.5px 0 #000;
       cursor: pointer;
-      transform: skewX(-8deg);
-      box-shadow: 2px 2px 0 #000;
+      transform: skewX(-10deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
     }
-    .ctrl-btn:active { transform: skewX(-8deg) translate(1px, 1px); }
-    .ctrl-btn.mode-btn {
-      font-size: 0.72rem;
+    .btn-p5x-ctrl:active {
+      transform: skewX(-10deg) translate(1.5px, 1.5px);
+      box-shadow: 1px 1px 0 #000;
+    }
+
+    .btn-p5x-play {
+      background: #e60012;
+      border: 2px solid #fff;
+      width: 44px;
+      height: 38px;
+    }
+    .btn-p5x-play svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+      stroke: #fff;
+    }
+    .btn-p5x-skip {
+      width: 36px;
+      height: 32px;
+      border-color: #5ce1e6;
+    }
+    .btn-p5x-skip svg {
+      width: 15px;
+      height: 15px;
+      fill: #5ce1e6;
+    }
+
+    /* 반복 모드 배지 (P5 커맨드 스타일) */
+    .btn-p5x-mode {
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 5px;
       border-color: #ffdd59;
       color: #ffdd59;
-      padding: 6px 8px;
+    }
+    .btn-p5x-mode svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+    .btn-p5x-mode.mode-one {
+      border-color: #5ce1e6;
+      color: #5ce1e6;
+    }
+    .btn-p5x-mode.mode-none {
+      border-color: #aaa;
+      color: #aaa;
     }
 
     .playlist-box {
-      max-height: 160px;
+      max-height: 150px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -535,17 +619,18 @@
       align-items: center;
       padding: 7px 10px;
       background: #000;
-      border: 1px solid #333;
+      border: 1.5px solid #333;
       cursor: pointer;
       font-size: 0.82rem;
       font-weight: 700;
+      transform: skewX(-6deg);
       transition: all 0.15s ease;
     }
     .playlist-item.active {
       border-color: #5ce1e6;
-      background: #0d1b2a;
+      background: #0c1a29;
       color: #5ce1e6;
-      box-shadow: inset 3px 0 0 #5ce1e6;
+      box-shadow: 2px 2px 0 #5ce1e6;
     }
 
     .schedule-item {
@@ -604,7 +689,7 @@
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- 오디오 요소 -->
+  <!-- 오디오 태그 -->
   <audio id="bgm-player" preload="metadata"></audio>
 
   <!-- 영상 감상 모드 버튼 -->
@@ -615,7 +700,7 @@
     </svg>
   </button>
 
-  <!-- P5 메신저 앱 메인 컨테이너 -->
+  <!-- P5X 메신저 앱 메인 컨테이너 -->
   <div id="app">
     <header>
       <div class="p5-logo-wrap">
@@ -629,9 +714,12 @@
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">일정케어</button>
       </div>
 
-      <!-- 우측 컨트롤 버튼 -->
+      <!-- 컨트롤 버튼들 (P5X BGM 배지 탑재) -->
       <div class="header-actions">
-        <button id="header-music-btn" class="btn-p5-icon btn-p5-bgm" onclick="openMusicPlayer()" title="뮤직 플레이어 열기">🎵 플레이어</button>
+        <button id="header-music-btn" class="btn-p5-icon btn-p5-music-badge" onclick="openMusicPlayer()" title="BGM 플레이어">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          <span id="header-music-status">BGM: OFF</span>
+        </button>
         <button class="btn-p5-icon" onclick="openSchedule()">일정</button>
         <button class="btn-p5-icon" onclick="openSettings()">설정</button>
         <button class="btn-p5-icon" onclick="clearCurrentHistory()">비움</button>
@@ -648,35 +736,58 @@
     </footer>
   </div>
 
-  <!-- 🎵 P5 뮤직 플레이어 모달 -->
+  <!-- 🎵 P5X 뮤직 플레이어 모달 -->
   <div id="music-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3>🎵 BGM AUDIO PLAYER</h3>
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        PHANTOM TRACK PLAYER
+      </h3>
 
-      <div class="player-card">
+      <div class="p5x-player-card">
+        <div class="p5x-tape-header">
+          <span class="p5x-tape-tag">NOW PLAYING</span>
+          <span style="font-size: 0.68rem; color:#5ce1e6; font-weight:800; letter-spacing:1px;">P5X SOUND</span>
+        </div>
+
         <div id="current-track-title" class="track-title-display">재생 중인 곡 없음</div>
 
+        <!-- 탐색 슬라이더 -->
         <div class="seek-container">
           <span id="current-time-txt" class="time-text">0:00</span>
           <input type="range" id="seek-bar" class="seek-slider" min="0" max="100" value="0" oninput="handleSeekInput()" onchange="handleSeekChange()">
           <span id="total-time-txt" class="time-text">0:00</span>
         </div>
 
-        <div class="player-controls">
-          <button id="repeat-mode-btn" class="ctrl-btn mode-btn" onclick="toggleRepeatMode()">🔁 전체 반복</button>
-          <div style="display: flex; gap: 4px;">
-            <button class="ctrl-btn" onclick="playPrevTrack()">⏮</button>
-            <button id="play-pause-btn" class="ctrl-btn" onclick="togglePlayPause()" style="font-size: 1rem; padding: 6px 14px;">▶</button>
-            <button class="ctrl-btn" onclick="playNextTrack()">⏭</button>
+        <!-- P5X 컨트롤러 -->
+        <div class="p5x-controls">
+          <!-- 반복 모드 토글 버튼 -->
+          <button id="repeat-mode-btn" class="btn-p5x-ctrl btn-p5x-mode" onclick="toggleRepeatMode()">
+            <svg id="repeat-icon" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+            <span id="repeat-mode-text">ALL LOOP</span>
+          </button>
+
+          <!-- 재생/이전/다음 버튼 -->
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="btn-p5x-ctrl btn-p5x-skip" onclick="playPrevTrack()" title="이전곡">
+              <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <button id="play-pause-btn" class="btn-p5x-ctrl btn-p5x-play" onclick="togglePlayPause()" title="재생/일시정지">
+              <!-- 기본: 재생 아이콘 (SVG) -->
+              <svg id="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="btn-p5x-ctrl btn-p5x-skip" onclick="playNextTrack()" title="다음곡">
+              <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
           </div>
         </div>
       </div>
 
-      <label>📋 플레이리스트</label>
+      <label>📋 TRACK LIST</label>
       <div id="playlist-container" class="playlist-box"></div>
 
-      <div style="border-top: 1px dashed #444; padding-top: 8px; margin-top: 4px;">
-        <label>➕ 새 노래 추가 (GitHub 파일명)</label>
+      <div style="border-top: 1.5px dashed #444; padding-top: 8px; margin-top: 4px;">
+        <label>➕ 새 노래 등록 (GitHub 업로드 파일명)</label>
         <div style="display: flex; gap: 4px; margin-top: 4px;">
           <input type="text" id="new-song-title" placeholder="곡 제목" style="flex: 1;">
           <input type="text" id="new-song-file" placeholder="파일명 (예: bgm.mp3)" style="flex: 1;">
@@ -819,7 +930,7 @@
       { id: 2, title: '기본 BGM', file: 'bgm.mp3' }
     ];
     let currentTrackIndex = 0;
-    let repeatMode = 'all';
+    let repeatMode = 'all'; // 'all' | 'one' | 'none'
     let isSeeking = false;
     let audio = null;
 
@@ -903,8 +1014,8 @@
         const div = document.createElement('div');
         div.className = `playlist-item ${idx === currentTrackIndex ? 'active' : ''}`;
         div.innerHTML = `
-          <span onclick="selectTrack(${idx})" style="flex:1;">${idx + 1}. ${track.title}</span>
-          <button onclick="deleteTrack(${track.id})" style="background:none; border:none; color:#888; cursor:pointer; font-size:0.9rem;">✕</button>
+          <span onclick="selectTrack(${idx})" style="flex:1;">TRACK 0${idx + 1}. ${track.title}</span>
+          <button onclick="deleteTrack(${track.id})" style="background:none; border:none; color:#e60012; font-weight:900; cursor:pointer; font-size:1rem;">✕</button>
         `;
         container.appendChild(div);
       });
@@ -934,16 +1045,20 @@
     }
 
     function updatePlayBtnState(isPlaying) {
-      const btn = document.getElementById('play-pause-btn');
+      const playBtn = document.getElementById('play-pause-btn');
       const headerBtn = document.getElementById('header-music-btn');
+      const headerStatus = document.getElementById('header-music-status');
+
       if (isPlaying) {
-        btn.innerText = '⏸';
+        // P5X 일시정지 아이콘 (❚❚ SVG)
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
         headerBtn.classList.add('playing');
-        headerBtn.innerText = '🎵 재생중';
+        headerStatus.innerText = 'BGM: PLAY';
       } else {
-        btn.innerText = '▶';
+        // P5X 재생 아이콘 (▶ SVG)
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
         headerBtn.classList.remove('playing');
-        headerBtn.innerText = '🎵 플레이어';
+        headerStatus.innerText = 'BGM: OFF';
       }
     }
 
@@ -961,17 +1076,28 @@
       audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
     }
 
+    /* P5X 반복 모드 토글 */
     function toggleRepeatMode() {
       const btn = document.getElementById('repeat-mode-btn');
+      const text = document.getElementById('repeat-mode-text');
+      const icon = document.getElementById('repeat-icon');
+
+      btn.classList.remove('mode-one', 'mode-none');
+
       if (repeatMode === 'all') {
         repeatMode = 'one';
-        btn.innerText = '🔂 1곡 반복';
+        btn.classList.add('mode-one');
+        text.innerText = 'ONE LOOP';
+        icon.innerHTML = `<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z"/>`;
       } else if (repeatMode === 'one') {
         repeatMode = 'none';
-        btn.innerText = '➡️ 순차 재생';
+        btn.classList.add('mode-none');
+        text.innerText = 'ORDER';
+        icon.innerHTML = `<path d="M4 18h11c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2H4v2h11v8H4v2zm14-8v8h2v-8h-2z"/>`;
       } else {
         repeatMode = 'all';
-        btn.innerText = '🔁 전체 반복';
+        text.innerText = 'ALL LOOP';
+        icon.innerHTML = `<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>`;
       }
     }
 
@@ -1015,7 +1141,7 @@
     function openMusicPlayer() { document.getElementById('music-modal').style.display = 'flex'; }
     function closeMusicPlayer() { document.getElementById('music-modal').style.display = 'none'; }
 
-    /* --- 구글 싱크 & 타이머 --- */
+    /* --- 구글 싱크 & 스케줄 타이머 --- */
     function syncSchedulesToGas() {
       if (!settings.gasUrl) return;
       fetch(settings.gasUrl, {
@@ -1072,7 +1198,7 @@
       try { schedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHED_CHAT)) || []; } catch(e) { schedHistory = []; }
     }
 
-    /* --- 문장 분해 유틸 함수 --- */
+    /* 문장 분해 */
     function parseAiResponse(fullText) {
       let cleanText = fullText;
       let emotion = '기본';
@@ -1107,7 +1233,7 @@
             }
           } else {
             let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
-            if (dialogue) items.push({ type: 'dialogue', dialogue });
+            if (dialogue) items.push({ type: 'dialogue', text: dialogue });
           }
         }
       });
@@ -1115,7 +1241,7 @@
       return { emotion, items };
     }
 
-    /* ★ 즉각 렌더러 (기존 기록 로딩용) */
+    /* 과거 기록용 즉각 렌더러 */
     function renderMessage(role, text) {
       const group = document.createElement('div');
       group.className = `msg-group ${role}-group`;
@@ -1153,7 +1279,7 @@
           const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
           const narEl = document.createElement('div');
           narEl.className = 'narration';
-          narEl.innerText = `「 ${raw} 」`;
+          narEl.textContent = `「 ${raw} 」`;
           group.appendChild(narEl);
         } else {
           let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
@@ -1167,15 +1293,15 @@
       return group;
     }
 
-    /* ★ 비주얼 노벨식 순차 렌더러 (한 글자씩 타자 타이핑 + 말풍선 퐁퐁 팝인) */
+    /* ★ 띄어쓰기 버그 수정된 비주얼 노벨식 타자기 & 말풍선 순차 렌더러 */
     async function playAiMessageSequence(fullText) {
       const chatBox = document.getElementById('chat-box');
       const { emotion, items } = parseAiResponse(fullText);
 
-      // 1. 감정 태그 즉시 반영 -> 배경 영상 먼저 교체!
+      // 1. 감정 태그 즉시 반영하여 배경 영상 먼저 교체
       setBackgroundByTag(emotion);
 
-      // 2. 소명이 메시지 그룹 컨테이너 생성
+      // 2. 메시지 래퍼 생성
       const group = document.createElement('div');
       group.className = 'msg-group ai-group';
 
@@ -1195,29 +1321,28 @@
       chatBox.appendChild(group);
       chatBox.scrollTop = chatBox.scrollHeight;
 
-      // 3. 지문과 말풍선을 순서대로 재생
+      // 3. 지문과 대사를 순차적으로 출력
       for (const item of items) {
         if (item.type === 'narration') {
-          // 상황 텍스트: 읽어가듯 한 글자씩 타자 치며 출력 (25ms 속도)
+          // 상황 텍스트: textContent로 한 글자씩 타이핑하여 공백 유지!
           const narEl = document.createElement('div');
           narEl.className = 'narration';
           group.appendChild(narEl);
 
           for (let i = 0; i < item.text.length; i++) {
-            narEl.innerText += item.text[i];
+            narEl.textContent += item.text[i];
             chatBox.scrollTop = chatBox.scrollHeight;
             await new Promise(r => setTimeout(r, 26)); // 타자 속도
           }
-          await new Promise(r => setTimeout(r, 300)); // 지문 후 짧은 호흡
+          await new Promise(r => setTimeout(r, 300));
         } else if (item.type === 'dialogue') {
-          // 말풍선: 한 번에 안 뜨고 하나씩 퐁! 팝업
+          // 말풍선: 한 개씩 팝업
           const bubble = document.createElement('div');
           bubble.className = 'p5-bubble ai-bubble';
           bubble.innerHTML = `<span class="bubble-inner-text">${item.text}</span>`;
           group.appendChild(bubble);
           chatBox.scrollTop = chatBox.scrollHeight;
 
-          // 다음 말풍선이 나오기 전 자연스러운 읽기 시간 (말풍선 간격 0.5초)
           const delay = Math.min(800, 480 + (item.text.length * 10));
           await new Promise(r => setTimeout(r, delay));
         }
@@ -1363,7 +1488,7 @@
     }
 
     function exportData() {
-      const payload = { version: 14, settings, dailyHistory, schedHistory, schedules, playlist };
+      const payload = { version: 15, settings, dailyHistory, schedHistory, schedules, playlist };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
@@ -1443,7 +1568,6 @@
       alert('설정이 저장되었습니다!');
     }
 
-    /* --- 대화 전송 및 실시간 비주얼 노벨 렌더링 호출 --- */
     async function sendMessage() {
       const inputEl = document.getElementById('user-input');
       const sendBtn = document.getElementById('send-btn');
@@ -1458,7 +1582,6 @@
 
       const chatBox = document.getElementById('chat-box');
 
-      // 1. 성주 메시지 즉시 출력
       chatBox.appendChild(renderMessage('user', userText));
       chatBox.scrollTop = chatBox.scrollHeight;
       inputEl.value = '';
@@ -1467,7 +1590,6 @@
       const currentHistory = currentRoom === 'daily' ? dailyHistory : schedHistory;
       currentHistory.push({ role: 'user', parts: [{ text: userText }] });
 
-      // 2. 소명이 '생각 중...' 인디케이터 즉시 띄우기 (대기 지루함 해소)
       const typingIndicator = document.createElement('div');
       typingIndicator.className = 'msg-group ai-group';
       typingIndicator.id = 'ai-typing-temp';
@@ -1486,7 +1608,6 @@
       chatBox.appendChild(typingIndicator);
       chatBox.scrollTop = chatBox.scrollHeight;
 
-      // 프롬프트 구성
       let systemInstructionText = settings.prompt || DEFAULT_PROMPT;
       if (currentRoom === 'daily') {
         systemInstructionText += `\n\n[현재 채널: 💬 일상 대화방]
@@ -1525,11 +1646,9 @@ ${schedSummary}
         const data = await response.json();
         const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[감정:기본] ...(가만히 바라본다)';
 
-        // 생각 중 인디케이터 제거
         const tempEl = document.getElementById('ai-typing-temp');
         if (tempEl) tempEl.remove();
 
-        // 3. 순차적 타자기 & 말풍선 퐁퐁 팝업 연출 실행!
         await playAiMessageSequence(reply);
 
         currentHistory.push({ role: 'model', parts: [{ text: reply }] });
