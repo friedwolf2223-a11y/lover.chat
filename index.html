@@ -376,7 +376,7 @@
     </div>
   </div>
 
-  <!-- ⚙️ 환경 설정 모달 (캐릭터 설정 & API & 구글 웹앱 URL 복원) -->
+  <!-- ⚙️ 환경 설정 모달 -->
   <div id="settings-modal" class="modal-overlay">
     <div class="modal-content">
       <h3 style="font-size: 1.05rem;">⚙️ 캐릭터 & 연동 설정</h3>
@@ -393,7 +393,7 @@
         <option value="gemini-3.5-flash">Gemini 3.5 Flash (고성능/표준)</option>
       </select>
 
-      <label style="color: #9bbfff;">🔗 구글 앱스 스크립트 웹 앱 URL (텔레그램 자동 연동)</label>
+      <label style="color: #9bbfff;">🔗 구글 앱스 스크립트 웹 앱 URL</label>
       <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec">
 
       <label>캐릭터 프롬프트 & 지침</label>
@@ -452,6 +452,15 @@
 1. 행동, 시선, 호흡, 스킨십 상황 묘사는 반드시 별표(*...*)로 감싸세요.
 2. 실제 대사는 따옴표("...")로 묶어서 말하세요.`;
 
+    // ★ 깃허브에 업로드된 영문 파일명 1:1 매핑 테이블
+    const EMOTION_VIDEO_MAP = {
+      '기본': 'default.mp4',
+      '설렘': 'smile.mp4',
+      '위로': 'comfort.mp4',
+      '토라짐': 'pout.mp4',
+      '슬픔': 'sad.mp4'
+    };
+
     const STORAGE_KEY_DAILY = 'novel_chat_daily_v1';
     const STORAGE_KEY_SCHED_CHAT = 'novel_chat_sched_room_v1';
     const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v1';
@@ -462,10 +471,9 @@
     let schedHistory = [];
     let schedules = [];
 
-    // 보내주신 API 키 및 구글 스크립트 URL을 기본값으로 지정
     let settings = {
       name: '유소명',
-      apiKey: 'AQ.Ab8RN6KrORNJ4jfFpYy1y_riRf9umoQbxT-__sba3wV54BbuTw',
+      apiKey: '', // 깃허브 보안 경고 방지를 위해 빈칸 유지 (웹앱 설정창에 입력)
       model: 'gemini-3.5-flash-lite',
       gasUrl: 'https://script.google.com/macros/s/AKfycbz7I_boE2Ey7mm3B7CIWMLgii76tg1V6n8cOvy_JoJqCaqZwrzlq7WMTETpYN2raOQL/exec',
       prompt: DEFAULT_PROMPT
@@ -491,7 +499,6 @@
       document.getElementById('avatar-video').play().catch(() => {});
     };
 
-    /* --- 구글 서버로 일정 자동 싱크 --- */
     function syncSchedulesToGas() {
       if (!settings.gasUrl) return;
       fetch(settings.gasUrl, {
@@ -499,10 +506,9 @@
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(schedules)
-      }).catch(e => console.log('구글 서버 싱크 중:', e));
+      }).catch(e => console.log('구글 싱크:', e));
     }
 
-    /* --- 정각 능동 잔소리 타이머 --- */
     function startScheduleAlarmChecker() {
       setInterval(() => {
         const now = new Date();
@@ -653,8 +659,9 @@
     function openSchedule() { document.getElementById('schedule-modal').style.display = 'flex'; }
     function closeSchedule() { document.getElementById('schedule-modal').style.display = 'none'; }
 
+    /* ★ 영문 파일명 매핑 적용된 영상 전환 함수 */
     function setBackgroundByTag(tag) {
-      const fileName = `${tag}.mp4`;
+      const fileName = EMOTION_VIDEO_MAP[tag] || `${tag}.mp4`;
       if (fileName === currentVideoSrc) return;
 
       const v1 = document.getElementById('bg-video-1');
@@ -691,12 +698,12 @@
     }
 
     function exportData() {
-      const payload = { version: 7, settings, dailyHistory, schedHistory, schedules };
+      const payload = { version: 8, settings, dailyHistory, schedHistory, schedules };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 복사되었습니다! (캐릭터 설정, URL, 대화 및 스케줄 모두 포함)');
+          alert('✅ 백업 코드가 복사되었습니다!');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -825,7 +832,6 @@
       const currentHistory = currentRoom === 'daily' ? dailyHistory : schedHistory;
       currentHistory.push({ role: 'user', parts: [{ text: userText }] });
 
-      // 유소명의 기본 프로필 + 채널별 상황 결합
       let systemInstructionText = settings.prompt || DEFAULT_PROMPT;
       if (currentRoom === 'daily') {
         systemInstructionText += `\n\n[현재 채널: 💬 일상 대화방]
