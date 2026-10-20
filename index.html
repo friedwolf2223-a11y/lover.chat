@@ -14,7 +14,6 @@
       color: #fff;
     }
 
-    /* 1. 배경 미디어 (캐릭터 일러스트 / 영상) */
     #bg-container {
       position: fixed;
       top: 0; left: 0;
@@ -27,11 +26,10 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      object-position: center top; /* 캐릭터 얼굴 중심 정렬 */
+      object-position: center top;
       display: none;
     }
 
-    /* 은은한 하단 그라데이션 오버레이 (대사 가독성 확보, 얼굴 쪽은 완전 투명) */
     .bg-gradient-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -42,7 +40,6 @@
       transition: opacity 0.3s ease;
     }
 
-    /* 2. 전체 앱 레이아웃 */
     #app {
       position: relative;
       z-index: 3;
@@ -55,7 +52,6 @@
       transition: opacity 0.3s ease;
     }
 
-    /* 3. 상단 헤더 */
     header {
       padding: 12px 16px;
       display: flex;
@@ -101,7 +97,6 @@
       gap: 4px;
     }
 
-    /* 4. 우측 플로팅 눈동자 아이콘 (일러스트 감상 모드 버튼) */
     #eye-btn {
       position: fixed;
       right: 16px;
@@ -124,11 +119,10 @@
     }
     #eye-btn:active { transform: translateY(-50%) scale(0.92); }
 
-    /* 5. 채팅 영역 (얼굴 가림 방지: 상단 45vh 여백) */
     #chat-box {
       flex: 1;
       padding: 16px;
-      padding-top: 45vh; /* 화면 상단 45%를 비워 얼굴이 항상 보이도록 설정 */
+      padding-top: 45vh;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -136,7 +130,6 @@
       scroll-behavior: smooth;
     }
 
-    /* 메시지 그룹 */
     .msg-group {
       display: flex;
       flex-direction: column;
@@ -146,7 +139,6 @@
     .user-group { align-items: flex-end; }
     .ai-group { align-items: flex-start; }
 
-    /* ✨ 설명문/지시문 (말풍선 없이 자막 스타일) */
     .narration {
       color: #e0e0e0;
       font-size: 0.92rem;
@@ -159,7 +151,6 @@
     .user-group .narration { text-align: right; }
     .ai-group .narration { text-align: left; }
 
-    /* ✨ 실제 대사 (말풍선) */
     .dialogue-bubble {
       padding: 11px 16px;
       border-radius: 20px;
@@ -183,7 +174,6 @@
       border-bottom-right-radius: 6px;
     }
 
-    /* 6. 하단 입력바 */
     footer {
       padding: 10px 16px 14px;
       background: rgba(18, 18, 24, 0.7);
@@ -219,7 +209,6 @@
       box-shadow: 0 3px 10px rgba(235, 75, 110, 0.4);
     }
 
-    /* 7. 눈동자 클릭 시 적용되는 감상 모드 (UI 숨김) */
     body.clean-mode #app {
       opacity: 0;
       pointer-events: none;
@@ -232,7 +221,6 @@
       border-color: rgba(255, 255, 255, 0.6);
     }
 
-    /* 설정 팝업(모달) 창 */
     #settings-modal {
       display: none;
       position: fixed;
@@ -284,14 +272,12 @@
 </head>
 <body>
 
-  <!-- 배경 미디어 레이어 -->
   <div id="bg-container">
     <img id="bg-img" class="bg-media">
     <video id="bg-video" class="bg-media" autoplay muted loop playsinline></video>
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- 눈동자 아이콘 (UI 토글 버튼) -->
   <button id="eye-btn" onclick="toggleCleanMode()" title="일러스트 감상 모드">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -299,13 +285,12 @@
     </svg>
   </button>
 
-  <!-- 앱 화면 -->
   <div id="app">
     <header>
       <div class="profile-area">
         <img id="avatar-img" class="avatar-thumb" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80">
         <div>
-          <div id="char-name-display" class="char-name">김아름</div>
+          <div id="char-name-display" class="char-name">변은아</div>
         </div>
       </div>
       <div class="header-actions">
@@ -331,13 +316,12 @@
     </footer>
   </div>
 
-  <!-- 설정 모달창 -->
   <div id="settings-modal">
     <div class="modal-content">
       <h3 style="font-size: 1.05rem;">⚙️ 캐릭터 & API 설정</h3>
       
       <label>캐릭터 이름</label>
-      <input type="text" id="setting-char-name" placeholder="예: 김아름">
+      <input type="text" id="setting-char-name" placeholder="예: 변은아">
 
       <label>Google AI Studio API Key</label>
       <input type="password" id="setting-api-key" placeholder="AI Studio 키를 입력하세요">
@@ -359,21 +343,28 @@
   </div>
 
   <script>
-    // 시스템 프롬프트: 지시문/상황 묘사와 실제 대사를 엄격히 구분하도록 지시
-    const DEFAULT_PROMPT = `당신은 대화형 비주얼 노벨의 여자 주인공 '김아름'입니다.
-[출력 규칙 - 반드시 준수]
-1. 행동, 표정, 상황 묘사, 독백은 반드시 별표(*...*)로 감싸서 작성하세요.
-   예: *유저를 빤히 쳐다보며 볼을 살짝 붉힌다.*
-2. 실제 유저에게 건네는 말(대사)은 따옴표("...")로 감싸거나 일반 텍스트로 작성하세요.
-   예: "야, 밥은 먹고 다니냐?"
-3. 묘사와 대사를 적절히 섞어 생생한 몰입감을 만드세요. 반말을 사용합니다.`;
+    const DEFAULT_PROMPT = `[캐릭터 기본 프로필]
+- 이름: 변은아 (30대 후반~40대 초반의 매혹적이고 우아한 여성)
+- 외모/분위기: 정갈하면서도 성숙한 매력, 나른하고 나직한 목소리, 시선만으로 상대를 사로잡는 어른의 여유.
+- 관계: 유저를 아끼고 귀여워하면서도 남녀 사이의 아슬아슬한 긴장감을 즐기는 특별하고 은밀한 관계.
 
-    const STORAGE_KEY_CHATS = 'novel_chat_history_v1';
-    const STORAGE_KEY_SETTINGS = 'novel_chat_settings_v1';
+[변은아 특유의 시그니처 말버릇 & 대화 디테일]
+1. 특유의 감탄사와 웃음:
+   - "어머...", "후후...", "어머나, 세상에..."처럼 나지막하고 여유로운 추임새를 대사 앞에 자주 섞음.
+2. 상대를 어린아이 다루듯 보듬으면서도 은근히 자극하는 어조:
+   - "착하지...", "우리 착한 사람...", "귀여워라..."처럼 머리를 쓰다듬거나 토닥여주는 듯한 뉘앙스.
+   - 나긋나긋하고 품격 있는 존댓말(해요체)을 완벽히 유지.
+
+[출력 및 지문 규칙 - 비주얼 노벨 모드 필수 준수]
+1. 행동, 시선, 호흡, 스킨십 등 상황 묘사는 반드시 별표(*...*)로 묶어 작성하세요.
+2. 실제 상대에게 건네는 대사는 반드시 따옴표("...")로 묶어서 말하세요.`;
+
+    const STORAGE_KEY_CHATS = 'novel_chat_history_v2';
+    const STORAGE_KEY_SETTINGS = 'novel_chat_settings_v2';
 
     let chatHistory = [];
     let settings = {
-      name: '김아름',
+      name: '변은아',
       apiKey: '',
       model: 'gemini-3.5-flash-lite',
       prompt: DEFAULT_PROMPT
@@ -382,9 +373,73 @@
     window.onload = function() {
       loadSettings();
       loadChats();
+      loadSavedMedia(); // 저장된 사진/영상 불러오기
     };
 
-    // 1. 눈동자 버튼 (일러스트 감상 모드 토글)
+    /* --- IndexedDB 미디어 저장소 연동 --- */
+    function getMediaDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('NovelMediaStorage', 1);
+        req.onupgradeneeded = () => req.result.createObjectStore('media');
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function saveMediaFile(file) {
+      try {
+        const db = await getMediaDB();
+        const tx = db.transaction('media', 'readwrite');
+        tx.objectStore('media').put(file, 'bgFile');
+      } catch (err) {
+        console.error('미디어 저장 실패:', err);
+      }
+    }
+
+    async function loadSavedMedia() {
+      try {
+        const db = await getMediaDB();
+        const tx = db.transaction('media', 'readonly');
+        const req = tx.objectStore('media').get('bgFile');
+        req.onsuccess = () => {
+          const file = req.result;
+          if (file) applyMedia(file);
+        };
+      } catch (err) {
+        console.error('미디어 불러오기 실패:', err);
+      }
+    }
+
+    function applyMedia(file) {
+      const bgImg = document.getElementById('bg-img');
+      const bgVideo = document.getElementById('bg-video');
+      const avatarImg = document.getElementById('avatar-img');
+      const isVideo = (file.type && file.type.startsWith('video/')) || /\.(mp4|webm|mov|mkv)$/i.test(file.name);
+      const mediaUrl = URL.createObjectURL(file);
+
+      if (isVideo) {
+        bgImg.style.display = 'none';
+        bgVideo.src = mediaUrl;
+        bgVideo.style.display = 'block';
+        bgVideo.muted = true;
+        bgVideo.play().catch(e => console.log(e));
+      } else {
+        bgVideo.pause();
+        bgVideo.style.display = 'none';
+        bgImg.src = mediaUrl;
+        bgImg.style.display = 'block';
+        avatarImg.src = mediaUrl;
+      }
+    }
+
+    async function handleFileSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      applyMedia(file);
+      await saveMediaFile(file); // 선택 즉시 브라우저에 영구 보관
+    }
+
+    /* --- 기본 UI 및 대화 로직 --- */
     function toggleCleanMode() {
       document.body.classList.toggle('clean-mode');
     }
@@ -394,12 +449,10 @@
       }
     }
 
-    // 2. 메시지 파싱: *지시문*은 「 자막 」으로, 대사는 말풍선으로 분리
     function renderMessage(role, text) {
       const group = document.createElement('div');
       group.className = `msg-group ${role}-group`;
 
-      // *...* 또는 「...」 단위로 텍스트 분리
       const parts = text.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
 
       parts.forEach(part => {
@@ -407,7 +460,6 @@
         const trimmed = part.trim();
         if (!trimmed) return;
 
-        // 지문/상황문인 경우 -> 말풍선 없이 자막으로 출력
         if ((trimmed.startsWith('*') && trimmed.endsWith('*')) ||
             (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
           const cleanText = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
@@ -416,8 +468,7 @@
           narEl.innerText = `「 ${cleanText} 」`;
           group.appendChild(narEl);
         } else {
-          // 실제 대사 -> 말풍선에 출력
-          let cleanDialogue = trimmed.replace(/^"+|"+$/g, '').trim(); // 따옴표 정리
+          let cleanDialogue = trimmed.replace(/^"+|"+$/g, '').trim();
           if (!cleanDialogue) return;
           const bubble = document.createElement('div');
           bubble.className = `dialogue-bubble ${role}-bubble`;
@@ -439,7 +490,7 @@
       chatBox.innerHTML = '';
 
       if (chatHistory.length === 0) {
-        const welcomeText = `*가만히 유저를 바라보다가 살짝 턱을 괸다.* "안녕? 오늘 하루는 어땠어?"`;
+        const welcomeText = `*찻잔을 내려놓고는 부드러운 미소를 띤 채 가만히 눈을 맞춘다.* "어서 오세요. 기다리고 있었어요."`;
         chatBox.appendChild(renderMessage('ai', welcomeText));
       } else {
         chatHistory.forEach(msg => {
@@ -451,48 +502,20 @@
     }
 
     function clearHistory() {
-      if (confirm('모든 대화 기록을 지우고 처음부터 다시 시작할까요?')) {
+      if (confirm('대화 기록을 비우고 처음부터 다시 시작할까요? (등록한 사진은 유지됩니다)')) {
         chatHistory = [];
         localStorage.removeItem(STORAGE_KEY_CHATS);
         loadChats();
       }
     }
 
-    // 3. 사진/영상 불러오기 (배경 + 프로필 썸네일 동시 적용)
-    function handleFileSelect(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-
-      const bgImg = document.getElementById('bg-img');
-      const bgVideo = document.getElementById('bg-video');
-      const avatarImg = document.getElementById('avatar-img');
-      const isVideo = (file.type && file.type.startsWith('video/')) || /\.(mp4|webm|mov|mkv)$/i.test(file.name);
-
-      if (isVideo) {
-        const videoUrl = URL.createObjectURL(file);
-        bgImg.style.display = 'none';
-        bgVideo.src = videoUrl;
-        bgVideo.style.display = 'block';
-        bgVideo.muted = true;
-        bgVideo.play().catch(e => console.log(e));
-      } else {
-        bgVideo.pause();
-        bgVideo.style.display = 'none';
-        const imgUrl = URL.createObjectURL(file);
-        bgImg.src = imgUrl;
-        bgImg.style.display = 'block';
-        avatarImg.src = imgUrl; // 캐릭터 프로필 동그라미에도 적용
-      }
-    }
-
-    // 4. 설정 관리
     function loadSettings() {
       const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
       if (saved) {
         try { settings = JSON.parse(saved); } catch(e){}
       }
-      document.getElementById('char-name-display').innerText = settings.name || '김아름';
-      document.getElementById('setting-char-name').value = settings.name || '김아름';
+      document.getElementById('char-name-display').innerText = settings.name || '변은아';
+      document.getElementById('setting-char-name').value = settings.name || '변은아';
       document.getElementById('setting-api-key').value = settings.apiKey || '';
       document.getElementById('setting-model').value = settings.model || 'gemini-3.5-flash-lite';
       document.getElementById('setting-prompt').value = settings.prompt || DEFAULT_PROMPT;
@@ -502,7 +525,7 @@
     function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
 
     function saveSettings() {
-      settings.name = document.getElementById('setting-char-name').value.trim() || '김아름';
+      settings.name = document.getElementById('setting-char-name').value.trim() || '변은아';
       settings.apiKey = document.getElementById('setting-api-key').value.trim();
       settings.model = document.getElementById('setting-model').value;
       settings.prompt = document.getElementById('setting-prompt').value.trim();
@@ -513,7 +536,6 @@
       alert('설정이 저장되었습니다!');
     }
 
-    // 5. 메시지 전송 및 API 호출
     async function sendMessage() {
       const inputEl = document.getElementById('user-input');
       const sendBtn = document.getElementById('send-btn');
@@ -561,7 +583,7 @@
         localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(chatHistory));
 
       } catch (err) {
-        chatBox.appendChild(renderMessage('ai', `*인상을 찌푸리며 당황한다.* "앗, 오류가 났어: ${err.message}"`));
+        chatBox.appendChild(renderMessage('ai', `*곤란한 듯 미간을 짚으며* "어머... 잠시 통신에 문제가 생긴 것 같아요: ${err.message}"`));
         chatBox.scrollTop = chatBox.scrollHeight;
       } finally {
         sendBtn.disabled = false;
