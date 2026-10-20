@@ -83,7 +83,6 @@
     }
     .char-name { font-size: 0.98rem; font-weight: 700; letter-spacing: -0.3px; }
 
-    /* 탭 전환 스위치 */
     .tab-switch {
       display: flex;
       background: rgba(255, 255, 255, 0.1);
@@ -331,7 +330,6 @@
         </div>
       </div>
 
-      <!-- 상단 탭 전환 -->
       <div class="tab-switch">
         <button id="tab-btn-daily" class="tab-btn active" onclick="switchChatRoom('daily')">💬 일상</button>
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">📅 일정 케어</button>
@@ -433,7 +431,7 @@
     const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v1';
     const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v1';
 
-    let currentRoom = 'daily'; // 'daily' | 'sched'
+    let currentRoom = 'daily';
     let dailyHistory = [];
     let schedHistory = [];
     let schedules = [];
@@ -449,11 +447,52 @@
       loadSettings();
       loadSchedules();
       loadChatHistories();
-      renderChatRoom();
+
+      // 텔레그램 링크를 통해 #sched로 접속 시 일정 케어방으로 즉시 오픈
+      if (window.location.hash === '#sched') {
+        switchChatRoom('sched');
+      } else {
+        renderChatRoom();
+      }
+
+      startScheduleAlarmChecker(); // 능동 잔소리 타이머 가동
 
       document.getElementById('bg-video-1').play().catch(() => {});
       document.getElementById('avatar-video').play().catch(() => {});
     };
+
+    /* --- 정각 능동 잔소리 타이머 (일정 케어방에 자동 등록) --- */
+    function startScheduleAlarmChecker() {
+      setInterval(() => {
+        const now = new Date();
+        const currentHM = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        const todayStr = now.toDateString();
+
+        let updated = false;
+        schedules.forEach(item => {
+          if (!item.done && item.time === currentHM && item.lastNotifiedDate !== todayStr) {
+            item.lastNotifiedDate = todayStr;
+            updated = true;
+
+            // 소명이의 능동적 알림 대사 생성
+            const reminderText = `[감정:토라짐] *손목시계를 톡톡 두드리며 당신을 빤히 바라본다.* "성주야, 벌써 ${item.time}네. 이제 [${item.title}] 할 시간이야. 딴짓하지 말고 얼른 시작해야지?"`;
+            
+            schedHistory.push({ role: 'model', parts: [{ text: reminderText }] });
+            localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
+
+            // 현재 일정 방을 보고 있다면 즉시 화면에 띄움
+            if (currentRoom === 'sched') {
+              const chatBox = document.getElementById('chat-box');
+              chatBox.appendChild(renderMessage('ai', reminderText));
+              chatBox.scrollTop = chatBox.scrollHeight;
+              setBackgroundByTag('토라짐');
+            }
+          }
+        });
+
+        if (updated) saveSchedules();
+      }, 10000);
+    }
 
     /* --- 채팅방 전환 --- */
     function switchChatRoom(room) {
@@ -464,7 +503,7 @@
       document.getElementById('tab-btn-sched').classList.toggle('active', room === 'sched');
 
       const input = document.getElementById('user-input');
-      input.placeholder = room === 'daily' ? '소명이에게 일상 메시지 보내기...' : '오늘 일정 진행 상황이나 고민 이야기하기...';
+      input.placeholder = room === 'daily' ? '소명이에게 일상 메시지 보내기...' : '일정 진행 상황 보고하거나 투정부리기...';
 
       renderChatRoom();
       setBackgroundByTag('기본');
@@ -485,7 +524,13 @@
         if (currentRoom === 'daily') {
           welcome = `[감정:기본] *벤치에 앉아 전공 책을 읽다가 당신을 올려다보며 은은하게 미소 짓는다.* "성주야, 왔어? 보고 싶었어."`;
         } else {
-          welcome = `[감정:기본] *플래너를 펼쳐놓고 펜을 가볍게 굴리며 당신을 빤히 바라본다.* "성주야, 오늘 세워둔 목표들 확인해 볼까? 몸 컨디션은 무리 없지?"`;
+          // 일정이 있으면 그 일정을 짚으면서 시작
+          const pending = schedules.filter(s => !s.done);
+          if (pending.length > 0) {
+            welcome = `[감정:기본] *플래너를 톡톡 두드리며 당신을 빤히 바라본다.* "성주야, 왔어? 오늘 [${pending[0].title}] 하기로 했잖아. 이제 슬슬 준비해야지?"`;
+          } else {
+            welcome = `[감정:기본] *플래너를 펼쳐놓고 펜을 가볍게 굴리며 당신을 본다.* "성주야, 오늘 세워둔 목표들 확인해 볼까? 몸 컨디션은 무리 없지?"`;
+          }
         }
         chatBox.appendChild(renderMessage('ai', welcome));
       } else {
@@ -528,7 +573,7 @@
       const title = document.getElementById('sched-title').value.trim();
       if (!title) return alert('목표 내용을 입력해 주세요!');
 
-      schedules.push({ id: Date.now(), category: cat, time: time, title: title, done: false });
+      schedules.push({ id: Date.now(), category: cat, time: time, title: title, done: false, lastNotifiedDate: '' });
       saveSchedules();
       document.getElementById('sched-title').value = '';
     }
@@ -729,7 +774,6 @@
       const currentHistory = currentRoom === 'daily' ? dailyHistory : schedHistory;
       currentHistory.push({ role: 'user', parts: [{ text: userText }] });
 
-      // 룸에 따른 프롬프트 분기
       let systemInstructionText = BASE_PROMPT;
       if (currentRoom === 'daily') {
         systemInstructionText += `\n\n[현재 채널: 일상 대화방]
@@ -742,8 +786,10 @@
 
         systemInstructionText += `\n\n[현재 채널: 일정 & 건강 케어방]
 ${schedSummary}
+[★ 소명이의 말투 & 코칭 필수 지침]
 - 간호학도다운 세심한 시선으로 성주의 목표 수행(운동, 공부 등)과 장루/신체 컨디션을 집중 체크하세요.
-- 미루려 할 때는 단호하면서도 다정하게 등을 떠밀고, 완료했을 때는 아낌없이 칭찬해 주세요.`;
+- 대화할 때 "이제 ~할 시간이야", "~해야지?", "딴짓하지 말고 얼른 해", "약속했잖아"처럼 차분하면서도 확실하게 등을 떠미는 어조를 적극적으로 사용하세요.
+- 미루거나 핑계를 대면 살짝 뾰로통하게 타이르고, 완료했을 때는 머리를 쓰다듬듯 진심으로 기특해하며 칭찬해 주세요.`;
       }
 
       try {
