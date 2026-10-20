@@ -345,7 +345,6 @@
     <div class="modal-content">
       <h3 style="font-size: 1.05rem;">📅 오늘의 목표 & 루틴</h3>
       
-      <!-- 알림 권한 허용 버튼 -->
       <button type="button" class="btn-notify" id="notify-perm-btn" onclick="requestNotificationPermission()">
         🔔 알림 켜기 (정각 푸시 알림 허용)
       </button>
@@ -380,10 +379,11 @@
       <label>Google AI Studio API Key</label>
       <input type="password" id="setting-api-key" placeholder="AI Studio 키를 입력하세요">
 
+      <!-- ✨ Gemini 3.5 모델 옵션 적용 -->
       <label>AI 모델</label>
       <select id="setting-model">
-        <option value="gemini-2.5-flash">Gemini 2.5 Flash (권장/빠름)</option>
-        <option value="gemini-2.5-pro">Gemini 2.5 Pro (고지능)</option>
+        <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (빠름/무료 추천)</option>
+        <option value="gemini-3.5-flash">Gemini 3.5 Flash (고성능/표준)</option>
       </select>
 
       <label>캐릭터 프롬프트 & 지침</label>
@@ -453,7 +453,7 @@
     let settings = {
       name: '유소명',
       apiKey: '',
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash-lite',
       prompt: DEFAULT_PROMPT
     };
 
@@ -465,7 +465,7 @@
       loadSchedules();
       loadChats();
       updateNotifyBtnState();
-      startAlarmChecker(); // 실시간 알림 타이머 가동
+      startAlarmChecker();
 
       document.getElementById('bg-video-1').play().catch(() => {});
       document.getElementById('avatar-video').play().catch(() => {});
@@ -505,7 +505,6 @@
       }
     }
 
-    // 10초마다 현재 시각을 확인하여 정각에 알림 발송
     function startAlarmChecker() {
       setInterval(() => {
         const now = new Date();
@@ -514,7 +513,6 @@
 
         let changed = false;
         schedules.forEach(item => {
-          // 아직 완료되지 않았고, 설정한 시각과 일치하며, 오늘 알림을 아직 안 보낸 경우
           if (!item.done && item.time === currentHM && item.lastNotifiedDate !== todayStr) {
             item.lastNotifiedDate = todayStr;
             changed = true;
@@ -527,19 +525,16 @@
     }
 
     function triggerScheduleNotification(item) {
-      // 1. 스마트폰 상단 바 푸시 알림
       if ("Notification" in window && Notification.permission === 'granted') {
         new Notification("유소명", {
           body: `성주야, ${item.time} 약속한 [${item.title}] 할 시간이야.`
         });
       }
 
-      // 2. 스마트폰 진동 울림
       if (navigator.vibrate) {
         navigator.vibrate([200, 100, 200]);
       }
 
-      // 3. 대화창에 소명이의 선제 대사 등록
       const alarmMsg = `[감정:기본] *시계를 가만히 들여다보더니 당신을 향해 고개를 돌린다.* "성주야, 벌써 ${item.time}네. 오늘 약속했던 [${item.title}] 시작할 시간이야. 잊지 않았지?"`;
       const chatBox = document.getElementById('chat-box');
       chatBox.appendChild(renderMessage('ai', alarmMsg));
@@ -569,7 +564,6 @@
       const title = document.getElementById('sched-title').value.trim();
       if (!title) return alert('목표 내용을 입력해 주세요!');
 
-      // 알림 권한이 꺼져 있으면 안내
       if ("Notification" in window && Notification.permission !== 'granted') {
         requestNotificationPermission();
       }
@@ -769,7 +763,7 @@
       document.getElementById('char-name-display').innerText = settings.name || '유소명';
       document.getElementById('setting-char-name').value = settings.name || '유소명';
       document.getElementById('setting-api-key').value = settings.apiKey || '';
-      document.getElementById('setting-model').value = settings.model || 'gemini-2.5-flash';
+      document.getElementById('setting-model').value = settings.model || 'gemini-3.5-flash-lite';
       document.getElementById('setting-prompt').value = settings.prompt || DEFAULT_PROMPT;
     }
 
