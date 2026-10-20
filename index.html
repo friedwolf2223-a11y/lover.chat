@@ -14,6 +14,7 @@
       color: #fff;
     }
 
+    /* 1. 배경 미디어 */
     #bg-container {
       position: fixed;
       top: 0; left: 0;
@@ -40,6 +41,7 @@
       transition: opacity 0.3s ease;
     }
 
+    /* 2. 메인 레이아웃 */
     #app {
       position: relative;
       z-index: 3;
@@ -97,6 +99,7 @@
       gap: 4px;
     }
 
+    /* 감상 모드 버튼 */
     #eye-btn {
       position: fixed;
       right: 16px;
@@ -119,6 +122,7 @@
     }
     #eye-btn:active { transform: translateY(-50%) scale(0.92); }
 
+    /* 대화 영역 (얼굴 노출용 45vh 상단 여백) */
     #chat-box {
       flex: 1;
       padding: 16px;
@@ -221,6 +225,7 @@
       border-color: rgba(255, 255, 255, 0.6);
     }
 
+    /* 설정 창 스타일 */
     #settings-modal {
       display: none;
       position: fixed;
@@ -264,6 +269,23 @@
       padding: 10px; background: #444; border: none; border-radius: 8px; color: #fff; cursor: pointer;
     }
 
+    /* 백업/복원 도구 버튼 */
+    .btn-sync {
+      flex: 1;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .btn-sync:hover { background: rgba(255, 255, 255, 0.2); }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -272,12 +294,14 @@
 </head>
 <body>
 
+  <!-- 배경 미디어 -->
   <div id="bg-container">
     <img id="bg-img" class="bg-media">
     <video id="bg-video" class="bg-media" autoplay muted loop playsinline></video>
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
+  <!-- 감상 모드 버튼 -->
   <button id="eye-btn" onclick="toggleCleanMode()" title="일러스트 감상 모드">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -285,6 +309,7 @@
     </svg>
   </button>
 
+  <!-- 웹앱 UI -->
   <div id="app">
     <header>
       <div class="profile-area">
@@ -316,6 +341,7 @@
     </footer>
   </div>
 
+  <!-- 설정 모달창 -->
   <div id="settings-modal">
     <div class="modal-content">
       <h3 style="font-size: 1.05rem;">⚙️ 캐릭터 & API 설정</h3>
@@ -334,6 +360,15 @@
 
       <label>캐릭터 프롬프트 & 지침</label>
       <textarea id="setting-prompt"></textarea>
+
+      <!-- ✨ 기기 간 데이터 백업 / 복원 섹션 -->
+      <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; margin-top: 4px;">
+        <label style="color: #ff9bbb; font-weight: 600;">📱💻 기기 간 데이터 이동</label>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+          <button type="button" class="btn-sync" onclick="exportData()">📤 백업 코드 복사</button>
+          <button type="button" class="btn-sync" onclick="importData()">📥 백업 코드 복원</button>
+        </div>
+      </div>
 
       <div style="display: flex; gap: 8px; margin-top: 6px;">
         <button class="btn-save" style="flex:1;" onclick="saveSettings()">저장</button>
@@ -373,10 +408,60 @@
     window.onload = function() {
       loadSettings();
       loadChats();
-      loadSavedMedia(); // 저장된 사진/영상 불러오기
+      loadSavedMedia();
     };
 
-    /* --- IndexedDB 미디어 저장소 연동 --- */
+    /* --- 데이터 백업 및 복원 (Export & Import) --- */
+    function exportData() {
+      const payload = {
+        version: 1,
+        settings: settings,
+        chatHistory: chatHistory
+      };
+      try {
+        const jsonStr = JSON.stringify(payload);
+        // 한글과 특수문자가 깨지지 않도록 UTF-8 인코딩 후 Base64로 압축
+        const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+        
+        navigator.clipboard.writeText(b64).then(() => {
+          alert('✅ 백업 코드가 클립보드에 복사되었습니다!\n\n카카오톡 "나와의 채팅" 등에 붙여넣어 다른 기기로 보낸 뒤, 다른 기기에서 [📥 백업 코드 복원]을 눌러 붙여넣으세요.');
+        }).catch(() => {
+          prompt('아래 백업 코드를 복사해서 다른 기기로 보내세요:', b64);
+        });
+      } catch (err) {
+        alert('백업 코드 생성 중 오류가 발생했습니다: ' + err.message);
+      }
+    }
+
+    function importData() {
+      const inputCode = prompt('다른 기기에서 복사한 백업 코드를 여기에 붙여넣어 주세요:');
+      if (!inputCode || !inputCode.trim()) return;
+
+      try {
+        const jsonStr = decodeURIComponent(Array.prototype.map.call(atob(inputCode.trim()), (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        const data = JSON.parse(jsonStr);
+
+        if (!data.settings || !data.chatHistory) {
+          throw new Error('올바르지 않은 백업 코드 형식입니다.');
+        }
+
+        settings = data.settings;
+        chatHistory = data.chatHistory;
+
+        localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+        localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(chatHistory));
+
+        loadSettings();
+        loadChats();
+        closeSettings();
+
+        alert('🎉 데이터 복원이 완료되었습니다!\nAPI 키, 은아 설정, 대화 기록이 모두 복원되었습니다.');
+      } catch (err) {
+        alert('⚠️ 복원 실패: 코드가 올바르지 않거나 손상되었습니다.\n' + err.message);
+      }
+    }
+
+    /* --- IndexedDB 사진/영상 영구 저장 --- */
     function getMediaDB() {
       return new Promise((resolve, reject) => {
         const req = indexedDB.open('NovelMediaStorage', 1);
@@ -436,10 +521,10 @@
       const file = event.target.files && event.target.files[0];
       if (!file) return;
       applyMedia(file);
-      await saveMediaFile(file); // 선택 즉시 브라우저에 영구 보관
+      await saveMediaFile(file);
     }
 
-    /* --- 기본 UI 및 대화 로직 --- */
+    /* --- UI 및 텍스트 렌더링 로직 --- */
     function toggleCleanMode() {
       document.body.classList.toggle('clean-mode');
     }
