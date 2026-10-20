@@ -164,7 +164,6 @@
       box-shadow: 1px 1px 0 #000;
     }
 
-    /* BGM 플레이어 활성화 버튼 스타일 */
     .btn-p5-bgm.playing {
       background: #ffdd59;
       color: #000;
@@ -268,7 +267,6 @@
       line-height: 1;
     }
 
-    /* 사선 말풍선 */
     .p5-bubble {
       padding: 10px 14px;
       font-size: 0.93rem;
@@ -303,7 +301,6 @@
       border-right: 8px solid #5ce1e6;
     }
 
-    /* 성주(유저) 메시지 */
     .user-group {
       align-items: flex-end;
       padding-right: 6px;
@@ -324,7 +321,6 @@
       font-weight: 700;
     }
 
-    /* 상황 나레이션: 투명 자막 */
     .narration {
       color: #ffdd59;
       font-size: 0.9rem;
@@ -342,7 +338,6 @@
     .ai-group .narration { text-align: left; }
     .user-group .narration { text-align: right; }
 
-    /* 하단 입력창 */
     footer {
       padding: 8px 12px 14px;
       background: rgba(18, 18, 24, 0.55);
@@ -394,7 +389,7 @@
     body.clean-mode #app { opacity: 0; pointer-events: none; transform: scale(0.96); }
     body.clean-mode .bg-gradient-overlay { opacity: 0.05; }
 
-    /* 모달 */
+    /* 모달 기본 스타일 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -448,6 +443,108 @@
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
     }
 
+    /* ★ P5 뮤직 플레이어 모달 디자인 */
+    .player-card {
+      background: #181824;
+      border: 2px solid #5ce1e6;
+      padding: 12px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .track-title-display {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #ffdd59;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 0 6px rgba(255, 221, 89, 0.4);
+    }
+    .seek-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .seek-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      background: #333;
+      outline: none;
+      border-radius: 3px;
+    }
+    .seek-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #5ce1e6;
+      border: 2px solid #000;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 6px #5ce1e6;
+    }
+    .time-text {
+      font-size: 0.72rem;
+      color: #bbb;
+      font-family: monospace;
+      width: 38px;
+      text-align: center;
+    }
+
+    .player-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+    .ctrl-btn {
+      background: #000;
+      color: #fff;
+      border: 2px solid #5ce1e6;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 900;
+      cursor: pointer;
+      transform: skewX(-8deg);
+      box-shadow: 2px 2px 0 #000;
+    }
+    .ctrl-btn:active { transform: skewX(-8deg) translate(1px, 1px); }
+    .ctrl-btn.mode-btn {
+      font-size: 0.72rem;
+      border-color: #ffdd59;
+      color: #ffdd59;
+      padding: 6px 8px;
+    }
+
+    .playlist-box {
+      max-height: 160px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .playlist-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 10px;
+      background: #000;
+      border: 1px solid #333;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    .playlist-item.active {
+      border-color: #5ce1e6;
+      background: #0d1b2a;
+      color: #5ce1e6;
+      box-shadow: inset 3px 0 0 #5ce1e6;
+    }
+
     .schedule-item {
       display: flex;
       align-items: center;
@@ -489,8 +586,8 @@
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- BGM 오디오 플레이어 (무한 반복) -->
-  <audio id="bgm-player" src="bgm.mp3" loop preload="auto"></audio>
+  <!-- 오디오 요소 (플레이어가 제어) -->
+  <audio id="bgm-player" preload="metadata"></audio>
 
   <!-- 영상 감상 모드 버튼 -->
   <button id="eye-btn" onclick="toggleCleanMode()" title="영상 감상 모드">
@@ -500,7 +597,7 @@
     </svg>
   </button>
 
-  <!-- P5 메신저 앱 -->
+  <!-- P5 메신저 앱 메인 컨테이너 -->
   <div id="app">
     <header>
       <div class="p5-logo-wrap">
@@ -514,9 +611,9 @@
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">일정케어</button>
       </div>
 
-      <!-- 우측 컨트롤 버튼 (BGM 추가) -->
+      <!-- 우측 컨트롤 버튼 (뮤직 플레이어 추가) -->
       <div class="header-actions">
-        <button id="bgm-btn" class="btn-p5-icon btn-p5-bgm" onclick="toggleBgm()" title="배경음악 재생/정지">🎵 OFF</button>
+        <button id="header-music-btn" class="btn-p5-icon btn-p5-bgm" onclick="openMusicPlayer()" title="뮤직 플레이어 열기">🎵 플레이어</button>
         <button class="btn-p5-icon" onclick="openSchedule()">일정</button>
         <button class="btn-p5-icon" onclick="openSettings()">설정</button>
         <button class="btn-p5-icon" onclick="clearCurrentHistory()">비움</button>
@@ -531,6 +628,49 @@
       </div>
       <button id="send-btn" class="btn-p5-send" onclick="sendMessage()">보내기</button>
     </footer>
+  </div>
+
+  <!-- 🎵 P5 뮤직 플레이어 모달 -->
+  <div id="music-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>🎵 BGM AUDIO PLAYER</h3>
+
+      <div class="player-card">
+        <div id="current-track-title" class="track-title-display">재생 중인 곡 없음</div>
+
+        <!-- 탐색 슬라이더 (구간 조절) -->
+        <div class="seek-container">
+          <span id="current-time-txt" class="time-text">0:00</span>
+          <input type="range" id="seek-bar" class="seek-slider" min="0" max="100" value="0" oninput="handleSeekInput()" onchange="handleSeekChange()">
+          <span id="total-time-txt" class="time-text">0:00</span>
+        </div>
+
+        <!-- 컨트롤 패널 -->
+        <div class="player-controls">
+          <button id="repeat-mode-btn" class="ctrl-btn mode-btn" onclick="toggleRepeatMode()">🔁 전체 반복</button>
+          <div style="display: flex; gap: 4px;">
+            <button class="ctrl-btn" onclick="playPrevTrack()">⏮</button>
+            <button id="play-pause-btn" class="ctrl-btn" onclick="togglePlayPause()" style="font-size: 1rem; padding: 6px 14px;">▶</button>
+            <button class="ctrl-btn" onclick="playNextTrack()">⏭</button>
+          </div>
+        </div>
+      </div>
+
+      <label>📋 플레이리스트</label>
+      <div id="playlist-container" class="playlist-box"></div>
+
+      <!-- 새 곡 등록 -->
+      <div style="border-top: 1px dashed #444; padding-top: 8px; margin-top: 4px;">
+        <label>➕ 새 노래 추가 (GitHub 파일명)</label>
+        <div style="display: flex; gap: 4px; margin-top: 4px;">
+          <input type="text" id="new-song-title" placeholder="곡 제목 (예: Changing Seasons)" style="flex: 1;">
+          <input type="text" id="new-song-file" placeholder="파일명 (예: bgm.mp3)" style="flex: 1;">
+          <button class="btn-save" style="padding: 6px 10px; font-size: 0.78rem;" onclick="addNewTrack()">추가</button>
+        </div>
+      </div>
+
+      <button class="btn-cancel" onclick="closeMusicPlayer()">닫기</button>
+    </div>
   </div>
 
   <!-- 📅 일정 관리 모달 -->
@@ -641,6 +781,7 @@
     const STORAGE_KEY_SCHED_CHAT = 'novel_chat_sched_room_v1';
     const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v1';
     const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v1';
+    const STORAGE_KEY_PLAYLIST = 'novel_music_playlist_v1';
 
     let currentRoom = 'daily';
     let dailyHistory = [];
@@ -658,10 +799,21 @@
     let activeLayer = 1;
     let currentVideoSrc = 'default.mp4';
 
+    /* ★ 뮤직 플레이어 상태 관리 ★ */
+    let playlist = [
+      { id: 1, title: 'Changing Seasons (-Reload-)', file: 'Changing Seasons -Reload-.mp3' },
+      { id: 2, title: '기본 BGM', file: 'bgm.mp3' }
+    ];
+    let currentTrackIndex = 0;
+    let repeatMode = 'all'; // 'all' | 'one' | 'none'
+    let isSeeking = false;
+    let audio = null;
+
     window.onload = function() {
       loadSettings();
       loadSchedules();
       loadChatHistories();
+      initMusicPlayer();
 
       if (window.location.hash === '#sched') {
         switchChatRoom('sched');
@@ -674,25 +826,184 @@
       document.getElementById('bg-video-1').play().catch(() => {});
     };
 
-    /* ★ BGM 재생 / 정지 토글 */
-    function toggleBgm() {
-      const audio = document.getElementById('bgm-player');
-      const btn = document.getElementById('bgm-btn');
+    /* --- 뮤직 플레이어 로직 --- */
+    function initMusicPlayer() {
+      audio = document.getElementById('bgm-player');
+      try {
+        const savedList = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAYLIST));
+        if (savedList && savedList.length > 0) playlist = savedList;
+      } catch(e){}
 
+      renderPlaylist();
+      updatePlayerTrackInfo();
+
+      audio.addEventListener('timeupdate', () => {
+        if (!isSeeking && audio.duration) {
+          const progress = (audio.currentTime / audio.duration) * 100;
+          document.getElementById('seek-bar').value = progress;
+          document.getElementById('current-time-txt').innerText = formatTime(audio.currentTime);
+        }
+      });
+
+      audio.addEventListener('loadedmetadata', () => {
+        document.getElementById('total-time-txt').innerText = formatTime(audio.duration);
+      });
+
+      // 곡이 끝났을 때 반복 모드 분기
+      audio.addEventListener('ended', () => {
+        if (repeatMode === 'one') {
+          audio.currentTime = 0;
+          audio.play();
+        } else if (repeatMode === 'all') {
+          playNextTrack();
+        } else {
+          if (currentTrackIndex < playlist.length - 1) {
+            playNextTrack();
+          } else {
+            updatePlayBtnState(false);
+          }
+        }
+      });
+    }
+
+    function formatTime(sec) {
+      if (isNaN(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function updatePlayerTrackInfo() {
+      if (playlist.length === 0) {
+        document.getElementById('current-track-title').innerText = '재생 가능한 곡 없음';
+        return;
+      }
+      const track = playlist[currentTrackIndex];
+      document.getElementById('current-track-title').innerText = track.title;
+      audio.src = encodeURI(track.file);
+      renderPlaylist();
+    }
+
+    function renderPlaylist() {
+      const container = document.getElementById('playlist-container');
+      container.innerHTML = '';
+      playlist.forEach((track, idx) => {
+        const div = document.createElement('div');
+        div.className = `playlist-item ${idx === currentTrackIndex ? 'active' : ''}`;
+        div.innerHTML = `
+          <span onclick="selectTrack(${idx})" style="flex:1;">${idx + 1}. ${track.title}</span>
+          <button onclick="deleteTrack(${track.id})" style="background:none; border:none; color:#888; cursor:pointer; font-size:0.9rem;">✕</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function selectTrack(idx) {
+      currentTrackIndex = idx;
+      updatePlayerTrackInfo();
+      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
+    }
+
+    function togglePlayPause() {
+      if (playlist.length === 0) return alert('재생할 곡이 없습니다. 곡을 먼저 추가해 주세요.');
       if (audio.paused) {
+        if (!audio.src || audio.src === window.location.href) {
+          updatePlayerTrackInfo();
+        }
         audio.play().then(() => {
-          btn.innerText = '🎵 ON';
-          btn.classList.add('playing');
+          updatePlayBtnState(true);
         }).catch(err => {
-          alert('GitHub 저장소에 bgm.mp3 파일이 업로드되어 있는지 확인해 주세요!');
+          alert('음악 파일을 불러올 수 없습니다. GitHub에 올린 파일명과 일치하는지 확인해 주세요!');
         });
       } else {
         audio.pause();
-        btn.innerText = '🎵 OFF';
-        btn.classList.remove('playing');
+        updatePlayBtnState(false);
       }
     }
 
+    function updatePlayBtnState(isPlaying) {
+      const btn = document.getElementById('play-pause-btn');
+      const headerBtn = document.getElementById('header-music-btn');
+      if (isPlaying) {
+        btn.innerText = '⏸';
+        headerBtn.classList.add('playing');
+        headerBtn.innerText = '🎵 재생중';
+      } else {
+        btn.innerText = '▶';
+        headerBtn.classList.remove('playing');
+        headerBtn.innerText = '🎵 플레이어';
+      }
+    }
+
+    function playNextTrack() {
+      if (playlist.length === 0) return;
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      updatePlayerTrackInfo();
+      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
+    }
+
+    function playPrevTrack() {
+      if (playlist.length === 0) return;
+      currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+      updatePlayerTrackInfo();
+      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
+    }
+
+    function toggleRepeatMode() {
+      const btn = document.getElementById('repeat-mode-btn');
+      if (repeatMode === 'all') {
+        repeatMode = 'one';
+        btn.innerText = '🔂 1곡 반복';
+      } else if (repeatMode === 'one') {
+        repeatMode = 'none';
+        btn.innerText = '➡️ 순차 재생';
+      } else {
+        repeatMode = 'all';
+        btn.innerText = '🔁 전체 반복';
+      }
+    }
+
+    function handleSeekInput() {
+      isSeeking = true;
+      const bar = document.getElementById('seek-bar');
+      if (audio.duration) {
+        const time = (bar.value / 100) * audio.duration;
+        document.getElementById('current-time-txt').innerText = formatTime(time);
+      }
+    }
+
+    function handleSeekChange() {
+      const bar = document.getElementById('seek-bar');
+      if (audio.duration) {
+        audio.currentTime = (bar.value / 100) * audio.duration;
+      }
+      isSeeking = false;
+    }
+
+    function addNewTrack() {
+      const title = document.getElementById('new-song-title').value.trim();
+      const file = document.getElementById('new-song-file').value.trim();
+      if (!title || !file) return alert('곡 제목과 파일명을 모두 입력해 주세요!');
+
+      playlist.push({ id: Date.now(), title, file });
+      localStorage.setItem(STORAGE_KEY_PLAYLIST, JSON.stringify(playlist));
+      renderPlaylist();
+      document.getElementById('new-song-title').value = '';
+      document.getElementById('new-song-file').value = '';
+    }
+
+    function deleteTrack(id) {
+      if (playlist.length <= 1) return alert('최소 1곡은 목록에 남아 있어야 합니다.');
+      playlist = playlist.filter(t => t.id !== id);
+      if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
+      localStorage.setItem(STORAGE_KEY_PLAYLIST, JSON.stringify(playlist));
+      updatePlayerTrackInfo();
+    }
+
+    function openMusicPlayer() { document.getElementById('music-modal').style.display = 'flex'; }
+    function closeMusicPlayer() { document.getElementById('music-modal').style.display = 'none'; }
+
+    /* --- 구글 스크립트 싱크 및 타이머 --- */
     function syncSchedulesToGas() {
       if (!settings.gasUrl) return;
       fetch(settings.gasUrl, {
@@ -942,12 +1253,12 @@
     }
 
     function exportData() {
-      const payload = { version: 12, settings, dailyHistory, schedHistory, schedules };
+      const payload = { version: 13, settings, dailyHistory, schedHistory, schedules, playlist };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 복사되었습니다!');
+          alert('✅ 백업 코드가 복사되었습니다! (플레이리스트 포함)');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -962,14 +1273,18 @@
         dailyHistory = data.dailyHistory || [];
         schedHistory = data.schedHistory || [];
         schedules = data.schedules || [];
+        playlist = data.playlist || playlist;
 
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
         localStorage.setItem(STORAGE_KEY_DAILY, JSON.stringify(dailyHistory));
         localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
         localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
+        localStorage.setItem(STORAGE_KEY_PLAYLIST, JSON.stringify(playlist));
 
         loadSettings();
         loadSchedules();
+        renderPlaylist();
+        updatePlayerTrackInfo();
         renderChatRoom();
         closeSettings();
         syncSchedulesToGas();
@@ -1099,3 +1414,4 @@ ${schedSummary}
   </script>
 </body>
 </html>
+
