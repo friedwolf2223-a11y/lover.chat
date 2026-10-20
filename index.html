@@ -66,7 +66,7 @@
       transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.3s ease;
     }
 
-    /* 3. 상단 헤더: 모바일 최적화 정돈 */
+    /* 3. 상단 헤더 */
     header {
       padding: 10px 12px;
       display: flex;
@@ -112,7 +112,6 @@
       letter-spacing: -0.5px;
     }
 
-    /* 상단 탭 스위치 */
     .tab-switch {
       display: flex;
       gap: 2px;
@@ -167,7 +166,6 @@
       box-shadow: 1px 1px 0 #000;
     }
 
-    /* P5X BGM 헤더 버튼 */
     .btn-p5-music-badge {
       background: #111;
       color: #5ce1e6;
@@ -181,7 +179,6 @@
       animation: bgmPulse 1.8s infinite alternate;
     }
 
-    /* ★ P5X 메뉴 토글 버튼 ★ */
     .btn-p5-menu-trigger {
       background: #e60012;
       color: #fff;
@@ -232,7 +229,6 @@
       animation: p5FadeIn 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     }
 
-    /* 소명이(AI) 메시지 */
     .ai-group {
       align-items: flex-start;
       position: relative;
@@ -287,7 +283,6 @@
       line-height: 1;
     }
 
-    /* 사선 말풍선 */
     .p5-bubble {
       padding: 10px 14px;
       font-size: 0.93rem;
@@ -343,7 +338,6 @@
       font-weight: 700;
     }
 
-    /* 상황 나레이션: 띄어쓰기/공백 보존 */
     .narration {
       color: #ffdd59;
       font-size: 0.9rem;
@@ -415,7 +409,7 @@
     body.clean-mode .bg-gradient-overlay { opacity: 0.05; }
 
     /* ========================================================
-       ★ P5X 스마트폰 메뉴 오버레이 (사진 테마 100% 구현) ★
+       ★ P5X 스마트폰 메뉴 오버레이 ★
     ======================================================== */
     #p5x-menu-modal {
       display: none;
@@ -454,7 +448,6 @@
       pointer-events: none;
     }
 
-    /* 스마트폰 상단 상태바 */
     .p5x-phone-topbar {
       display: flex;
       justify-content: space-between;
@@ -490,7 +483,6 @@
       transform: skewX(-10deg) translate(1px, 1px);
     }
 
-    /* P5X 캐릭터 영웅 카드 (프로필) */
     .p5x-hero-card {
       margin: 12px 14px 10px;
       background: #000;
@@ -562,7 +554,6 @@
       background: linear-gradient(90deg, #5ce1e6, #ffdd59);
     }
 
-    /* P5X 앱 아이콘 그리드 */
     .p5x-apps-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -689,7 +680,73 @@
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
     }
 
-    /* P5X 뮤직 플레이어 모달 디자인 */
+    /* ========================================================
+       ★ 신규: P5X 스마트 루틴 & 시간 설정 UI 스타일 ★
+    ======================================================== */
+    .p5x-routine-card {
+      background: #14141e;
+      border: 2px solid #5ce1e6;
+      padding: 12px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .quick-chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 2px;
+    }
+    .quick-chip {
+      background: #000;
+      color: #ffdd59;
+      border: 1.5px solid #ffdd59;
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      transform: skewX(-8deg);
+      box-shadow: 2px 2px 0 #000;
+      transition: all 0.1s ease;
+    }
+    .quick-chip:active {
+      transform: skewX(-8deg) translate(1px, 1px);
+      box-shadow: 0 0 0 #000;
+    }
+    .quick-time-chip {
+      color: #5ce1e6;
+      border-color: #5ce1e6;
+    }
+
+    /* P5X 커스텀 시간 선택기 */
+    .custom-time-picker-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #000;
+      border: 2px solid #5ce1e6;
+      padding: 6px 10px;
+      transform: skewX(-8deg);
+      box-shadow: 3px 3px 0 #000;
+    }
+    .custom-time-picker-wrap select {
+      border: none;
+      background: #000;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 900;
+      padding: 4px 6px;
+      font-family: monospace;
+      width: auto;
+      text-align: center;
+    }
+    .time-colon {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #5ce1e6;
+    }
+
     .p5x-player-card {
       background: #14141e;
       border: 2.5px solid #5ce1e6;
@@ -930,13 +987,11 @@
         <div class="p5-comm-tag">SNS</div>
       </div>
 
-      <!-- 상단 탭 전환 -->
       <div class="tab-switch">
         <button id="tab-btn-daily" class="tab-btn active" onclick="switchChatRoom('daily')">일상</button>
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">일정케어</button>
       </div>
 
-      <!-- 정돈된 헤더 우측 (잘림 방지) -->
       <div class="header-actions">
         <button id="header-music-btn" class="btn-p5-icon btn-p5-music-badge" onclick="openMusicPlayer()" title="BGM 플레이어">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
@@ -956,12 +1011,9 @@
     </footer>
   </div>
 
-  <!-- ========================================================
-       ★ P5X 스마트폰 메뉴 모달 (사진 UI 1:1 완벽 구현) ★
-  ======================================================== -->
+  <!-- P5X 스마트폰 메뉴 모달 -->
   <div id="p5x-menu-modal">
     <div class="p5x-phone-body">
-      <!-- 최상단 상태바 (시계 + 닫기) -->
       <div class="p5x-phone-topbar">
         <div class="p5x-phone-time-wrap">
           <span id="p5x-live-clock">07:46</span>
@@ -974,7 +1026,6 @@
         <button class="btn-p5x-phone-close" onclick="closeP5Menu()">✕</button>
       </div>
 
-      <!-- 소명이 캐릭터 프로필 카드 -->
       <div class="p5x-hero-card">
         <div class="p5x-star-badge">
           <video id="menu-avatar-video" class="p5x-star-avatar" src="default.mp4" autoplay muted loop playsinline></video>
@@ -989,9 +1040,7 @@
         </div>
       </div>
 
-      <!-- P5X 앱 아이콘 그리드 -->
       <div class="p5x-apps-grid">
-        <!-- 1. 일정 (스케줄) -->
         <button class="p5x-app-item" onclick="launchApp('schedule')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
@@ -1000,7 +1049,6 @@
           <span class="p5x-app-label">루틴·일정</span>
         </button>
 
-        <!-- 2. 환경 설정 -->
         <button class="p5x-app-item" onclick="launchApp('settings')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -1008,7 +1056,6 @@
           <span class="p5x-app-label">환경설정</span>
         </button>
 
-        <!-- 3. 대화 비우기 -->
         <button class="p5x-app-item" onclick="launchApp('clear')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
@@ -1016,7 +1063,6 @@
           <span class="p5x-app-label">기록비움</span>
         </button>
 
-        <!-- 4. 뮤직 플레이어 -->
         <button class="p5x-app-item" onclick="launchApp('music')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
@@ -1024,7 +1070,6 @@
           <span class="p5x-app-label">플레이어</span>
         </button>
 
-        <!-- 5. 데이터 백업 / 복원 -->
         <button class="p5x-app-item" onclick="launchApp('backup')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
@@ -1032,7 +1077,6 @@
           <span class="p5x-app-label">동기백업</span>
         </button>
 
-        <!-- 6. 클린 뷰 (영상 감상) -->
         <button class="p5x-app-item" onclick="launchApp('clean')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
@@ -1040,7 +1084,6 @@
           <span class="p5x-app-label">감상모드</span>
         </button>
 
-        <!-- 7. 소명 일기 / 메모 (확장 준비) -->
         <button class="p5x-app-item" onclick="launchApp('diary')">
           <div class="p5x-icon-box" style="border-style: dashed; opacity: 0.85;">
             <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
@@ -1049,7 +1092,6 @@
           <span class="p5x-app-label">소명메모</span>
         </button>
 
-        <!-- 8. 팬텀 라인업 (확장 준비 슬롯) -->
         <button class="p5x-app-item" onclick="launchApp('soon')">
           <div class="p5x-icon-box" style="border-style: dashed; opacity: 0.6;">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
@@ -1057,6 +1099,69 @@
           <span class="p5x-app-label">확장슬롯</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       ★ 개선: P5X 스마트 루틴 & 시간 설정 모달 (원터치 시간/추천 칩) ★
+  ======================================================== -->
+  <div id="schedule-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>📅 ROUTINE & MISSION</h3>
+
+      <!-- 1. 시간 선택 패널 (구식 시계판 제거) -->
+      <div class="p5x-routine-card">
+        <label>⏰ 목표 시간 (24시간 기준 자동 적용)</label>
+        
+        <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
+          <div class="custom-time-picker-wrap">
+            <select id="sched-hour"></select>
+            <span class="time-colon">:</span>
+            <select id="sched-minute"></select>
+          </div>
+          <select id="sched-category" style="flex: 1; height: 38px; transform: skewX(-8deg); font-weight: 800;">
+            <option value="운동">운동 🏋️</option>
+            <option value="공부">공부 📚</option>
+            <option value="건강">건강 🩺</option>
+            <option value="일상">일상 ☕</option>
+          </select>
+        </div>
+
+        <!-- 빠른 시간 추가 칩 -->
+        <label style="margin-top: 4px; font-size: 0.75rem;">⚡ 빠른 시간 세팅</label>
+        <div class="quick-chip-container">
+          <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(5)">+5분 뒤</button>
+          <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(10)">+10분 뒤</button>
+          <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(30)">+30분 뒤</button>
+          <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(60)">+1시간 뒤</button>
+          <button type="button" class="quick-chip quick-time-chip" onclick="setExactTime(20, 0)">저녁 8시</button>
+          <button type="button" class="quick-chip quick-time-chip" onclick="setExactTime(22, 0)">밤 10시</button>
+        </div>
+      </div>
+
+      <!-- 2. 목표 입력 및 원터치 루틴 추천 -->
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label>🎯 목표 내용</label>
+        <div style="display: flex; gap: 6px;">
+          <input type="text" id="sched-title" placeholder="목표 입력 (예: 턱걸이 5세트)" style="flex:1;">
+          <button class="btn-save" style="padding: 6px 14px; white-space: nowrap;" onclick="addSchedule()">등록</button>
+        </div>
+
+        <!-- 원터치 추천 칩 -->
+        <div class="quick-chip-container">
+          <button type="button" class="quick-chip" onclick="applyPresetRoutine('운동', '턱걸이 5세트')">💪 턱걸이 5세트</button>
+          <button type="button" class="quick-chip" onclick="applyPresetRoutine('공부', '영어 단어 암기')">📖 영단어 암기</button>
+          <button type="button" class="quick-chip" onclick="applyPresetRoutine('건강', '장루·컨디션 체크')">🩺 장루/컨디션</button>
+          <button type="button" class="quick-chip" onclick="applyPresetRoutine('건강', '저녁 약·영양제 복용')">💊 약/영양제</button>
+          <button type="button" class="quick-chip" onclick="applyPresetRoutine('운동', '스트레칭 & 호흡')">🚶 스트레칭</button>
+        </div>
+      </div>
+
+      <!-- 3. 등록된 미션 목록 -->
+      <label style="margin-top: 4px;">📋 오늘의 등록 미션</label>
+      <div id="schedule-list" style="max-height: 180px; overflow-y: auto;"></div>
+
+      <button class="btn-cancel" onclick="closeSchedule()">닫기</button>
     </div>
   </div>
 
@@ -1115,27 +1220,6 @@
       </div>
 
       <button class="btn-cancel" onclick="closeMusicPlayer()">닫기</button>
-    </div>
-  </div>
-
-  <!-- 📅 일정 관리 모달 -->
-  <div id="schedule-modal" class="modal-overlay">
-    <div class="modal-content">
-      <h3>📅 루틴 & 목표 설정</h3>
-      <div style="display: flex; gap: 6px;">
-        <select id="sched-category" style="width: 80px;">
-          <option value="운동">운동</option>
-          <option value="공부">공부</option>
-          <option value="일상">일상</option>
-        </select>
-        <input type="time" id="sched-time" style="width: 110px;" value="20:00">
-      </div>
-      <div style="display: flex; gap: 6px;">
-        <input type="text" id="sched-title" placeholder="목표 입력 (예: 턱걸이 5세트)">
-        <button class="btn-save" style="padding: 6px 12px;" onclick="addSchedule()">추가</button>
-      </div>
-      <div id="schedule-list" style="max-height: 220px; overflow-y: auto; margin-top: 6px;"></div>
-      <button class="btn-cancel" onclick="closeSchedule()">닫기</button>
     </div>
   </div>
 
@@ -1255,6 +1339,7 @@
 
     window.onload = function() {
       loadSettings();
+      initTimePickerOptions();
       loadSchedules();
       loadChatHistories();
       initMusicPlayer();
@@ -1296,7 +1381,6 @@
       document.getElementById('p5x-menu-modal').style.display = 'none';
     }
 
-    /* P5X 앱 아이콘 라우터 */
     function launchApp(appId) {
       closeP5Menu();
       if (appId === 'schedule') {
@@ -1316,6 +1400,52 @@
       } else if (appId === 'soon') {
         alert('✨ 괴도단의 새로운 기능이 곧 추가될 예정입니다!');
       }
+    }
+
+    /* --- ★ 신규: P5X 스마트 시간 선택기 로직 --- */
+    function initTimePickerOptions() {
+      const hSelect = document.getElementById('sched-hour');
+      const mSelect = document.getElementById('sched-minute');
+
+      hSelect.innerHTML = '';
+      mSelect.innerHTML = '';
+
+      for (let h = 0; h < 24; h++) {
+        const val = String(h).padStart(2, '0');
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.innerText = `${val}시`;
+        hSelect.appendChild(opt);
+      }
+
+      for (let m = 0; m < 60; m++) {
+        const val = String(m).padStart(2, '0');
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.innerText = `${val}분`;
+        mSelect.appendChild(opt);
+      }
+
+      // 기본값: 현재 시각 + 10분 뒤
+      setQuickTime(10);
+    }
+
+    function setQuickTime(plusMinutes) {
+      const target = new Date(Date.now() + plusMinutes * 60000);
+      const hStr = String(target.getHours()).padStart(2, '0');
+      const mStr = String(target.getMinutes()).padStart(2, '0');
+      document.getElementById('sched-hour').value = hStr;
+      document.getElementById('sched-minute').value = mStr;
+    }
+
+    function setExactTime(hour, minute) {
+      document.getElementById('sched-hour').value = String(hour).padStart(2, '0');
+      document.getElementById('sched-minute').value = String(minute).padStart(2, '0');
+    }
+
+    function applyPresetRoutine(cat, title) {
+      document.getElementById('sched-category').value = cat;
+      document.getElementById('sched-title').value = title;
     }
 
     /* --- 뮤직 플레이어 --- */
@@ -1758,10 +1888,14 @@
       syncSchedulesToGas();
     }
 
+    /* ★ 시간 셀렉터 기반 일정 추가 ★ */
     function addSchedule() {
       const cat = document.getElementById('sched-category').value;
-      const time = document.getElementById('sched-time').value;
+      const hStr = document.getElementById('sched-hour').value;
+      const mStr = document.getElementById('sched-minute').value;
+      const time = `${hStr}:${mStr}`; // 24시간 형식 유지 ("HH:mm")
       const title = document.getElementById('sched-title').value.trim();
+
       if (!title) return alert('목표 내용을 입력해 주세요!');
 
       schedules.push({ id: Date.now(), category: cat, time: time, title: title, done: false, lastNotifiedDate: '' });
@@ -1794,7 +1928,7 @@
             <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleSchedule(${item.id})">
             <div>
               <span class="sched-tag">${item.category}</span>
-              <span style="font-size: 0.78rem; color:#aaa;">${item.time}</span>
+              <span style="font-size: 0.78rem; color:#5ce1e6; font-family:monospace; font-weight:700;">${item.time}</span>
               <div class="sched-text" style="font-size: 0.88rem; margin-top:2px;">${item.title}</div>
             </div>
           </div>
@@ -1845,7 +1979,7 @@
     }
 
     function exportData() {
-      const payload = { version: 16, settings, dailyHistory, schedHistory, schedules, playlist };
+      const payload = { version: 17, settings, dailyHistory, schedHistory, schedules, playlist };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
