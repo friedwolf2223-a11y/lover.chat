@@ -41,7 +41,6 @@
     }
     .bg-video-layer.active { opacity: 1; }
 
-    /* 영상 가시성을 위해 오버레이 최소화 */
     .bg-gradient-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -52,7 +51,7 @@
       transition: opacity 0.3s ease;
     }
 
-    /* 2. 메인 앱 컨테이너: 완전 투명화 */
+    /* 2. 메인 앱 컨테이너 */
     #app {
       position: relative;
       z-index: 3;
@@ -62,12 +61,12 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      background: transparent; /* 뒷배경 투명 */
+      background: transparent;
       box-shadow: none;
       transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.3s ease;
     }
 
-    /* 상단 P5 CHAT 헤더: 반투명 글래스 */
+    /* 상단 헤더 */
     header {
       padding: 12px 14px 10px;
       display: flex;
@@ -111,7 +110,6 @@
       letter-spacing: -0.5px;
     }
 
-    /* 상단 탭 전환 */
     .tab-switch {
       display: flex;
       gap: 4px;
@@ -159,7 +157,6 @@
       box-shadow: 0 0 0 #000;
     }
 
-    /* 영상 감상 모드 버튼 */
     #eye-btn {
       position: fixed;
       right: 14px;
@@ -182,7 +179,7 @@
     }
     #eye-btn:active { transform: translateY(-50%) scale(0.9); }
 
-    /* 3. 대화창 영역: 완전 투명화 */
+    /* 대화 스크롤 영역 */
     #chat-box {
       flex: 1;
       padding: 16px 14px;
@@ -191,10 +188,9 @@
       flex-direction: column;
       gap: 16px;
       scroll-behavior: smooth;
-      background: transparent; /* 완전 투명 */
+      background: transparent;
     }
 
-    /* 페르소나 스타일 메시지 그룹 */
     .msg-group {
       display: flex;
       flex-direction: column;
@@ -202,11 +198,12 @@
       animation: p5FadeIn 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     }
 
-    /* AI 메시지: 우측 아바타 + 사선 네이비 말풍선 */
+    /* ★ 소명이(AI) 메시지: 왼쪽 정렬 + 아바타 왼쪽 배치 */
     .ai-group {
-      align-items: flex-end;
+      align-items: flex-start;
       position: relative;
-      padding-right: 56px;
+      padding-left: 56px;
+      padding-right: 10px;
     }
     .ai-sender-info {
       display: flex;
@@ -227,14 +224,14 @@
     }
     .ai-avatar-anchor {
       position: absolute;
-      right: 0;
+      left: 0;
       top: 0;
-      width: 50px;
-      height: 50px;
-    }
-    .ai-avatar-video {
       width: 48px;
       height: 48px;
+    }
+    .ai-avatar-video {
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       object-fit: cover;
       border: 3px solid #e60012;
@@ -244,19 +241,19 @@
     .ai-star-badge {
       position: absolute;
       bottom: -2px;
-      left: -4px;
+      right: -4px;
       background: #000;
       color: #ffdf00;
       border: 2px solid #fff;
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       font-weight: 900;
       padding: 1px 3px;
       border-radius: 4px;
-      transform: rotate(-8deg);
+      transform: rotate(8deg);
       line-height: 1;
     }
 
-    /* P5 사선 말풍선 (영상 위에서도 또렷하게 읽히도록 고대비 유지) */
+    /* P5 사선 말풍선 (소명이: 왼쪽 배치 + 꼬리표 왼쪽) */
     .p5-bubble {
       padding: 10px 14px;
       font-size: 0.93rem;
@@ -266,7 +263,6 @@
       font-weight: 600;
       position: relative;
     }
-
     .ai-bubble {
       background: rgba(13, 27, 42, 0.92);
       backdrop-filter: blur(8px);
@@ -274,27 +270,28 @@
       color: #ffffff;
       border: 2.5px solid #5ce1e6;
       box-shadow: 3px 3px 0 rgba(0,0,0,0.7);
-      transform: skewX(-12deg);
+      transform: skewX(-10deg);
       border-radius: 4px;
     }
     .ai-bubble > .bubble-inner-text {
       display: inline-block;
-      transform: skewX(12deg);
+      transform: skewX(10deg);
     }
     .ai-bubble::after {
       content: '';
       position: absolute;
-      right: -8px;
+      left: -8px;
       top: 10px;
       width: 0; height: 0;
       border-top: 6px solid transparent;
       border-bottom: 6px solid transparent;
-      border-left: 8px solid #5ce1e6;
+      border-right: 8px solid #5ce1e6;
     }
 
-    /* 유저 메시지 */
+    /* 성주(유저) 메시지: 오른쪽 정렬 */
     .user-group {
-      align-items: flex-start;
+      align-items: flex-end;
+      padding-right: 6px;
     }
     .user-bubble {
       background: rgba(255, 255, 255, 0.95);
@@ -312,29 +309,25 @@
       font-weight: 700;
     }
 
-    /* 지문 / 나레이션 */
+    /* ★ 상황 / 나레이션: 말풍선 박스 없이 투명한 감성 자막 스타일로 복원 */
     .narration {
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
       color: #ffdd59;
-      font-size: 0.82rem;
-      font-weight: 700;
-      line-height: 1.4;
-      padding: 5px 10px;
-      border-left: 3.5px solid #e60012;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      transform: skewX(-10deg);
-      box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
-      max-width: 92%;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      font-style: italic;
+      font-weight: 600;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,0.9);
+      padding: 4px 6px;
+      max-width: 90%;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      transform: none;
     }
-    .narration > span {
-      display: inline-block;
-      transform: skewX(10deg);
-    }
+    .ai-group .narration { text-align: left; }
+    .user-group .narration { text-align: right; }
 
-    /* 4. 하단 입력창: 반투명 글래스 */
+    /* 하단 입력창 */
     footer {
       padding: 8px 12px 14px;
       background: rgba(18, 18, 24, 0.55);
@@ -383,11 +376,10 @@
       box-shadow: 1px 1px 0 #000;
     }
 
-    /* 클린 감상 모드 */
     body.clean-mode #app { opacity: 0; pointer-events: none; transform: scale(0.96); }
     body.clean-mode .bg-gradient-overlay { opacity: 0.05; }
 
-    /* 모달 팝업 */
+    /* 모달 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -471,14 +463,12 @@
 </head>
 <body>
 
-  <!-- 배경 영상 레이어 -->
   <div id="bg-container">
     <video id="bg-video-1" class="bg-video-layer active" src="default.mp4" autoplay muted loop playsinline></video>
     <video id="bg-video-2" class="bg-video-layer" src="default.mp4" autoplay muted loop playsinline></video>
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- 영상 감상 모드 버튼 -->
   <button id="eye-btn" onclick="toggleCleanMode()" title="영상 감상 모드">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -486,7 +476,6 @@
     </svg>
   </button>
 
-  <!-- P5 CHAT 폰 메인 컨테이너 -->
   <div id="app">
     <header>
       <div class="p5-logo-wrap">
@@ -494,13 +483,11 @@
         <div class="p5-comm-tag">SNS</div>
       </div>
 
-      <!-- 상단 탭 전환 -->
       <div class="tab-switch">
         <button id="tab-btn-daily" class="tab-btn active" onclick="switchChatRoom('daily')">일상</button>
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">일정케어</button>
       </div>
 
-      <!-- 유틸 버튼 -->
       <div class="header-actions">
         <button class="btn-p5-icon" onclick="openSchedule()">일정</button>
         <button class="btn-p5-icon" onclick="openSettings()">설정</button>
@@ -518,7 +505,6 @@
     </footer>
   </div>
 
-  <!-- 📅 일정 관리 모달 -->
   <div id="schedule-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>📅 루틴 & 목표 설정</h3>
@@ -539,7 +525,6 @@
     </div>
   </div>
 
-  <!-- ⚙️ 환경 설정 모달 -->
   <div id="settings-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>⚙️ 캐릭터 & 시스템 설정</h3>
@@ -718,6 +703,7 @@
       try { schedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHED_CHAT)) || []; } catch(e) { schedHistory = []; }
     }
 
+    /* 렌더러: 소명이 왼쪽 정렬 + 상황 지문 투명화 */
     function renderMessage(role, text) {
       const group = document.createElement('div');
       group.className = `msg-group ${role}-group`;
@@ -729,12 +715,8 @@
         cleanText = text.replace(/\[감정:[^\]]+\]/g, '').trim();
       }
 
+      // 소명이(AI) 프로필 & 아바타 (왼쪽 상단 배치)
       if (role === 'ai') {
-        const info = document.createElement('div');
-        info.className = 'ai-sender-info';
-        info.innerHTML = `<span class="ai-sender-name">${settings.name || '유소명'}</span>`;
-        group.appendChild(info);
-
         const avatarAnchor = document.createElement('div');
         avatarAnchor.className = 'ai-avatar-anchor';
         avatarAnchor.innerHTML = `
@@ -742,6 +724,11 @@
           <div class="ai-star-badge">★MAX</div>
         `;
         group.appendChild(avatarAnchor);
+
+        const info = document.createElement('div');
+        info.className = 'ai-sender-info';
+        info.innerHTML = `<span class="ai-sender-name">${settings.name || '유소명'}</span>`;
+        group.appendChild(info);
       }
 
       const parts = cleanText.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
@@ -751,11 +738,12 @@
         const trimmed = part.trim();
         if (!trimmed) return;
 
+        // 상황 지문: 박스 없이 투명한 감성 자막 형태로 출력
         if ((trimmed.startsWith('*') && trimmed.endsWith('*')) || (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
           const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
           const narEl = document.createElement('div');
           narEl.className = 'narration';
-          narEl.innerHTML = `<span>「 ${raw} 」</span>`;
+          narEl.innerText = `「 ${raw} 」`;
           group.appendChild(narEl);
         } else {
           let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
@@ -908,7 +896,7 @@
     }
 
     function exportData() {
-      const payload = { version: 10, settings, dailyHistory, schedHistory, schedules };
+      const payload = { version: 11, settings, dailyHistory, schedHistory, schedules };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
