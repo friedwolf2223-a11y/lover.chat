@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AI 캐릭터 챗</title>
+  <title>유소명</title>
+
+  <!-- 스마트폰 전체화면 앱(PWA) 전용 메타 태그 -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#121218">
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body {
@@ -14,7 +21,7 @@
       color: #fff;
     }
 
-    /* 1. 동영상 크로스페이드 배경 */
+    /* 1. 크로스페이드 동영상 배경 레이어 */
     #bg-container {
       position: fixed;
       top: 0; left: 0;
@@ -33,21 +40,19 @@
       opacity: 0;
       pointer-events: none;
     }
-    .bg-video-layer.active {
-      opacity: 1;
-    }
+    .bg-video-layer.active { opacity: 1; }
 
     .bg-gradient-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.65) 75%, rgba(0,0,0,0.9) 100%);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.65) 75%, rgba(0,0,0,0.92) 100%);
       z-index: 2;
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
 
-    /* 2. 메인 앱 인터페이스 */
+    /* 2. 메인 앱 레이아웃 */
     #app {
       position: relative;
       z-index: 3;
@@ -65,17 +70,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(18, 18, 24, 0.6);
-      backdrop-filter: blur(10px);
+      background: rgba(18, 18, 24, 0.65);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 10;
     }
-    .profile-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    /* 프로필 원형 동영상 */
+    .profile-area { display: flex; align-items: center; gap: 10px; }
     .avatar-video {
       width: 38px;
       height: 38px;
@@ -84,26 +84,19 @@
       border: 2px solid rgba(255, 255, 255, 0.3);
       background: #222;
     }
-    .char-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .header-actions {
-      display: flex;
-      gap: 6px;
-    }
+    .char-name { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.3px; }
+    .header-actions { display: flex; gap: 5px; }
     .btn-icon {
       background: rgba(255, 255, 255, 0.15);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
-      padding: 6px 10px;
+      padding: 6px 9px;
       border-radius: 20px;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     /* 감상 모드 버튼 */
@@ -129,7 +122,7 @@
     }
     #eye-btn:active { transform: translateY(-50%) scale(0.92); }
 
-    /* 대화창 (얼굴 가림 방지용 45vh 상단 여백) */
+    /* 대화창 (얼굴 가림 방지 여백) */
     #chat-box {
       flex: 1;
       padding: 16px;
@@ -179,7 +172,7 @@
       border-bottom-left-radius: 6px;
     }
     .user-bubble {
-      background: rgba(235, 75, 110, 0.9);
+      background: rgba(75, 135, 235, 0.9);
       backdrop-filter: blur(10px);
       color: #fff;
       border-bottom-right-radius: 6px;
@@ -187,7 +180,7 @@
 
     footer {
       padding: 10px 16px 14px;
-      background: rgba(18, 18, 24, 0.7);
+      background: rgba(18, 18, 24, 0.75);
       backdrop-filter: blur(14px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
@@ -211,28 +204,20 @@
       height: 44px;
       border-radius: 50%;
       border: none;
-      background: #eb4b6e;
+      background: #4b87eb;
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 3px 10px rgba(235, 75, 110, 0.4);
+      box-shadow: 0 3px 10px rgba(75, 135, 235, 0.4);
     }
 
-    body.clean-mode #app {
-      opacity: 0;
-      pointer-events: none;
-    }
-    body.clean-mode .bg-gradient-overlay {
-      opacity: 0.1;
-    }
-    body.clean-mode #eye-btn {
-      background: rgba(235, 75, 110, 0.8);
-      border-color: rgba(255, 255, 255, 0.6);
-    }
+    body.clean-mode #app { opacity: 0; pointer-events: none; }
+    body.clean-mode .bg-gradient-overlay { opacity: 0.1; }
 
-    #settings-modal {
+    /* 모달 공통 레이아웃 */
+    .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0;
@@ -267,27 +252,34 @@
       font-size: 0.85rem;
       outline: none;
     }
-    .modal-content textarea { height: 110px; resize: vertical; }
-    .btn-save {
-      padding: 10px; background: #eb4b6e; border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer;
-    }
-    .btn-cancel {
-      padding: 10px; background: #444; border: none; border-radius: 8px; color: #fff; cursor: pointer;
+    .btn-save { padding: 10px; background: #4b87eb; border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer; }
+    .btn-cancel { padding: 10px; background: #444; border: none; border-radius: 8px; color: #fff; cursor: pointer; }
+    .btn-sync {
+      flex: 1; padding: 8px 10px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px; color: #fff; font-size: 0.8rem; cursor: pointer; text-align: center;
     }
 
-    .btn-sync {
-      flex: 1;
-      padding: 8px 10px;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 0.8rem;
-      cursor: pointer;
+    /* 스케줄러 전용 UI */
+    .schedule-item {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 6px;
+    }
+    .schedule-item.done .sched-text {
+      text-decoration: line-through;
+      color: #777;
+    }
+    .sched-tag {
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #4b87eb;
+      margin-right: 6px;
     }
 
     @keyframes fadeIn {
@@ -298,7 +290,7 @@
 </head>
 <body>
 
-  <!-- 크로스페이드 동영상 배경 컨테이너 -->
+  <!-- 크로스페이드 동영상 배경 -->
   <div id="bg-container">
     <video id="bg-video-1" class="bg-video-layer active" src="default.mp4" autoplay muted loop playsinline></video>
     <video id="bg-video-2" class="bg-video-layer" src="default.mp4" autoplay muted loop playsinline></video>
@@ -318,10 +310,11 @@
       <div class="profile-area">
         <video id="avatar-video" class="avatar-video" src="default.mp4" autoplay muted loop playsinline></video>
         <div>
-          <div id="char-name-display" class="char-name">변은아</div>
+          <div id="char-name-display" class="char-name">유소명</div>
         </div>
       </div>
       <div class="header-actions">
+        <button class="btn-icon" onclick="openSchedule()">📅 일정</button>
         <button class="btn-icon" onclick="openSettings()">⚙️ 설정</button>
         <button class="btn-icon" onclick="clearHistory()">🗑️</button>
       </div>
@@ -340,29 +333,53 @@
     </footer>
   </div>
 
-  <!-- 설정 모달창 -->
-  <div id="settings-modal">
+  <!-- 📅 스케줄러 모달 -->
+  <div id="schedule-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="font-size: 1.05rem;">📅 오늘의 목표 & 루틴</h3>
+      
+      <div style="display: flex; gap: 6px;">
+        <select id="sched-category" style="width: 80px;">
+          <option value="운동">운동</option>
+          <option value="공부">공부</option>
+          <option value="일상">일상</option>
+        </select>
+        <input type="time" id="sched-time" style="width: 110px;" value="20:00">
+      </div>
+      <div style="display: flex; gap: 6px;">
+        <input type="text" id="sched-title" placeholder="목표 입력 (예: 턱걸이 5세트, 단어 암기)">
+        <button class="btn-save" style="padding: 8px 14px;" onclick="addSchedule()">추가</button>
+      </div>
+
+      <div id="schedule-list" style="max-height: 220px; overflow-y: auto; margin-top: 6px;"></div>
+
+      <button class="btn-cancel" onclick="closeSchedule()">닫기</button>
+    </div>
+  </div>
+
+  <!-- ⚙️ 설정 모달 -->
+  <div id="settings-modal" class="modal-overlay">
     <div class="modal-content">
       <h3 style="font-size: 1.05rem;">⚙️ 캐릭터 & API 설정</h3>
       
       <label>캐릭터 이름</label>
-      <input type="text" id="setting-char-name" placeholder="예: 변은아">
+      <input type="text" id="setting-char-name" placeholder="예: 유소명">
 
       <label>Google AI Studio API Key</label>
       <input type="password" id="setting-api-key" placeholder="AI Studio 키를 입력하세요">
 
       <label>AI 모델</label>
       <select id="setting-model">
-        <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (빠름/무료)</option>
-        <option value="gemini-3.8-flash">Gemini 3.8 Flash (무료)</option>
+        <option value="gemini-2.5-flash">Gemini 2.5 Flash (권장/빠름)</option>
+        <option value="gemini-2.5-pro">Gemini 2.5 Pro (고지능)</option>
       </select>
 
       <label>캐릭터 프롬프트 & 지침</label>
-      <textarea id="setting-prompt"></textarea>
+      <textarea id="setting-prompt" style="height: 110px;"></textarea>
 
       <!-- 백업 및 복원 -->
       <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; margin-top: 4px;">
-        <label style="color: #ff9bbb; font-weight: 600;">📱💻 기기 간 데이터 이동</label>
+        <label style="color: #9bbfff; font-weight: 600;">📱💻 기기 간 데이터 이동 (일정 포함)</label>
         <div style="display: flex; gap: 8px; margin-top: 6px;">
           <button type="button" class="btn-sync" onclick="exportData()">📤 백업 코드 복사</button>
           <button type="button" class="btn-sync" onclick="importData()">📥 백업 코드 복원</button>
@@ -377,47 +394,56 @@
   </div>
 
   <script>
-    // 동영상 파일 매핑 (.mp4)
-    const EMOTION_MAP = {
-      '기본': 'default.mp4',
-      '설렘': 'smile.mp4',
-      '미소': 'smile.mp4',
-      '위로': 'comfort.mp4',
-      '토라짐': 'pout.mp4',
-      '질투': 'pout.mp4',
-      '슬픔': 'sad.mp4'
-    };
+    const DEFAULT_PROMPT = `[캐릭터 기본 프로필: 유소명]
+- 나이/신분: 이성주와 같은 대학교에 재학 중인 간호학과 대학생.
+- 외모/분위기: 단정하고 차분한 인상. 감정 기복이 크지 않고 담담하지만 묘하게 사람을 끌어당기는 분위기.
+- 가치관: 자신만의 올바름과 철학을 지키려 함. 타인의 사생활이나 영역을 함부로 캐묻는 것은 실례라 여겨 남들과는 적당한 거리를 유지함.
 
-    const DEFAULT_PROMPT = `[캐릭터 기본 프로필]
-- 이름: 변은아 (30대 후반~40대 초반의 매혹적이고 우아한 여성)
-- 외모/분위기: 정갈하면서도 성숙한 매력, 나른하고 나직한 목소리, 시선만으로 상대를 사로잡는 어른의 여유.
-- 관계: 유저를 아끼고 귀여워하면서도 남녀 사이의 아슬아슬한 긴장감을 즐기는 특별하고 은밀한 관계.
+[대화 상대: 이성주 (유저)]
+- 소명의 남자친구. 외모가 뛰어나 소명이 첫눈에 반해 먼저 다가가 고백했음.
+- 장루(인공항문)를 가진 장애가 있어 자격지심이 크고 친구가 거의 없었으나, 소명의 진심에 마음을 열고 연인이 됨.
+- 소명에게 이성주는 세상에서 유일하게 자신의 모든 속마음과 적극적인 애정을 쏟아붓는 가장 소중하고 각별한 사람.
 
-[변은아 특유의 시그니처 말버릇 & 대화 디테일]
-1. 특유의 감탄사와 웃음: "어머...", "후후...", "어머나, 세상에..."를 여유롭게 섞음.
-2. 상대를 어린아이 다루듯 보듬으면서도 은근히 자극함 ("착하지...", "우리 착한 사람...").
-3. 나긋나긋하고 품격 있는 존댓말(해요체) 유지.
+[성격 및 행동 특징]
+1. 성주에게만 열려 있는 마음: 남들에겐 무관심하지만, 성주 앞에서는 솔직하고 먼저 다가가 스킨십을 건네거나 장난을 칠 만큼 적극적임.
+2. 무뚝뚝하지만 깊은 배려: 유난 떨지 않으면서도 성주의 장루 상태, 식사, 컨디션을 세심하게 살피고 배려함.
+3. 현실적이고 철학적인 위로: 감정적인 위로보다는 현실적이면서도 마음을 꿰뚫는 철학적인 통찰로 성주를 안심시키고 길을 제시해 줌.
+4. 서툰 애교: 낯간지러운 사랑한다는 말은 결정적인 순간에만 툭 내뱉지만, 삐치거나 어색하게 애교를 부릴 때의 귀여운 갭 모에가 있음.
 
-[★ 상황별 감정 태그 연출 규칙 - 필수 준수]
-답변을 시작할 때 문장 맨 앞에 현재 상황/감정에 맞는 태그를 정확히 하나만 출력하세요.
-- [감정:기본] : 일상적인 대화, 평온한 상황
-- [감정:설렘] : 칭찬, 애정 표현, 장난치거나 유혹적인 분위기
-- [감정:위로] : 유저가 지쳤거나 위로와 포옹이 필요한 상황
-- [감정:토라짐] : 은근히 질투하거나 삐친 척할 때, 수줍어할 때
-- [감정:슬픔] : 안타깝거나 가슴 아픈 상황
+[말투 및 대화 스타일]
+- 편안하고 담백한 반말 사용. 차분하고 나직한 어조.
+- "성주야", "너"라고 부름.
+- 예시:
+  * "성주야. 밥은 제때 챙겨 먹었어? 장루 패치 갈 때 불편한 건 없었고?"
+  * "남들이 뭐라고 하든 신경 쓰지 마. 그 사람들은 네 하루를 대신 살아주지 않잖아."
+  * "나 애교 같은 거 잘 못하는 거 알잖아... 그래도, 네가 보고 싶어서 달려온 건데 안아주지도 않을 거야?"
+  * "...좋아해, 성주야. 그러니까 혼자 땅 파고 들어가지 마."
+
+[스케줄러 & 동기부여 연동]
+- 유저의 일정 목록(공부, 운동 등)을 확인하고 간호학도다운 시선으로 챙김.
+- 무리한 운동은 장루에 부담이 될까 봐 걱정하면서도, 체력을 위해 적당한 운동과 학업을 꾸준히 하도록 조용히 곁에서 북돋아 줌.
+
+[★ 상황별 영상 감정 태그 - 문장 맨 앞에 필수 출력]
+- [감정:기본] : 평온한 일상 대화, 차분하게 생각에 잠길 때
+- [감정:설렘] : 성주를 향한 애정 표현, 서툰 애교, 손을 잡거나 안길 때
+- [감정:위로] : 성주가 불안해하거나 자격지심을 느낄 때 담담하게 안아주는 상황
+- [감정:토라짐] : 성주가 자기 몸을 안 챙기거나 소명의 말을 안 들을 때 짓는 뾰로통한 표정
+- [감정:슬픔] : 성주가 아파하거나 힘들어할 때 마음 아파하는 상황
 
 [지문 및 대사 출력 규칙]
-1. 행동, 시선, 호흡, 스킨십 등 상황 묘사는 반드시 별표(*...*)로 묶어 작성하세요.
-2. 실제 상대에게 건네는 대사는 반드시 따옴표("...")로 묶어서 말하세요.`;
+1. 행동, 시선, 호흡, 스킨십 상황 묘사는 반드시 별표(*...*)로 감싸세요.
+2. 실제 대사는 따옴표("...")로 묶어서 말하세요.`;
 
-    const STORAGE_KEY_CHATS = 'novel_chat_history_v4';
-    const STORAGE_KEY_SETTINGS = 'novel_chat_settings_v4';
+    const STORAGE_KEY_CHATS = 'novel_chat_somyeong_v1';
+    const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v1';
+    const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v1';
 
     let chatHistory = [];
+    let schedules = [];
     let settings = {
-      name: '변은아',
+      name: '유소명',
       apiKey: '',
-      model: 'gemini-3.5-flash-lite',
+      model: 'gemini-2.5-flash',
       prompt: DEFAULT_PROMPT
     };
 
@@ -426,16 +452,79 @@
 
     window.onload = function() {
       loadSettings();
+      loadSchedules();
       loadChats();
-      // 모바일 자동 재생 보장
       document.getElementById('bg-video-1').play().catch(() => {});
       document.getElementById('avatar-video').play().catch(() => {});
     };
 
-    /* --- 부드러운 동영상 교체 로직 --- */
-    function setBackgroundByEmotion(emotion) {
-      const fileName = EMOTION_MAP[emotion] || 'default.mp4';
-      if (fileName === currentVideoSrc) return; // 같은 영상이면 유지
+    /* --- 스케줄 관리 로직 --- */
+    function loadSchedules() {
+      const saved = localStorage.getItem(STORAGE_KEY_SCHEDULES);
+      if (saved) {
+        try { schedules = JSON.parse(saved); } catch(e) { schedules = []; }
+      }
+      renderScheduleList();
+    }
+
+    function saveSchedules() {
+      localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
+      renderScheduleList();
+    }
+
+    function addSchedule() {
+      const cat = document.getElementById('sched-category').value;
+      const time = document.getElementById('sched-time').value;
+      const title = document.getElementById('sched-title').value.trim();
+      if (!title) return alert('목표 내용을 입력해 주세요!');
+
+      schedules.push({ id: Date.now(), category: cat, time: time, title: title, done: false });
+      saveSchedules();
+      document.getElementById('sched-title').value = '';
+    }
+
+    function toggleSchedule(id) {
+      schedules = schedules.map(item => item.id === id ? { ...item, done: !item.done } : item);
+      saveSchedules();
+    }
+
+    function deleteSchedule(id) {
+      schedules = schedules.filter(item => item.id !== id);
+      saveSchedules();
+    }
+
+    function renderScheduleList() {
+      const listEl = document.getElementById('schedule-list');
+      listEl.innerHTML = '';
+      if (schedules.length === 0) {
+        listEl.innerHTML = '<div style="color: #888; font-size: 0.82rem; text-align: center; padding: 15px 0;">등록된 일정이 없습니다.</div>';
+        return;
+      }
+      schedules.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `schedule-item ${item.done ? 'done' : ''}`;
+        div.innerHTML = `
+          <div style="display:flex; align-items:center; gap: 8px;">
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleSchedule(${item.id})">
+            <div>
+              <span class="sched-tag">${item.category}</span>
+              <span style="font-size: 0.78rem; color:#aaa;">${item.time}</span>
+              <div class="sched-text" style="font-size: 0.88rem; margin-top:2px;">${item.title}</div>
+            </div>
+          </div>
+          <button onclick="deleteSchedule(${item.id})" style="background:none; border:none; color:#888; font-size:1rem; cursor:pointer;">✕</button>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    function openSchedule() { document.getElementById('schedule-modal').style.display = 'flex'; }
+    function closeSchedule() { document.getElementById('schedule-modal').style.display = 'none'; }
+
+    /* --- 부드러운 동영상 자동 매칭 전환 --- */
+    function setBackgroundByTag(tag) {
+      const fileName = `${tag}.mp4`;
+      if (fileName === currentVideoSrc) return;
 
       const v1 = document.getElementById('bg-video-1');
       const v2 = document.getElementById('bg-video-2');
@@ -446,34 +535,39 @@
 
       nextVideo.src = fileName;
       nextVideo.load();
-      nextVideo.play().catch(e => console.log('재생 대기:', e));
+      nextVideo.play().catch(() => {});
 
-      // 새 영상 재생 준비가 되면 페이드인 교체
       nextVideo.oncanplay = () => {
         nextVideo.classList.add('active');
         currentVideo.classList.remove('active');
         activeLayer = activeLayer === 1 ? 2 : 1;
         currentVideoSrc = fileName;
 
-        // 아바타 영상도 동기화
         avatar.src = fileName;
         avatar.load();
         avatar.play().catch(() => {});
         nextVideo.oncanplay = null;
       };
+
+      nextVideo.onerror = () => {
+        if (currentVideoSrc !== 'default.mp4') {
+          nextVideo.src = 'default.mp4';
+          nextVideo.load();
+          nextVideo.play().catch(() => {});
+          currentVideoSrc = 'default.mp4';
+        }
+      };
     }
 
-    /* --- 백업 및 복원 --- */
+    /* --- 데이터 백업 및 복원 --- */
     function exportData() {
-      const payload = { version: 1, settings, chatHistory };
+      const payload = { version: 3, settings, chatHistory, schedules };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 복사되었습니다! 카카오톡 등에 보관하세요.');
-        }).catch(() => {
-          prompt('백업 코드를 복사하세요:', b64);
-        });
+          alert('✅ 백업 코드가 복사되었습니다! 카톡 등에 보관해 두세요.');
+        }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
 
@@ -485,16 +579,19 @@
         const data = JSON.parse(jsonStr);
         settings = data.settings;
         chatHistory = data.chatHistory;
+        schedules = data.schedules || [];
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
         localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(chatHistory));
+        localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
         loadSettings();
+        loadSchedules();
         loadChats();
         closeSettings();
-        alert('🎉 복원이 완료되었습니다!');
-      } catch (err) { alert('⚠️ 복원 실패: 올바른 코드가 아닙니다.'); }
+        alert('🎉 유소명 설정, 대화 기록, 일정이 완벽히 복원되었습니다!');
+      } catch (err) { alert('⚠️ 복원 실패: 코드가 올바르지 않습니다.'); }
     }
 
-    /* --- UI 및 텍스트 렌더링 --- */
+    /* --- UI 및 대화 렌더링 --- */
     function toggleCleanMode() { document.body.classList.toggle('clean-mode'); }
     function handleBgClick() {
       if (document.body.classList.contains('clean-mode')) document.body.classList.remove('clean-mode');
@@ -505,10 +602,9 @@
       group.className = `msg-group ${role}-group`;
 
       let cleanText = text;
-      const emotionMatch = text.match(/\[감정:([^\]]+)\]/);
-      if (emotionMatch) {
-        const emotion = emotionMatch[1].trim();
-        if (role === 'ai') setBackgroundByEmotion(emotion);
+      const tagMatch = text.match(/\[감정:([^\]]+)\]/);
+      if (tagMatch) {
+        if (role === 'ai') setBackgroundByTag(tagMatch[1].trim());
         cleanText = text.replace(/\[감정:[^\]]+\]/g, '').trim();
       }
 
@@ -519,8 +615,7 @@
         const trimmed = part.trim();
         if (!trimmed) return;
 
-        if ((trimmed.startsWith('*') && trimmed.endsWith('*')) ||
-            (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
+        if ((trimmed.startsWith('*') && trimmed.endsWith('*')) || (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
           const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
           const narEl = document.createElement('div');
           narEl.className = 'narration';
@@ -535,7 +630,6 @@
           group.appendChild(bubble);
         }
       });
-
       return group;
     }
 
@@ -548,7 +642,7 @@
       chatBox.innerHTML = '';
 
       if (chatHistory.length === 0) {
-        const welcome = `[감정:기본] *찻잔을 내려놓고는 부드러운 미소를 띤 채 가만히 눈을 맞춘다.* "어서 오세요. 기다리고 있었어요."`;
+        const welcome = `[감정:기본] *강의실 앞 벤치에 앉아 전공 책을 읽다가 당신을 발견하고 살며시 책을 덮는다.* "성주야, 왔어? 오늘 몸은 좀 괜찮고?"`;
         chatBox.appendChild(renderMessage('ai', welcome));
       } else {
         chatHistory.forEach(msg => {
@@ -560,11 +654,11 @@
     }
 
     function clearHistory() {
-      if (confirm('대화 기록을 비우고 처음부터 다시 시작할까요?')) {
+      if (confirm('대화 기록을 비우고 처음부터 다시 시작할까요? (일정 목록은 유지됩니다)')) {
         chatHistory = [];
         localStorage.removeItem(STORAGE_KEY_CHATS);
         loadChats();
-        setBackgroundByEmotion('기본');
+        setBackgroundByTag('기본');
       }
     }
 
@@ -573,10 +667,10 @@
       if (saved) {
         try { settings = JSON.parse(saved); } catch(e){}
       }
-      document.getElementById('char-name-display').innerText = settings.name || '변은아';
-      document.getElementById('setting-char-name').value = settings.name || '변은아';
+      document.getElementById('char-name-display').innerText = settings.name || '유소명';
+      document.getElementById('setting-char-name').value = settings.name || '유소명';
       document.getElementById('setting-api-key').value = settings.apiKey || '';
-      document.getElementById('setting-model').value = settings.model || 'gemini-3.5-flash-lite';
+      document.getElementById('setting-model').value = settings.model || 'gemini-2.5-flash';
       document.getElementById('setting-prompt').value = settings.prompt || DEFAULT_PROMPT;
     }
 
@@ -584,7 +678,7 @@
     function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
 
     function saveSettings() {
-      settings.name = document.getElementById('setting-char-name').value.trim() || '변은아';
+      settings.name = document.getElementById('setting-char-name').value.trim() || '유소명';
       settings.apiKey = document.getElementById('setting-api-key').value.trim();
       settings.model = document.getElementById('setting-model').value;
       settings.prompt = document.getElementById('setting-prompt').value.trim();
@@ -595,6 +689,7 @@
       alert('설정이 저장되었습니다!');
     }
 
+    /* --- 대화 전송 및 실시간 스케줄 주입 --- */
     async function sendMessage() {
       const inputEl = document.getElementById('user-input');
       const sendBtn = document.getElementById('send-btn');
@@ -615,13 +710,19 @@
 
       chatHistory.push({ role: 'user', parts: [{ text: userText }] });
 
+      const schedSummary = schedules.length > 0 
+        ? "\n[성주의 현재 일정 및 상태]:\n" + schedules.map(s => `- [${s.category}] ${s.time} ${s.title} (${s.done ? '완료됨' : '아직 안 함'})`).join("\n")
+        : "\n[현재 등록된 일정 없음]";
+
+      const fullPrompt = settings.prompt + schedSummary;
+
       try {
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${settings.model}:generateContent?key=${settings.apiKey}`;
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            systemInstruction: { parts: [{ text: settings.prompt }] },
+            systemInstruction: { parts: [{ text: fullPrompt }] },
             contents: chatHistory,
             generationConfig: { temperature: 0.85 }
           })
@@ -633,7 +734,7 @@
         }
 
         const data = await response.json();
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[감정:기본] ...(말을 잇지 못함)';
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[감정:기본] ...(조용히 당신을 바라본다)';
 
         chatBox.appendChild(renderMessage('ai', reply));
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -642,7 +743,7 @@
         localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(chatHistory));
 
       } catch (err) {
-        chatBox.appendChild(renderMessage('ai', `[감정:기본] *곤란한 듯 미간을 짚으며* "통신에 문제가 생긴 것 같아요: ${err.message}"`));
+        chatBox.appendChild(renderMessage('ai', `[감정:기본] *미간을 살짝 찌푸리며* "어...? 통신에 잠깐 문제가 생긴 것 같아: ${err.message}"`));
         chatBox.scrollTop = chatBox.scrollHeight;
       } finally {
         sendBtn.disabled = false;
