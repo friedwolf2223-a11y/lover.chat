@@ -66,19 +66,19 @@
       transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.3s ease;
     }
 
-    /* 상단 헤더 */
+    /* 3. 상단 헤더: 모바일 최적화 정돈 */
     header {
       padding: 10px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(18, 18, 24, 0.45);
+      background: rgba(18, 18, 24, 0.55);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border-bottom: 2px solid rgba(255, 255, 255, 0.15);
       position: relative;
       z-index: 10;
-      gap: 4px;
+      gap: 6px;
     }
 
     .p5-logo-wrap {
@@ -112,11 +112,11 @@
       letter-spacing: -0.5px;
     }
 
-    /* 탭 스위치 */
+    /* 상단 탭 스위치 */
     .tab-switch {
       display: flex;
       gap: 2px;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.85);
       padding: 2px;
       border: 2px solid #fff;
       box-shadow: 2px 2px 0 #000;
@@ -127,8 +127,8 @@
       background: transparent;
       border: none;
       color: #bbb;
-      padding: 4px 6px;
-      font-size: 0.7rem;
+      padding: 4px 7px;
+      font-size: 0.72rem;
       font-weight: 800;
       cursor: pointer;
       transform: skewX(8deg);
@@ -142,7 +142,7 @@
 
     .header-actions {
       display: flex;
-      gap: 3px;
+      gap: 4px;
       align-items: center;
       flex-shrink: 0;
     }
@@ -151,13 +151,16 @@
       color: #000;
       border: 2px solid #000;
       box-shadow: 2px 2px 0 #000;
-      font-size: 0.7rem;
+      font-size: 0.74rem;
       font-weight: 900;
-      padding: 4px 6px;
+      padding: 4px 7px;
       cursor: pointer;
       transform: skewX(-8deg);
       transition: all 0.1s ease;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
     .btn-p5-icon:active {
       transform: skewX(-8deg) translate(1px, 1px);
@@ -166,9 +169,6 @@
 
     /* P5X BGM 헤더 버튼 */
     .btn-p5-music-badge {
-      display: flex;
-      align-items: center;
-      gap: 3px;
       background: #111;
       color: #5ce1e6;
       border: 2px solid #5ce1e6;
@@ -179,6 +179,16 @@
       border-color: #fff;
       box-shadow: 0 0 8px rgba(230, 0, 18, 0.8), 2px 2px 0 #000;
       animation: bgmPulse 1.8s infinite alternate;
+    }
+
+    /* ★ P5X 메뉴 토글 버튼 ★ */
+    .btn-p5-menu-trigger {
+      background: #e60012;
+      color: #fff;
+      border: 2px solid #fff;
+      box-shadow: 2.5px 2.5px 0 #000;
+      font-size: 0.76rem;
+      letter-spacing: -0.3px;
     }
 
     #eye-btn {
@@ -333,7 +343,7 @@
       font-weight: 700;
     }
 
-    /* ★ 상황 나레이션: 띄어쓰기 및 줄바꿈 보존 (white-space: pre-wrap) */
+    /* 상황 나레이션: 띄어쓰기/공백 보존 */
     .narration {
       color: #ffdd59;
       font-size: 0.9rem;
@@ -404,14 +414,232 @@
     body.clean-mode #app { opacity: 0; pointer-events: none; transform: scale(0.96); }
     body.clean-mode .bg-gradient-overlay { opacity: 0.05; }
 
-    /* 모달 기본 스타일 */
+    /* ========================================================
+       ★ P5X 스마트폰 메뉴 오버레이 (사진 테마 100% 구현) ★
+    ======================================================== */
+    #p5x-menu-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 150;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .p5x-phone-body {
+      width: 100%;
+      max-width: 390px;
+      background: #0077c8;
+      background-image: radial-gradient(circle at 80% 20%, #0099ff 10%, #0055a5 60%, #002244 100%);
+      border: 4px solid #fff;
+      box-shadow: 0 0 25px rgba(0,0,0,0.8), 8px 8px 0 #000, inset 0 0 0 3px #000;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      animation: phoneSlideUp 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+    .p5x-phone-body::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      border: 4px dashed rgba(255, 255, 255, 0.18);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* 스마트폰 상단 상태바 */
+    .p5x-phone-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px 6px;
+      background: rgba(0, 0, 0, 0.4);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+    }
+    .p5x-phone-time-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 900;
+      font-family: monospace;
+      color: #fff;
+    }
+    .btn-p5x-phone-close {
+      background: #000;
+      color: #fff;
+      border: 2px solid #fff;
+      box-shadow: 2px 2px 0 #000;
+      width: 30px; height: 30px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      transform: skewX(-10deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-p5x-phone-close:active {
+      transform: skewX(-10deg) translate(1px, 1px);
+    }
+
+    /* P5X 캐릭터 영웅 카드 (프로필) */
+    .p5x-hero-card {
+      margin: 12px 14px 10px;
+      background: #000;
+      border: 3px solid #fff;
+      box-shadow: 4px 4px 0 #000;
+      padding: 10px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: skewX(-6deg);
+    }
+    .p5x-star-badge {
+      position: relative;
+      width: 60px; height: 60px;
+      flex-shrink: 0;
+    }
+    .p5x-star-avatar {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ff3344;
+      background: #222;
+      box-shadow: 0 0 10px rgba(255, 51, 68, 0.7);
+    }
+    .p5x-star-tag {
+      position: absolute;
+      bottom: -4px; right: -6px;
+      background: #ffdd59;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 1px 4px;
+      border: 1.5px solid #000;
+      border-radius: 3px;
+      transform: rotate(10deg);
+    }
+    .p5x-hero-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transform: skewX(6deg);
+    }
+    .p5x-hero-name {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+      text-shadow: 2px 2px 0 #000;
+    }
+    .p5x-hero-level {
+      font-size: 0.76rem;
+      font-weight: 900;
+      color: #5ce1e6;
+    }
+    .p5x-exp-bar-wrap {
+      width: 100%;
+      height: 7px;
+      background: #333;
+      border: 1px solid #fff;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .p5x-exp-bar-fill {
+      width: 78%;
+      height: 100%;
+      background: linear-gradient(90deg, #5ce1e6, #ffdd59);
+    }
+
+    /* P5X 앱 아이콘 그리드 */
+    .p5x-apps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px 6px;
+      padding: 12px 14px 20px;
+    }
+    .p5x-app-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      position: relative;
+      transition: transform 0.12s ease;
+    }
+    .p5x-app-item:active {
+      transform: scale(0.92);
+    }
+    .p5x-icon-box {
+      width: 54px; height: 54px;
+      background: #000;
+      border: 3px solid #fff;
+      box-shadow: 3px 3px 0 #000;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transform: skewX(-8deg);
+      transition: all 0.15s ease;
+    }
+    .p5x-app-item:hover .p5x-icon-box {
+      border-color: #5ce1e6;
+      box-shadow: 0 0 12px #5ce1e6, 3px 3px 0 #000;
+    }
+    .p5x-icon-box svg {
+      width: 28px; height: 28px;
+      fill: #fff;
+      transform: skewX(8deg);
+    }
+    .p5x-app-label {
+      font-size: 0.74rem;
+      font-weight: 900;
+      background: #000;
+      color: #fff;
+      padding: 1px 6px;
+      border: 1.5px solid #fff;
+      border-radius: 4px;
+      box-shadow: 2px 2px 0 #000;
+      transform: skewX(-6deg);
+      letter-spacing: -0.3px;
+    }
+    .p5x-badge-new {
+      position: absolute;
+      top: -6px; right: -6px;
+      background: #ffdd59;
+      color: #000;
+      font-size: 0.6rem;
+      font-weight: 900;
+      padding: 1px 4px;
+      border: 1.5px solid #000;
+      border-radius: 3px;
+      transform: rotate(12deg);
+      box-shadow: 1px 1px 0 #000;
+    }
+
+    /* 일반 모달 스타일 */
     .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.85);
-      z-index: 100;
+      z-index: 200;
       align-items: center;
       justify-content: center;
       padding: 20px;
@@ -461,7 +689,7 @@
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
     }
 
-    /* ★ P5X 스타일 오디오 플레이어 UI */
+    /* P5X 뮤직 플레이어 모달 디자인 */
     .p5x-player-card {
       background: #14141e;
       border: 2.5px solid #5ce1e6;
@@ -499,7 +727,6 @@
       padding: 2px 0;
     }
 
-    /* P5X SP 게이지 스타일 탐색바 */
     .seek-container {
       display: flex;
       align-items: center;
@@ -533,7 +760,6 @@
       text-align: center;
     }
 
-    /* P5X 컨트롤 패널 */
     .p5x-controls {
       display: flex;
       justify-content: space-between;
@@ -556,31 +782,24 @@
       transform: skewX(-10deg) translate(1.5px, 1.5px);
       box-shadow: 1px 1px 0 #000;
     }
-
     .btn-p5x-play {
       background: #e60012;
       border: 2px solid #fff;
-      width: 44px;
-      height: 38px;
+      width: 44px; height: 38px;
     }
     .btn-p5x-play svg {
-      width: 18px;
-      height: 18px;
+      width: 18px; height: 18px;
       fill: #fff;
-      stroke: #fff;
     }
     .btn-p5x-skip {
-      width: 36px;
-      height: 32px;
+      width: 36px; height: 32px;
       border-color: #5ce1e6;
     }
     .btn-p5x-skip svg {
-      width: 15px;
-      height: 15px;
+      width: 15px; height: 15px;
       fill: #5ce1e6;
     }
 
-    /* 반복 모드 배지 (P5 커맨드 스타일) */
     .btn-p5x-mode {
       padding: 6px 10px;
       font-size: 0.75rem;
@@ -592,8 +811,7 @@
       color: #ffdd59;
     }
     .btn-p5x-mode svg {
-      width: 14px;
-      height: 14px;
+      width: 14px; height: 14px;
       fill: currentColor;
     }
     .btn-p5x-mode.mode-one {
@@ -668,6 +886,10 @@
       from { transform: skewX(-8deg) scale(1); }
       to { transform: skewX(-8deg) scale(1.05); }
     }
+    @keyframes phoneSlideUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.92); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
     @keyframes blinkDots {
       0%, 20% { opacity: 0.2; }
       50% { opacity: 1; }
@@ -700,7 +922,7 @@
     </svg>
   </button>
 
-  <!-- P5X 메신저 앱 메인 컨테이너 -->
+  <!-- 메인 메신저 앱 -->
   <div id="app">
     <header>
       <div class="p5-logo-wrap">
@@ -714,15 +936,13 @@
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">일정케어</button>
       </div>
 
-      <!-- 컨트롤 버튼들 (P5X BGM 배지 탑재) -->
+      <!-- 정돈된 헤더 우측 (잘림 방지) -->
       <div class="header-actions">
         <button id="header-music-btn" class="btn-p5-icon btn-p5-music-badge" onclick="openMusicPlayer()" title="BGM 플레이어">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-          <span id="header-music-status">BGM: OFF</span>
+          <span id="header-music-status">♫ OFF</span>
         </button>
-        <button class="btn-p5-icon" onclick="openSchedule()">일정</button>
-        <button class="btn-p5-icon" onclick="openSettings()">설정</button>
-        <button class="btn-p5-icon" onclick="clearCurrentHistory()">비움</button>
+        <button class="btn-p5-icon btn-p5-menu-trigger" onclick="openP5Menu()" title="괴도단 스마트폰 메뉴">MENU ☰</button>
       </div>
     </header>
 
@@ -734,6 +954,110 @@
       </div>
       <button id="send-btn" class="btn-p5-send" onclick="sendMessage()">보내기</button>
     </footer>
+  </div>
+
+  <!-- ========================================================
+       ★ P5X 스마트폰 메뉴 모달 (사진 UI 1:1 완벽 구현) ★
+  ======================================================== -->
+  <div id="p5x-menu-modal">
+    <div class="p5x-phone-body">
+      <!-- 최상단 상태바 (시계 + 닫기) -->
+      <div class="p5x-phone-topbar">
+        <div class="p5x-phone-time-wrap">
+          <span id="p5x-live-clock">07:46</span>
+          <svg width="16" height="12" viewBox="0 0 24 14" fill="none" stroke="#fff" stroke-width="2">
+            <rect x="1" y="1" width="18" height="12" rx="2"/>
+            <path d="M22 5v4" stroke-linecap="round"/>
+            <rect x="3" y="3" width="10" height="8" fill="#5ce1e6"/>
+          </svg>
+        </div>
+        <button class="btn-p5x-phone-close" onclick="closeP5Menu()">✕</button>
+      </div>
+
+      <!-- 소명이 캐릭터 프로필 카드 -->
+      <div class="p5x-hero-card">
+        <div class="p5x-star-badge">
+          <video id="menu-avatar-video" class="p5x-star-avatar" src="default.mp4" autoplay muted loop playsinline></video>
+          <div class="p5x-star-tag">★MAX</div>
+        </div>
+        <div class="p5x-hero-info">
+          <div id="menu-char-name" class="p5x-hero-name">유소명</div>
+          <div class="p5x-hero-level">S-LV.99 <span>[연인 / 간호학도]</span></div>
+          <div class="p5x-exp-bar-wrap">
+            <div class="p5x-exp-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- P5X 앱 아이콘 그리드 -->
+      <div class="p5x-apps-grid">
+        <!-- 1. 일정 (스케줄) -->
+        <button class="p5x-app-item" onclick="launchApp('schedule')">
+          <div class="p5x-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+            <span class="p5x-badge-new">NEW</span>
+          </div>
+          <span class="p5x-app-label">루틴·일정</span>
+        </button>
+
+        <!-- 2. 환경 설정 -->
+        <button class="p5x-app-item" onclick="launchApp('settings')">
+          <div class="p5x-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          </div>
+          <span class="p5x-app-label">환경설정</span>
+        </button>
+
+        <!-- 3. 대화 비우기 -->
+        <button class="p5x-app-item" onclick="launchApp('clear')">
+          <div class="p5x-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </div>
+          <span class="p5x-app-label">기록비움</span>
+        </button>
+
+        <!-- 4. 뮤직 플레이어 -->
+        <button class="p5x-app-item" onclick="launchApp('music')">
+          <div class="p5x-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          </div>
+          <span class="p5x-app-label">플레이어</span>
+        </button>
+
+        <!-- 5. 데이터 백업 / 복원 -->
+        <button class="p5x-app-item" onclick="launchApp('backup')">
+          <div class="p5x-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+          </div>
+          <span class="p5x-app-label">동기백업</span>
+        </button>
+
+        <!-- 6. 클린 뷰 (영상 감상) -->
+        <button class="p5x-app-item" onclick="launchApp('clean')">
+          <div class="p5x-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          </div>
+          <span class="p5x-app-label">감상모드</span>
+        </button>
+
+        <!-- 7. 소명 일기 / 메모 (확장 준비) -->
+        <button class="p5x-app-item" onclick="launchApp('diary')">
+          <div class="p5x-icon-box" style="border-style: dashed; opacity: 0.85;">
+            <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+            <span class="p5x-badge-new">NEW</span>
+          </div>
+          <span class="p5x-app-label">소명메모</span>
+        </button>
+
+        <!-- 8. 팬텀 라인업 (확장 준비 슬롯) -->
+        <button class="p5x-app-item" onclick="launchApp('soon')">
+          <div class="p5x-icon-box" style="border-style: dashed; opacity: 0.6;">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          </div>
+          <span class="p5x-app-label">확장슬롯</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- 🎵 P5X 뮤직 플레이어 모달 -->
@@ -752,28 +1076,23 @@
 
         <div id="current-track-title" class="track-title-display">재생 중인 곡 없음</div>
 
-        <!-- 탐색 슬라이더 -->
         <div class="seek-container">
           <span id="current-time-txt" class="time-text">0:00</span>
           <input type="range" id="seek-bar" class="seek-slider" min="0" max="100" value="0" oninput="handleSeekInput()" onchange="handleSeekChange()">
           <span id="total-time-txt" class="time-text">0:00</span>
         </div>
 
-        <!-- P5X 컨트롤러 -->
         <div class="p5x-controls">
-          <!-- 반복 모드 토글 버튼 -->
           <button id="repeat-mode-btn" class="btn-p5x-ctrl btn-p5x-mode" onclick="toggleRepeatMode()">
             <svg id="repeat-icon" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
             <span id="repeat-mode-text">ALL LOOP</span>
           </button>
 
-          <!-- 재생/이전/다음 버튼 -->
           <div style="display: flex; gap: 6px; align-items: center;">
             <button class="btn-p5x-ctrl btn-p5x-skip" onclick="playPrevTrack()" title="이전곡">
               <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
             </button>
             <button id="play-pause-btn" class="btn-p5x-ctrl btn-p5x-play" onclick="togglePlayPause()" title="재생/일시정지">
-              <!-- 기본: 재생 아이콘 (SVG) -->
               <svg id="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </button>
             <button class="btn-p5x-ctrl btn-p5x-skip" onclick="playNextTrack()" title="다음곡">
@@ -930,7 +1249,7 @@
       { id: 2, title: '기본 BGM', file: 'bgm.mp3' }
     ];
     let currentTrackIndex = 0;
-    let repeatMode = 'all'; // 'all' | 'one' | 'none'
+    let repeatMode = 'all';
     let isSeeking = false;
     let audio = null;
 
@@ -939,6 +1258,7 @@
       loadSchedules();
       loadChatHistories();
       initMusicPlayer();
+      initLiveClock();
 
       if (window.location.hash === '#sched') {
         switchChatRoom('sched');
@@ -949,6 +1269,54 @@
       startScheduleAlarmChecker();
       document.getElementById('bg-video-1').play().catch(() => {});
     };
+
+    /* --- P5X 스마트폰 시계 --- */
+    function initLiveClock() {
+      function updateTime() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const clockEl = document.getElementById('p5x-live-clock');
+        if (clockEl) clockEl.innerText = `${hh}:${mm}`;
+      }
+      updateTime();
+      setInterval(updateTime, 1000);
+    }
+
+    /* --- P5X 메뉴 모달 제어 --- */
+    function openP5Menu() {
+      document.getElementById('p5x-menu-modal').style.display = 'flex';
+      document.getElementById('menu-char-name').innerText = settings.name || '유소명';
+      const menuAvatar = document.getElementById('menu-avatar-video');
+      menuAvatar.src = currentVideoSrc;
+      menuAvatar.play().catch(() => {});
+    }
+
+    function closeP5Menu() {
+      document.getElementById('p5x-menu-modal').style.display = 'none';
+    }
+
+    /* P5X 앱 아이콘 라우터 */
+    function launchApp(appId) {
+      closeP5Menu();
+      if (appId === 'schedule') {
+        openSchedule();
+      } else if (appId === 'settings') {
+        openSettings();
+      } else if (appId === 'clear') {
+        clearCurrentHistory();
+      } else if (appId === 'music') {
+        openMusicPlayer();
+      } else if (appId === 'backup') {
+        exportData();
+      } else if (appId === 'clean') {
+        toggleCleanMode();
+      } else if (appId === 'diary') {
+        alert('📖 [소명 메모]\n성주에게 해주고 싶은 말이나 장루 관리 팁을 소명이가 매일 기록해두는 공간입니다. (다음 업데이트 준비 중!)');
+      } else if (appId === 'soon') {
+        alert('✨ 괴도단의 새로운 기능이 곧 추가될 예정입니다!');
+      }
+    }
 
     /* --- 뮤직 플레이어 --- */
     function initMusicPlayer() {
@@ -1050,15 +1418,13 @@
       const headerStatus = document.getElementById('header-music-status');
 
       if (isPlaying) {
-        // P5X 일시정지 아이콘 (❚❚ SVG)
         playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
         headerBtn.classList.add('playing');
-        headerStatus.innerText = 'BGM: PLAY';
+        headerStatus.innerText = '♫ PLAY';
       } else {
-        // P5X 재생 아이콘 (▶ SVG)
         playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
         headerBtn.classList.remove('playing');
-        headerStatus.innerText = 'BGM: OFF';
+        headerStatus.innerText = '♫ OFF';
       }
     }
 
@@ -1076,7 +1442,6 @@
       audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
     }
 
-    /* P5X 반복 모드 토글 */
     function toggleRepeatMode() {
       const btn = document.getElementById('repeat-mode-btn');
       const text = document.getElementById('repeat-mode-text');
@@ -1141,7 +1506,7 @@
     function openMusicPlayer() { document.getElementById('music-modal').style.display = 'flex'; }
     function closeMusicPlayer() { document.getElementById('music-modal').style.display = 'none'; }
 
-    /* --- 구글 싱크 & 스케줄 타이머 --- */
+    /* --- 구글 싱크 & 타이머 --- */
     function syncSchedulesToGas() {
       if (!settings.gasUrl) return;
       fetch(settings.gasUrl, {
@@ -1198,7 +1563,6 @@
       try { schedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHED_CHAT)) || []; } catch(e) { schedHistory = []; }
     }
 
-    /* 문장 분해 */
     function parseAiResponse(fullText) {
       let cleanText = fullText;
       let emotion = '기본';
@@ -1241,7 +1605,6 @@
       return { emotion, items };
     }
 
-    /* 과거 기록용 즉각 렌더러 */
     function renderMessage(role, text) {
       const group = document.createElement('div');
       group.className = `msg-group ${role}-group`;
@@ -1293,15 +1656,12 @@
       return group;
     }
 
-    /* ★ 띄어쓰기 버그 수정된 비주얼 노벨식 타자기 & 말풍선 순차 렌더러 */
     async function playAiMessageSequence(fullText) {
       const chatBox = document.getElementById('chat-box');
       const { emotion, items } = parseAiResponse(fullText);
 
-      // 1. 감정 태그 즉시 반영하여 배경 영상 먼저 교체
       setBackgroundByTag(emotion);
 
-      // 2. 메시지 래퍼 생성
       const group = document.createElement('div');
       group.className = 'msg-group ai-group';
 
@@ -1321,10 +1681,8 @@
       chatBox.appendChild(group);
       chatBox.scrollTop = chatBox.scrollHeight;
 
-      // 3. 지문과 대사를 순차적으로 출력
       for (const item of items) {
         if (item.type === 'narration') {
-          // 상황 텍스트: textContent로 한 글자씩 타이핑하여 공백 유지!
           const narEl = document.createElement('div');
           narEl.className = 'narration';
           group.appendChild(narEl);
@@ -1332,11 +1690,10 @@
           for (let i = 0; i < item.text.length; i++) {
             narEl.textContent += item.text[i];
             chatBox.scrollTop = chatBox.scrollHeight;
-            await new Promise(r => setTimeout(r, 26)); // 타자 속도
+            await new Promise(r => setTimeout(r, 26));
           }
           await new Promise(r => setTimeout(r, 300));
         } else if (item.type === 'dialogue') {
-          // 말풍선: 한 개씩 팝업
           const bubble = document.createElement('div');
           bubble.className = 'p5-bubble ai-bubble';
           bubble.innerHTML = `<span class="bubble-inner-text">${item.text}</span>`;
@@ -1470,7 +1827,7 @@
         activeLayer = activeLayer === 1 ? 2 : 1;
         currentVideoSrc = fileName;
 
-        document.querySelectorAll('.ai-avatar-video').forEach(el => {
+        document.querySelectorAll('.ai-avatar-video, .p5x-star-avatar').forEach(el => {
           el.src = fileName;
           el.play().catch(() => {});
         });
@@ -1488,12 +1845,12 @@
     }
 
     function exportData() {
-      const payload = { version: 15, settings, dailyHistory, schedHistory, schedules, playlist };
+      const payload = { version: 16, settings, dailyHistory, schedHistory, schedules, playlist };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 복사되었습니다!');
+          alert('✅ 백업 코드가 클립보드에 복사되었습니다!');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -1524,7 +1881,7 @@
         closeSettings();
         syncSchedulesToGas();
         alert('🎉 모든 데이터가 복원되었습니다!');
-      } catch (err) { alert('⚠️ 복원 실패: 코드가 올바르지 않습니다.'); }
+      } catch (err) { alert('⚠️ 복원 실패: 올바른 코드가 아닙니다.'); }
     }
 
     function toggleCleanMode() { document.body.classList.toggle('clean-mode'); }
@@ -1575,7 +1932,7 @@
 
       if (!userText) return;
       if (!settings.apiKey) {
-        alert('우측 상단 [설정]에서 Google AI Studio API 키를 입력해 주세요!');
+        alert('우측 상단 MENU -> [환경설정]에서 Google AI Studio API 키를 입력해 주세요!');
         openSettings();
         return;
       }
