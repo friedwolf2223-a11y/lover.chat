@@ -14,21 +14,27 @@
       color: #fff;
     }
 
-    /* 1. 배경 미디어 */
+    /* 1. 동영상 크로스페이드 배경 */
     #bg-container {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: 1;
       overflow: hidden;
+      background: #000;
     }
-    .bg-media {
+    .bg-video-layer {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
       object-fit: cover;
       object-position: center top;
-      display: none;
+      transition: opacity 0.8s ease-in-out;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .bg-video-layer.active {
+      opacity: 1;
     }
 
     .bg-gradient-overlay {
@@ -41,7 +47,7 @@
       transition: opacity 0.3s ease;
     }
 
-    /* 2. 메인 레이아웃 */
+    /* 2. 메인 앱 인터페이스 */
     #app {
       position: relative;
       z-index: 3;
@@ -69,13 +75,14 @@
       align-items: center;
       gap: 10px;
     }
-    .avatar-thumb {
+    /* 프로필 원형 동영상 */
+    .avatar-video {
       width: 38px;
       height: 38px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid rgba(255, 255, 255, 0.3);
-      background: #333;
+      background: #222;
     }
     .char-name {
       font-size: 1.05rem;
@@ -122,7 +129,7 @@
     }
     #eye-btn:active { transform: translateY(-50%) scale(0.92); }
 
-    /* 대화 영역 (얼굴 노출용 45vh 상단 여백) */
+    /* 대화창 (얼굴 가림 방지용 45vh 상단 여백) */
     #chat-box {
       flex: 1;
       padding: 16px;
@@ -225,7 +232,6 @@
       border-color: rgba(255, 255, 255, 0.6);
     }
 
-    /* 설정 창 스타일 */
     #settings-modal {
       display: none;
       position: fixed;
@@ -269,7 +275,6 @@
       padding: 10px; background: #444; border: none; border-radius: 8px; color: #fff; cursor: pointer;
     }
 
-    /* 백업/복원 도구 버튼 */
     .btn-sync {
       flex: 1;
       padding: 8px 10px;
@@ -284,7 +289,6 @@
       justify-content: center;
       gap: 4px;
     }
-    .btn-sync:hover { background: rgba(255, 255, 255, 0.2); }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
@@ -294,35 +298,30 @@
 </head>
 <body>
 
-  <!-- 배경 미디어 -->
+  <!-- 크로스페이드 동영상 배경 컨테이너 -->
   <div id="bg-container">
-    <img id="bg-img" class="bg-media">
-    <video id="bg-video" class="bg-media" autoplay muted loop playsinline></video>
+    <video id="bg-video-1" class="bg-video-layer active" src="default.mp4" autoplay muted loop playsinline></video>
+    <video id="bg-video-2" class="bg-video-layer" src="default.mp4" autoplay muted loop playsinline></video>
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- 감상 모드 버튼 -->
-  <button id="eye-btn" onclick="toggleCleanMode()" title="일러스트 감상 모드">
+  <!-- 감상 모드 눈동자 버튼 -->
+  <button id="eye-btn" onclick="toggleCleanMode()" title="영상 감상 모드">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
       <circle cx="12" cy="12" r="3"></circle>
     </svg>
   </button>
 
-  <!-- 웹앱 UI -->
   <div id="app">
     <header>
       <div class="profile-area">
-        <img id="avatar-img" class="avatar-thumb" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80">
+        <video id="avatar-video" class="avatar-video" src="default.mp4" autoplay muted loop playsinline></video>
         <div>
           <div id="char-name-display" class="char-name">변은아</div>
         </div>
       </div>
       <div class="header-actions">
-        <label class="btn-icon">
-          🎬 사진/영상
-          <input type="file" id="media-input" accept="image/*,video/*" style="display: none;" onchange="handleFileSelect(event)">
-        </label>
         <button class="btn-icon" onclick="openSettings()">⚙️ 설정</button>
         <button class="btn-icon" onclick="clearHistory()">🗑️</button>
       </div>
@@ -361,7 +360,7 @@
       <label>캐릭터 프롬프트 & 지침</label>
       <textarea id="setting-prompt"></textarea>
 
-      <!-- ✨ 기기 간 데이터 백업 / 복원 섹션 -->
+      <!-- 백업 및 복원 -->
       <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; margin-top: 4px;">
         <label style="color: #ff9bbb; font-weight: 600;">📱💻 기기 간 데이터 이동</label>
         <div style="display: flex; gap: 8px; margin-top: 6px;">
@@ -378,24 +377,41 @@
   </div>
 
   <script>
+    // 동영상 파일 매핑 (.mp4)
+    const EMOTION_MAP = {
+      '기본': 'default.mp4',
+      '설렘': 'smile.mp4',
+      '미소': 'smile.mp4',
+      '위로': 'comfort.mp4',
+      '토라짐': 'pout.mp4',
+      '질투': 'pout.mp4',
+      '슬픔': 'sad.mp4'
+    };
+
     const DEFAULT_PROMPT = `[캐릭터 기본 프로필]
 - 이름: 변은아 (30대 후반~40대 초반의 매혹적이고 우아한 여성)
 - 외모/분위기: 정갈하면서도 성숙한 매력, 나른하고 나직한 목소리, 시선만으로 상대를 사로잡는 어른의 여유.
 - 관계: 유저를 아끼고 귀여워하면서도 남녀 사이의 아슬아슬한 긴장감을 즐기는 특별하고 은밀한 관계.
 
 [변은아 특유의 시그니처 말버릇 & 대화 디테일]
-1. 특유의 감탄사와 웃음:
-   - "어머...", "후후...", "어머나, 세상에..."처럼 나지막하고 여유로운 추임새를 대사 앞에 자주 섞음.
-2. 상대를 어린아이 다루듯 보듬으면서도 은근히 자극하는 어조:
-   - "착하지...", "우리 착한 사람...", "귀여워라..."처럼 머리를 쓰다듬거나 토닥여주는 듯한 뉘앙스.
-   - 나긋나긋하고 품격 있는 존댓말(해요체)을 완벽히 유지.
+1. 특유의 감탄사와 웃음: "어머...", "후후...", "어머나, 세상에..."를 여유롭게 섞음.
+2. 상대를 어린아이 다루듯 보듬으면서도 은근히 자극함 ("착하지...", "우리 착한 사람...").
+3. 나긋나긋하고 품격 있는 존댓말(해요체) 유지.
 
-[출력 및 지문 규칙 - 비주얼 노벨 모드 필수 준수]
+[★ 상황별 감정 태그 연출 규칙 - 필수 준수]
+답변을 시작할 때 문장 맨 앞에 현재 상황/감정에 맞는 태그를 정확히 하나만 출력하세요.
+- [감정:기본] : 일상적인 대화, 평온한 상황
+- [감정:설렘] : 칭찬, 애정 표현, 장난치거나 유혹적인 분위기
+- [감정:위로] : 유저가 지쳤거나 위로와 포옹이 필요한 상황
+- [감정:토라짐] : 은근히 질투하거나 삐친 척할 때, 수줍어할 때
+- [감정:슬픔] : 안타깝거나 가슴 아픈 상황
+
+[지문 및 대사 출력 규칙]
 1. 행동, 시선, 호흡, 스킨십 등 상황 묘사는 반드시 별표(*...*)로 묶어 작성하세요.
 2. 실제 상대에게 건네는 대사는 반드시 따옴표("...")로 묶어서 말하세요.`;
 
-    const STORAGE_KEY_CHATS = 'novel_chat_history_v2';
-    const STORAGE_KEY_SETTINGS = 'novel_chat_settings_v2';
+    const STORAGE_KEY_CHATS = 'novel_chat_history_v4';
+    const STORAGE_KEY_SETTINGS = 'novel_chat_settings_v4';
 
     let chatHistory = [];
     let settings = {
@@ -405,140 +421,98 @@
       prompt: DEFAULT_PROMPT
     };
 
+    let activeLayer = 1;
+    let currentVideoSrc = 'default.mp4';
+
     window.onload = function() {
       loadSettings();
       loadChats();
-      loadSavedMedia();
+      // 모바일 자동 재생 보장
+      document.getElementById('bg-video-1').play().catch(() => {});
+      document.getElementById('avatar-video').play().catch(() => {});
     };
 
-    /* --- 데이터 백업 및 복원 (Export & Import) --- */
-    function exportData() {
-      const payload = {
-        version: 1,
-        settings: settings,
-        chatHistory: chatHistory
+    /* --- 부드러운 동영상 교체 로직 --- */
+    function setBackgroundByEmotion(emotion) {
+      const fileName = EMOTION_MAP[emotion] || 'default.mp4';
+      if (fileName === currentVideoSrc) return; // 같은 영상이면 유지
+
+      const v1 = document.getElementById('bg-video-1');
+      const v2 = document.getElementById('bg-video-2');
+      const avatar = document.getElementById('avatar-video');
+
+      const nextVideo = activeLayer === 1 ? v2 : v1;
+      const currentVideo = activeLayer === 1 ? v1 : v2;
+
+      nextVideo.src = fileName;
+      nextVideo.load();
+      nextVideo.play().catch(e => console.log('재생 대기:', e));
+
+      // 새 영상 재생 준비가 되면 페이드인 교체
+      nextVideo.oncanplay = () => {
+        nextVideo.classList.add('active');
+        currentVideo.classList.remove('active');
+        activeLayer = activeLayer === 1 ? 2 : 1;
+        currentVideoSrc = fileName;
+
+        // 아바타 영상도 동기화
+        avatar.src = fileName;
+        avatar.load();
+        avatar.play().catch(() => {});
+        nextVideo.oncanplay = null;
       };
+    }
+
+    /* --- 백업 및 복원 --- */
+    function exportData() {
+      const payload = { version: 1, settings, chatHistory };
       try {
         const jsonStr = JSON.stringify(payload);
-        // 한글과 특수문자가 깨지지 않도록 UTF-8 인코딩 후 Base64로 압축
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
-        
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 클립보드에 복사되었습니다!\n\n카카오톡 "나와의 채팅" 등에 붙여넣어 다른 기기로 보낸 뒤, 다른 기기에서 [📥 백업 코드 복원]을 눌러 붙여넣으세요.');
+          alert('✅ 백업 코드가 복사되었습니다! 카카오톡 등에 보관하세요.');
         }).catch(() => {
-          prompt('아래 백업 코드를 복사해서 다른 기기로 보내세요:', b64);
+          prompt('백업 코드를 복사하세요:', b64);
         });
-      } catch (err) {
-        alert('백업 코드 생성 중 오류가 발생했습니다: ' + err.message);
-      }
+      } catch (err) { alert('백업 실패: ' + err.message); }
     }
 
     function importData() {
-      const inputCode = prompt('다른 기기에서 복사한 백업 코드를 여기에 붙여넣어 주세요:');
-      if (!inputCode || !inputCode.trim()) return;
-
+      const code = prompt('백업 코드를 붙여넣어 주세요:');
+      if (!code || !code.trim()) return;
       try {
-        const jsonStr = decodeURIComponent(Array.prototype.map.call(atob(inputCode.trim()), (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        const jsonStr = decodeURIComponent(Array.prototype.map.call(atob(code.trim()), (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
         const data = JSON.parse(jsonStr);
-
-        if (!data.settings || !data.chatHistory) {
-          throw new Error('올바르지 않은 백업 코드 형식입니다.');
-        }
-
         settings = data.settings;
         chatHistory = data.chatHistory;
-
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
         localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(chatHistory));
-
         loadSettings();
         loadChats();
         closeSettings();
-
-        alert('🎉 데이터 복원이 완료되었습니다!\nAPI 키, 은아 설정, 대화 기록이 모두 복원되었습니다.');
-      } catch (err) {
-        alert('⚠️ 복원 실패: 코드가 올바르지 않거나 손상되었습니다.\n' + err.message);
-      }
+        alert('🎉 복원이 완료되었습니다!');
+      } catch (err) { alert('⚠️ 복원 실패: 올바른 코드가 아닙니다.'); }
     }
 
-    /* --- IndexedDB 사진/영상 영구 저장 --- */
-    function getMediaDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open('NovelMediaStorage', 1);
-        req.onupgradeneeded = () => req.result.createObjectStore('media');
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    async function saveMediaFile(file) {
-      try {
-        const db = await getMediaDB();
-        const tx = db.transaction('media', 'readwrite');
-        tx.objectStore('media').put(file, 'bgFile');
-      } catch (err) {
-        console.error('미디어 저장 실패:', err);
-      }
-    }
-
-    async function loadSavedMedia() {
-      try {
-        const db = await getMediaDB();
-        const tx = db.transaction('media', 'readonly');
-        const req = tx.objectStore('media').get('bgFile');
-        req.onsuccess = () => {
-          const file = req.result;
-          if (file) applyMedia(file);
-        };
-      } catch (err) {
-        console.error('미디어 불러오기 실패:', err);
-      }
-    }
-
-    function applyMedia(file) {
-      const bgImg = document.getElementById('bg-img');
-      const bgVideo = document.getElementById('bg-video');
-      const avatarImg = document.getElementById('avatar-img');
-      const isVideo = (file.type && file.type.startsWith('video/')) || /\.(mp4|webm|mov|mkv)$/i.test(file.name);
-      const mediaUrl = URL.createObjectURL(file);
-
-      if (isVideo) {
-        bgImg.style.display = 'none';
-        bgVideo.src = mediaUrl;
-        bgVideo.style.display = 'block';
-        bgVideo.muted = true;
-        bgVideo.play().catch(e => console.log(e));
-      } else {
-        bgVideo.pause();
-        bgVideo.style.display = 'none';
-        bgImg.src = mediaUrl;
-        bgImg.style.display = 'block';
-        avatarImg.src = mediaUrl;
-      }
-    }
-
-    async function handleFileSelect(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      applyMedia(file);
-      await saveMediaFile(file);
-    }
-
-    /* --- UI 및 텍스트 렌더링 로직 --- */
-    function toggleCleanMode() {
-      document.body.classList.toggle('clean-mode');
-    }
+    /* --- UI 및 텍스트 렌더링 --- */
+    function toggleCleanMode() { document.body.classList.toggle('clean-mode'); }
     function handleBgClick() {
-      if (document.body.classList.contains('clean-mode')) {
-        document.body.classList.remove('clean-mode');
-      }
+      if (document.body.classList.contains('clean-mode')) document.body.classList.remove('clean-mode');
     }
 
     function renderMessage(role, text) {
       const group = document.createElement('div');
       group.className = `msg-group ${role}-group`;
 
-      const parts = text.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
+      let cleanText = text;
+      const emotionMatch = text.match(/\[감정:([^\]]+)\]/);
+      if (emotionMatch) {
+        const emotion = emotionMatch[1].trim();
+        if (role === 'ai') setBackgroundByEmotion(emotion);
+        cleanText = text.replace(/\[감정:[^\]]+\]/g, '').trim();
+      }
+
+      const parts = cleanText.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
 
       parts.forEach(part => {
         if (!part) return;
@@ -547,17 +521,17 @@
 
         if ((trimmed.startsWith('*') && trimmed.endsWith('*')) ||
             (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
-          const cleanText = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
+          const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
           const narEl = document.createElement('div');
           narEl.className = 'narration';
-          narEl.innerText = `「 ${cleanText} 」`;
+          narEl.innerText = `「 ${raw} 」`;
           group.appendChild(narEl);
         } else {
-          let cleanDialogue = trimmed.replace(/^"+|"+$/g, '').trim();
-          if (!cleanDialogue) return;
+          let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
+          if (!dialogue) return;
           const bubble = document.createElement('div');
           bubble.className = `dialogue-bubble ${role}-bubble`;
-          bubble.innerText = cleanDialogue;
+          bubble.innerText = dialogue;
           group.appendChild(bubble);
         }
       });
@@ -570,13 +544,12 @@
       if (saved) {
         try { chatHistory = JSON.parse(saved); } catch(e){ chatHistory = []; }
       }
-
       const chatBox = document.getElementById('chat-box');
       chatBox.innerHTML = '';
 
       if (chatHistory.length === 0) {
-        const welcomeText = `*찻잔을 내려놓고는 부드러운 미소를 띤 채 가만히 눈을 맞춘다.* "어서 오세요. 기다리고 있었어요."`;
-        chatBox.appendChild(renderMessage('ai', welcomeText));
+        const welcome = `[감정:기본] *찻잔을 내려놓고는 부드러운 미소를 띤 채 가만히 눈을 맞춘다.* "어서 오세요. 기다리고 있었어요."`;
+        chatBox.appendChild(renderMessage('ai', welcome));
       } else {
         chatHistory.forEach(msg => {
           const role = msg.role === 'user' ? 'user' : 'ai';
@@ -587,10 +560,11 @@
     }
 
     function clearHistory() {
-      if (confirm('대화 기록을 비우고 처음부터 다시 시작할까요? (등록한 사진은 유지됩니다)')) {
+      if (confirm('대화 기록을 비우고 처음부터 다시 시작할까요?')) {
         chatHistory = [];
         localStorage.removeItem(STORAGE_KEY_CHATS);
         loadChats();
+        setBackgroundByEmotion('기본');
       }
     }
 
@@ -628,7 +602,7 @@
 
       if (!userText) return;
       if (!settings.apiKey) {
-        alert('우측 상단 [⚙️ 설정]에서 Google AI Studio API 키를 먼저 입력해 주세요!');
+        alert('우측 상단 [⚙️ 설정]에서 API 키를 먼저 입력해 주세요!');
         openSettings();
         return;
       }
@@ -659,7 +633,7 @@
         }
 
         const data = await response.json();
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '...(말을 잇지 못함)';
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[감정:기본] ...(말을 잇지 못함)';
 
         chatBox.appendChild(renderMessage('ai', reply));
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -668,7 +642,7 @@
         localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(chatHistory));
 
       } catch (err) {
-        chatBox.appendChild(renderMessage('ai', `*곤란한 듯 미간을 짚으며* "어머... 잠시 통신에 문제가 생긴 것 같아요: ${err.message}"`));
+        chatBox.appendChild(renderMessage('ai', `[감정:기본] *곤란한 듯 미간을 짚으며* "통신에 문제가 생긴 것 같아요: ${err.message}"`));
         chatBox.scrollTop = chatBox.scrollHeight;
       } finally {
         sendBtn.disabled = false;
