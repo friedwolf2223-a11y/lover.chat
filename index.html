@@ -376,7 +376,7 @@
     </div>
   </div>
 
-  <!-- ⚙️ 설정 모달 -->
+  <!-- ⚙️ 환경 설정 모달 -->
   <div id="settings-modal" class="modal-overlay">
     <div class="modal-content">
       <h3 style="font-size: 1.05rem;">⚙️ 환경 설정</h3>
@@ -389,6 +389,10 @@
         <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (빠름/무료 추천)</option>
         <option value="gemini-3.5-flash">Gemini 3.5 Flash (고성능/표준)</option>
       </select>
+
+      <!-- ★ 텔레그램 연동용 구글 웹앱 URL 입력 칸 -->
+      <label style="color: #9bbfff; font-weight: 600;">🔗 구글 앱스 스크립트 웹 앱 URL (텔레그램 자동 연동)</label>
+      <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec">
 
       <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; margin-top: 4px;">
         <label style="color: #9bbfff; font-weight: 600;">📱💻 기기 간 데이터 백업 (일상+일정방 전체)</label>
@@ -437,7 +441,8 @@
     let schedules = [];
     let settings = {
       apiKey: '',
-      model: 'gemini-3.5-flash-lite'
+      model: 'gemini-3.5-flash-lite',
+      gasUrl: ''
     };
 
     let activeLayer = 1;
@@ -448,20 +453,30 @@
       loadSchedules();
       loadChatHistories();
 
-      // 텔레그램 링크를 통해 #sched로 접속 시 일정 케어방으로 즉시 오픈
       if (window.location.hash === '#sched') {
         switchChatRoom('sched');
       } else {
         renderChatRoom();
       }
 
-      startScheduleAlarmChecker(); // 능동 잔소리 타이머 가동
+      startScheduleAlarmChecker();
 
       document.getElementById('bg-video-1').play().catch(() => {});
       document.getElementById('avatar-video').play().catch(() => {});
     };
 
-    /* --- 정각 능동 잔소리 타이머 (일정 케어방에 자동 등록) --- */
+    /* --- 구글 서버로 일정 자동 싱크 --- */
+    function syncSchedulesToGas() {
+      if (!settings.gasUrl) return;
+      fetch(settings.gasUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(schedules)
+      }).catch(e => console.log('구글 서버 싱크 중:', e));
+    }
+
+    /* --- 정각 능동 잔소리 타이머 --- */
     function startScheduleAlarmChecker() {
       setInterval(() => {
         const now = new Date();
@@ -474,13 +489,11 @@
             item.lastNotifiedDate = todayStr;
             updated = true;
 
-            // 소명이의 능동적 알림 대사 생성
             const reminderText = `[감정:토라짐] *손목시계를 톡톡 두드리며 당신을 빤히 바라본다.* "성주야, 벌써 ${item.time}네. 이제 [${item.title}] 할 시간이야. 딴짓하지 말고 얼른 시작해야지?"`;
             
             schedHistory.push({ role: 'model', parts: [{ text: reminderText }] });
             localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
 
-            // 현재 일정 방을 보고 있다면 즉시 화면에 띄움
             if (currentRoom === 'sched') {
               const chatBox = document.getElementById('chat-box');
               chatBox.appendChild(renderMessage('ai', reminderText));
@@ -494,7 +507,6 @@
       }, 10000);
     }
 
-    /* --- 채팅방 전환 --- */
     function switchChatRoom(room) {
       if (currentRoom === room) return;
       currentRoom = room;
@@ -524,7 +536,6 @@
         if (currentRoom === 'daily') {
           welcome = `[감정:기본] *벤치에 앉아 전공 책을 읽다가 당신을 올려다보며 은은하게 미소 짓는다.* "성주야, 왔어? 보고 싶었어."`;
         } else {
-          // 일정이 있으면 그 일정을 짚으면서 시작
           const pending = schedules.filter(s => !s.done);
           if (pending.length > 0) {
             welcome = `[감정:기본] *플래너를 톡톡 두드리며 당신을 빤히 바라본다.* "성주야, 왔어? 오늘 [${pending[0].title}] 하기로 했잖아. 이제 슬슬 준비해야지?"`;
@@ -556,7 +567,6 @@
       }
     }
 
-    /* --- 스케줄 관리 로직 --- */
     function loadSchedules() {
       try { schedules = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHEDULES)) || []; } catch(e) { schedules = []; }
       renderScheduleList();
@@ -565,6 +575,7 @@
     function saveSchedules() {
       localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
       renderScheduleList();
+      syncSchedulesToGas(); // 구글 서버 자동 연동!
     }
 
     function addSchedule() {
@@ -616,7 +627,6 @@
     function openSchedule() { document.getElementById('schedule-modal').style.display = 'flex'; }
     function closeSchedule() { document.getElementById('schedule-modal').style.display = 'none'; }
 
-    /* --- 동영상 자동 매칭 전환 --- */
     function setBackgroundByTag(tag) {
       const fileName = `${tag}.mp4`;
       if (fileName === currentVideoSrc) return;
@@ -654,14 +664,13 @@
       };
     }
 
-    /* --- 데이터 백업 및 복원 --- */
     function exportData() {
-      const payload = { version: 5, settings, dailyHistory, schedHistory, schedules };
+      const payload = { version: 6, settings, dailyHistory, schedHistory, schedules };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 복사되었습니다! (일상/일정 대화 및 스케줄 모두 포함)');
+          alert('✅ 백업 코드가 복사되었습니다! (구글 URL, 대화 및 스케줄 모두 포함)');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -686,11 +695,11 @@
         loadSchedules();
         renderChatRoom();
         closeSettings();
-        alert('🎉 모든 대화방 기록과 일정이 완벽하게 복원되었습니다!');
+        syncSchedulesToGas();
+        alert('🎉 모든 데이터가 복원되었습니다!');
       } catch (err) { alert('⚠️ 복원 실패: 코드가 올바르지 않습니다.'); }
     }
 
-    /* --- UI 및 텍스트 렌더링 --- */
     function toggleCleanMode() { document.body.classList.toggle('clean-mode'); }
     function handleBgClick() {
       if (document.body.classList.contains('clean-mode')) document.body.classList.remove('clean-mode');
@@ -739,6 +748,7 @@
       } catch(e){}
       document.getElementById('setting-api-key').value = settings.apiKey || '';
       document.getElementById('setting-model').value = settings.model || 'gemini-3.5-flash-lite';
+      document.getElementById('setting-gas-url').value = settings.gasUrl || '';
     }
 
     function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
@@ -747,12 +757,13 @@
     function saveSettings() {
       settings.apiKey = document.getElementById('setting-api-key').value.trim();
       settings.model = document.getElementById('setting-model').value;
+      settings.gasUrl = document.getElementById('setting-gas-url').value.trim();
       localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
       closeSettings();
+      syncSchedulesToGas();
       alert('설정이 저장되었습니다!');
     }
 
-    /* --- 대화 전송 및 방별 프롬프트 자동 분기 --- */
     async function sendMessage() {
       const inputEl = document.getElementById('user-input');
       const sendBtn = document.getElementById('send-btn');
