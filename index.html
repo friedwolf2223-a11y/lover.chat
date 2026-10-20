@@ -51,7 +51,7 @@
       transition: opacity 0.3s ease;
     }
 
-    /* 2. 메인 앱 컨테이너 */
+    /* 2. 메인 컨테이너 (완전 투명) */
     #app {
       position: relative;
       z-index: 3;
@@ -68,7 +68,7 @@
 
     /* 상단 헤더 */
     header {
-      padding: 12px 14px 10px;
+      padding: 10px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -78,53 +78,57 @@
       border-bottom: 2px solid rgba(255, 255, 255, 0.15);
       position: relative;
       z-index: 10;
+      gap: 4px;
     }
 
     .p5-logo-wrap {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      flex-shrink: 0;
     }
     .p5-chat-badge {
       background: #e60012;
       color: #fff;
-      font-size: 1.45rem;
+      font-size: 1.35rem;
       font-weight: 900;
       font-style: italic;
-      padding: 2px 10px;
+      padding: 2px 8px;
       letter-spacing: -1px;
       transform: skewX(-14deg) rotate(-3deg);
       border: 2.5px solid #000;
-      box-shadow: 2.5px 2.5px 0 #000;
+      box-shadow: 2px 2px 0 #000;
       text-shadow: 1.5px 1.5px 0 #000;
       display: inline-block;
     }
     .p5-comm-tag {
       background: #000;
       color: #5ce1e6;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 800;
-      padding: 3px 5px;
+      padding: 2px 4px;
       border: 1.5px solid #fff;
       transform: skewX(-10deg);
       letter-spacing: -0.5px;
     }
 
+    /* 탭 스위치 */
     .tab-switch {
       display: flex;
-      gap: 4px;
+      gap: 2px;
       background: rgba(0, 0, 0, 0.75);
-      padding: 3px;
+      padding: 2px;
       border: 2px solid #fff;
       box-shadow: 2px 2px 0 #000;
       transform: skewX(-8deg);
+      flex-shrink: 0;
     }
     .tab-btn {
       background: transparent;
       border: none;
       color: #bbb;
-      padding: 4px 8px;
-      font-size: 0.72rem;
+      padding: 4px 6px;
+      font-size: 0.7rem;
       font-weight: 800;
       cursor: pointer;
       transform: skewX(8deg);
@@ -138,23 +142,34 @@
 
     .header-actions {
       display: flex;
-      gap: 4px;
+      gap: 3px;
+      align-items: center;
+      flex-shrink: 0;
     }
     .btn-p5-icon {
       background: #fff;
       color: #000;
       border: 2px solid #000;
       box-shadow: 2px 2px 0 #000;
-      font-size: 0.74rem;
+      font-size: 0.7rem;
       font-weight: 900;
-      padding: 5px 7px;
+      padding: 4px 6px;
       cursor: pointer;
       transform: skewX(-8deg);
-      transition: transform 0.1s ease;
+      transition: all 0.1s ease;
+      white-space: nowrap;
     }
     .btn-p5-icon:active {
-      transform: skewX(-8deg) translate(2px, 2px);
-      box-shadow: 0 0 0 #000;
+      transform: skewX(-8deg) translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+
+    /* BGM 플레이어 활성화 버튼 스타일 */
+    .btn-p5-bgm.playing {
+      background: #ffdd59;
+      color: #000;
+      box-shadow: 0 0 8px rgba(255, 221, 89, 0.8), 2px 2px 0 #000;
+      animation: bgmPulse 1.8s infinite alternate;
     }
 
     #eye-btn {
@@ -179,7 +194,7 @@
     }
     #eye-btn:active { transform: translateY(-50%) scale(0.9); }
 
-    /* 대화 스크롤 영역 */
+    /* 대화창 */
     #chat-box {
       flex: 1;
       padding: 16px 14px;
@@ -198,7 +213,7 @@
       animation: p5FadeIn 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     }
 
-    /* ★ 소명이(AI) 메시지: 왼쪽 정렬 + 아바타 왼쪽 배치 */
+    /* 소명이(AI) 메시지: 왼쪽 정렬 */
     .ai-group {
       align-items: flex-start;
       position: relative;
@@ -253,7 +268,7 @@
       line-height: 1;
     }
 
-    /* P5 사선 말풍선 (소명이: 왼쪽 배치 + 꼬리표 왼쪽) */
+    /* 사선 말풍선 */
     .p5-bubble {
       padding: 10px 14px;
       font-size: 0.93rem;
@@ -288,7 +303,7 @@
       border-right: 8px solid #5ce1e6;
     }
 
-    /* 성주(유저) 메시지: 오른쪽 정렬 */
+    /* 성주(유저) 메시지 */
     .user-group {
       align-items: flex-end;
       padding-right: 6px;
@@ -309,7 +324,7 @@
       font-weight: 700;
     }
 
-    /* ★ 상황 / 나레이션: 말풍선 박스 없이 투명한 감성 자막 스타일로 복원 */
+    /* 상황 나레이션: 투명 자막 */
     .narration {
       color: #ffdd59;
       font-size: 0.9rem;
@@ -459,16 +474,25 @@
       from { opacity: 0; transform: translateY(12px) scale(0.96); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
+    @keyframes bgmPulse {
+      from { transform: skewX(-8deg) scale(1); }
+      to { transform: skewX(-8deg) scale(1.05); }
+    }
   </style>
 </head>
 <body>
 
+  <!-- 배경 영상 레이어 -->
   <div id="bg-container">
     <video id="bg-video-1" class="bg-video-layer active" src="default.mp4" autoplay muted loop playsinline></video>
     <video id="bg-video-2" class="bg-video-layer" src="default.mp4" autoplay muted loop playsinline></video>
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
+  <!-- BGM 오디오 플레이어 (무한 반복) -->
+  <audio id="bgm-player" src="bgm.mp3" loop preload="auto"></audio>
+
+  <!-- 영상 감상 모드 버튼 -->
   <button id="eye-btn" onclick="toggleCleanMode()" title="영상 감상 모드">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -476,6 +500,7 @@
     </svg>
   </button>
 
+  <!-- P5 메신저 앱 -->
   <div id="app">
     <header>
       <div class="p5-logo-wrap">
@@ -483,12 +508,15 @@
         <div class="p5-comm-tag">SNS</div>
       </div>
 
+      <!-- 상단 탭 전환 -->
       <div class="tab-switch">
         <button id="tab-btn-daily" class="tab-btn active" onclick="switchChatRoom('daily')">일상</button>
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">일정케어</button>
       </div>
 
+      <!-- 우측 컨트롤 버튼 (BGM 추가) -->
       <div class="header-actions">
+        <button id="bgm-btn" class="btn-p5-icon btn-p5-bgm" onclick="toggleBgm()" title="배경음악 재생/정지">🎵 OFF</button>
         <button class="btn-p5-icon" onclick="openSchedule()">일정</button>
         <button class="btn-p5-icon" onclick="openSettings()">설정</button>
         <button class="btn-p5-icon" onclick="clearCurrentHistory()">비움</button>
@@ -505,6 +533,7 @@
     </footer>
   </div>
 
+  <!-- 📅 일정 관리 모달 -->
   <div id="schedule-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>📅 루틴 & 목표 설정</h3>
@@ -525,6 +554,7 @@
     </div>
   </div>
 
+  <!-- ⚙️ 환경 설정 모달 -->
   <div id="settings-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>⚙️ 캐릭터 & 시스템 설정</h3>
@@ -644,6 +674,25 @@
       document.getElementById('bg-video-1').play().catch(() => {});
     };
 
+    /* ★ BGM 재생 / 정지 토글 */
+    function toggleBgm() {
+      const audio = document.getElementById('bgm-player');
+      const btn = document.getElementById('bgm-btn');
+
+      if (audio.paused) {
+        audio.play().then(() => {
+          btn.innerText = '🎵 ON';
+          btn.classList.add('playing');
+        }).catch(err => {
+          alert('GitHub 저장소에 bgm.mp3 파일이 업로드되어 있는지 확인해 주세요!');
+        });
+      } else {
+        audio.pause();
+        btn.innerText = '🎵 OFF';
+        btn.classList.remove('playing');
+      }
+    }
+
     function syncSchedulesToGas() {
       if (!settings.gasUrl) return;
       fetch(settings.gasUrl, {
@@ -703,7 +752,6 @@
       try { schedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHED_CHAT)) || []; } catch(e) { schedHistory = []; }
     }
 
-    /* 렌더러: 소명이 왼쪽 정렬 + 상황 지문 투명화 */
     function renderMessage(role, text) {
       const group = document.createElement('div');
       group.className = `msg-group ${role}-group`;
@@ -715,7 +763,6 @@
         cleanText = text.replace(/\[감정:[^\]]+\]/g, '').trim();
       }
 
-      // 소명이(AI) 프로필 & 아바타 (왼쪽 상단 배치)
       if (role === 'ai') {
         const avatarAnchor = document.createElement('div');
         avatarAnchor.className = 'ai-avatar-anchor';
@@ -738,7 +785,6 @@
         const trimmed = part.trim();
         if (!trimmed) return;
 
-        // 상황 지문: 박스 없이 투명한 감성 자막 형태로 출력
         if ((trimmed.startsWith('*') && trimmed.endsWith('*')) || (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
           const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
           const narEl = document.createElement('div');
@@ -896,7 +942,7 @@
     }
 
     function exportData() {
-      const payload = { version: 11, settings, dailyHistory, schedHistory, schedules };
+      const payload = { version: 12, settings, dailyHistory, schedHistory, schedules };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
