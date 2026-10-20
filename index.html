@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>유소명</title>
 
-  <!-- 스마트폰 전체화면 앱(PWA) 전용 메타 태그 -->
+  <!-- PWA 앱 메타 태그 -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,7 +21,6 @@
       color: #fff;
     }
 
-    /* 1. 크로스페이드 동영상 배경 레이어 */
     #bg-container {
       position: fixed;
       top: 0; left: 0;
@@ -52,7 +51,6 @@
       transition: opacity 0.3s ease;
     }
 
-    /* 2. 메인 앱 레이아웃 */
     #app {
       position: relative;
       z-index: 3;
@@ -99,7 +97,6 @@
       gap: 3px;
     }
 
-    /* 감상 모드 버튼 */
     #eye-btn {
       position: fixed;
       right: 16px;
@@ -122,7 +119,6 @@
     }
     #eye-btn:active { transform: translateY(-50%) scale(0.92); }
 
-    /* 대화창 (얼굴 가림 방지 여백) */
     #chat-box {
       flex: 1;
       padding: 16px;
@@ -216,7 +212,6 @@
     body.clean-mode #app { opacity: 0; pointer-events: none; }
     body.clean-mode .bg-gradient-overlay { opacity: 0.1; }
 
-    /* 모달 공통 레이아웃 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -259,7 +254,21 @@
       border-radius: 8px; color: #fff; font-size: 0.8rem; cursor: pointer; text-align: center;
     }
 
-    /* 스케줄러 전용 UI */
+    .btn-notify {
+      background: rgba(75, 135, 235, 0.2);
+      border: 1px solid #4b87eb;
+      color: #9bbfff;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
     .schedule-item {
       display: flex;
       align-items: center;
@@ -290,14 +299,12 @@
 </head>
 <body>
 
-  <!-- 크로스페이드 동영상 배경 -->
   <div id="bg-container">
     <video id="bg-video-1" class="bg-video-layer active" src="default.mp4" autoplay muted loop playsinline></video>
     <video id="bg-video-2" class="bg-video-layer" src="default.mp4" autoplay muted loop playsinline></video>
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- 감상 모드 눈동자 버튼 -->
   <button id="eye-btn" onclick="toggleCleanMode()" title="영상 감상 모드">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -338,6 +345,11 @@
     <div class="modal-content">
       <h3 style="font-size: 1.05rem;">📅 오늘의 목표 & 루틴</h3>
       
+      <!-- 알림 권한 허용 버튼 -->
+      <button type="button" class="btn-notify" id="notify-perm-btn" onclick="requestNotificationPermission()">
+        🔔 알림 켜기 (정각 푸시 알림 허용)
+      </button>
+
       <div style="display: flex; gap: 6px;">
         <select id="sched-category" style="width: 80px;">
           <option value="운동">운동</option>
@@ -351,7 +363,7 @@
         <button class="btn-save" style="padding: 8px 14px;" onclick="addSchedule()">추가</button>
       </div>
 
-      <div id="schedule-list" style="max-height: 220px; overflow-y: auto; margin-top: 6px;"></div>
+      <div id="schedule-list" style="max-height: 200px; overflow-y: auto; margin-top: 6px;"></div>
 
       <button class="btn-cancel" onclick="closeSchedule()">닫기</button>
     </div>
@@ -377,9 +389,8 @@
       <label>캐릭터 프롬프트 & 지침</label>
       <textarea id="setting-prompt" style="height: 110px;"></textarea>
 
-      <!-- 백업 및 복원 -->
       <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; margin-top: 4px;">
-        <label style="color: #9bbfff; font-weight: 600;">📱💻 기기 간 데이터 이동 (일정 포함)</label>
+        <label style="color: #9bbfff; font-weight: 600;">📱💻 기기 간 데이터 이동</label>
         <div style="display: flex; gap: 8px; margin-top: 6px;">
           <button type="button" class="btn-sync" onclick="exportData()">📤 백업 코드 복사</button>
           <button type="button" class="btn-sync" onclick="importData()">📥 백업 코드 복원</button>
@@ -417,7 +428,6 @@
   * "성주야. 밥은 제때 챙겨 먹었어? 장루 패치 갈 때 불편한 건 없었고?"
   * "남들이 뭐라고 하든 신경 쓰지 마. 그 사람들은 네 하루를 대신 살아주지 않잖아."
   * "나 애교 같은 거 잘 못하는 거 알잖아... 그래도, 네가 보고 싶어서 달려온 건데 안아주지도 않을 거야?"
-  * "...좋아해, 성주야. 그러니까 혼자 땅 파고 들어가지 마."
 
 [스케줄러 & 동기부여 연동]
 - 유저의 일정 목록(공부, 운동 등)을 확인하고 간호학도다운 시선으로 챙김.
@@ -454,9 +464,90 @@
       loadSettings();
       loadSchedules();
       loadChats();
+      updateNotifyBtnState();
+      startAlarmChecker(); // 실시간 알림 타이머 가동
+
       document.getElementById('bg-video-1').play().catch(() => {});
       document.getElementById('avatar-video').play().catch(() => {});
     };
+
+    /* --- 브라우저 알림 & 실시간 알람 타이머 --- */
+    function requestNotificationPermission() {
+      if (!("Notification" in window)) {
+        alert("이 브라우저는 웹 알림을 지원하지 않습니다.");
+        return;
+      }
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          alert("✅ 알림이 허용되었습니다! 설정한 시간에 소명이가 알려줍니다.");
+          new Notification("유소명", { body: "성주야, 이제부터 네 일정은 내가 챙겨줄게." });
+        } else {
+          alert("⚠️ 알림 권한이 차단되었습니다. 브라우저 설정에서 알림을 허용해 주세요.");
+        }
+        updateNotifyBtnState();
+      });
+    }
+
+    function updateNotifyBtnState() {
+      const btn = document.getElementById('notify-perm-btn');
+      if (!("Notification" in window)) {
+        btn.innerText = "⚠️ 알림 미지원 브라우저";
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        btn.innerText = "✅ 알림 켜짐 (정각 알림 정상 작동 중)";
+        btn.style.borderColor = '#4bd987';
+        btn.style.color = '#8df2b4';
+      } else {
+        btn.innerText = "🔔 알림 켜기 (터치해서 알림 허용)";
+        btn.style.borderColor = '#4b87eb';
+        btn.style.color = '#9bbfff';
+      }
+    }
+
+    // 10초마다 현재 시각을 확인하여 정각에 알림 발송
+    function startAlarmChecker() {
+      setInterval(() => {
+        const now = new Date();
+        const currentHM = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        const todayStr = now.toDateString();
+
+        let changed = false;
+        schedules.forEach(item => {
+          // 아직 완료되지 않았고, 설정한 시각과 일치하며, 오늘 알림을 아직 안 보낸 경우
+          if (!item.done && item.time === currentHM && item.lastNotifiedDate !== todayStr) {
+            item.lastNotifiedDate = todayStr;
+            changed = true;
+            triggerScheduleNotification(item);
+          }
+        });
+
+        if (changed) saveSchedules();
+      }, 10000);
+    }
+
+    function triggerScheduleNotification(item) {
+      // 1. 스마트폰 상단 바 푸시 알림
+      if ("Notification" in window && Notification.permission === 'granted') {
+        new Notification("유소명", {
+          body: `성주야, ${item.time} 약속한 [${item.title}] 할 시간이야.`
+        });
+      }
+
+      // 2. 스마트폰 진동 울림
+      if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+
+      // 3. 대화창에 소명이의 선제 대사 등록
+      const alarmMsg = `[감정:기본] *시계를 가만히 들여다보더니 당신을 향해 고개를 돌린다.* "성주야, 벌써 ${item.time}네. 오늘 약속했던 [${item.title}] 시작할 시간이야. 잊지 않았지?"`;
+      const chatBox = document.getElementById('chat-box');
+      chatBox.appendChild(renderMessage('ai', alarmMsg));
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      chatHistory.push({ role: 'model', parts: [{ text: alarmMsg }] });
+      localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(chatHistory));
+    }
 
     /* --- 스케줄 관리 로직 --- */
     function loadSchedules() {
@@ -478,7 +569,12 @@
       const title = document.getElementById('sched-title').value.trim();
       if (!title) return alert('목표 내용을 입력해 주세요!');
 
-      schedules.push({ id: Date.now(), category: cat, time: time, title: title, done: false });
+      // 알림 권한이 꺼져 있으면 안내
+      if ("Notification" in window && Notification.permission !== 'granted') {
+        requestNotificationPermission();
+      }
+
+      schedules.push({ id: Date.now(), category: cat, time: time, title: title, done: false, lastNotifiedDate: '' });
       saveSchedules();
       document.getElementById('sched-title').value = '';
     }
@@ -518,10 +614,13 @@
       });
     }
 
-    function openSchedule() { document.getElementById('schedule-modal').style.display = 'flex'; }
+    function openSchedule() {
+      updateNotifyBtnState();
+      document.getElementById('schedule-modal').style.display = 'flex';
+    }
     function closeSchedule() { document.getElementById('schedule-modal').style.display = 'none'; }
 
-    /* --- 부드러운 동영상 자동 매칭 전환 --- */
+    /* --- 배경 영상 자동 매칭 --- */
     function setBackgroundByTag(tag) {
       const fileName = `${tag}.mp4`;
       if (fileName === currentVideoSrc) return;
@@ -559,9 +658,9 @@
       };
     }
 
-    /* --- 데이터 백업 및 복원 --- */
+    /* --- 백업 및 복원 --- */
     function exportData() {
-      const payload = { version: 3, settings, chatHistory, schedules };
+      const payload = { version: 4, settings, chatHistory, schedules };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
@@ -587,7 +686,7 @@
         loadSchedules();
         loadChats();
         closeSettings();
-        alert('🎉 유소명 설정, 대화 기록, 일정이 완벽히 복원되었습니다!');
+        alert('🎉 모든 설정과 일정이 완벽히 복원되었습니다!');
       } catch (err) { alert('⚠️ 복원 실패: 코드가 올바르지 않습니다.'); }
     }
 
