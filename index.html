@@ -267,6 +267,7 @@
       line-height: 1;
     }
 
+    /* 사선 말풍선 */
     .p5-bubble {
       padding: 10px 14px;
       font-size: 0.93rem;
@@ -275,6 +276,7 @@
       max-width: 90%;
       font-weight: 600;
       position: relative;
+      animation: bubblePop 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     }
     .ai-bubble {
       background: rgba(13, 27, 42, 0.92);
@@ -321,6 +323,7 @@
       font-weight: 700;
     }
 
+    /* 상황 나레이션: 투명 자막 */
     .narration {
       color: #ffdd59;
       font-size: 0.9rem;
@@ -443,7 +446,7 @@
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
     }
 
-    /* ★ P5 뮤직 플레이어 모달 디자인 */
+    /* P5 뮤직 플레이어 디자인 */
     .player-card {
       background: #181824;
       border: 2px solid #5ce1e6;
@@ -571,9 +574,24 @@
       from { opacity: 0; transform: translateY(12px) scale(0.96); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
+    @keyframes bubblePop {
+      0% { opacity: 0; transform: skewX(-10deg) scale(0.88); }
+      60% { transform: skewX(-10deg) scale(1.04); }
+      100% { opacity: 1; transform: skewX(-10deg) scale(1); }
+    }
     @keyframes bgmPulse {
       from { transform: skewX(-8deg) scale(1); }
       to { transform: skewX(-8deg) scale(1.05); }
+    }
+    @keyframes blinkDots {
+      0%, 20% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
+    }
+    .thinking-dots {
+      animation: blinkDots 1.2s infinite;
+      font-weight: 900;
+      color: #ffdd59;
     }
   </style>
 </head>
@@ -586,7 +604,7 @@
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- 오디오 요소 (플레이어가 제어) -->
+  <!-- 오디오 요소 -->
   <audio id="bgm-player" preload="metadata"></audio>
 
   <!-- 영상 감상 모드 버튼 -->
@@ -611,7 +629,7 @@
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">일정케어</button>
       </div>
 
-      <!-- 우측 컨트롤 버튼 (뮤직 플레이어 추가) -->
+      <!-- 우측 컨트롤 버튼 -->
       <div class="header-actions">
         <button id="header-music-btn" class="btn-p5-icon btn-p5-bgm" onclick="openMusicPlayer()" title="뮤직 플레이어 열기">🎵 플레이어</button>
         <button class="btn-p5-icon" onclick="openSchedule()">일정</button>
@@ -638,14 +656,12 @@
       <div class="player-card">
         <div id="current-track-title" class="track-title-display">재생 중인 곡 없음</div>
 
-        <!-- 탐색 슬라이더 (구간 조절) -->
         <div class="seek-container">
           <span id="current-time-txt" class="time-text">0:00</span>
           <input type="range" id="seek-bar" class="seek-slider" min="0" max="100" value="0" oninput="handleSeekInput()" onchange="handleSeekChange()">
           <span id="total-time-txt" class="time-text">0:00</span>
         </div>
 
-        <!-- 컨트롤 패널 -->
         <div class="player-controls">
           <button id="repeat-mode-btn" class="ctrl-btn mode-btn" onclick="toggleRepeatMode()">🔁 전체 반복</button>
           <div style="display: flex; gap: 4px;">
@@ -659,11 +675,10 @@
       <label>📋 플레이리스트</label>
       <div id="playlist-container" class="playlist-box"></div>
 
-      <!-- 새 곡 등록 -->
       <div style="border-top: 1px dashed #444; padding-top: 8px; margin-top: 4px;">
         <label>➕ 새 노래 추가 (GitHub 파일명)</label>
         <div style="display: flex; gap: 4px; margin-top: 4px;">
-          <input type="text" id="new-song-title" placeholder="곡 제목 (예: Changing Seasons)" style="flex: 1;">
+          <input type="text" id="new-song-title" placeholder="곡 제목" style="flex: 1;">
           <input type="text" id="new-song-file" placeholder="파일명 (예: bgm.mp3)" style="flex: 1;">
           <button class="btn-save" style="padding: 6px 10px; font-size: 0.78rem;" onclick="addNewTrack()">추가</button>
         </div>
@@ -799,13 +814,12 @@
     let activeLayer = 1;
     let currentVideoSrc = 'default.mp4';
 
-    /* ★ 뮤직 플레이어 상태 관리 ★ */
     let playlist = [
       { id: 1, title: 'Changing Seasons (-Reload-)', file: 'Changing Seasons -Reload-.mp3' },
       { id: 2, title: '기본 BGM', file: 'bgm.mp3' }
     ];
     let currentTrackIndex = 0;
-    let repeatMode = 'all'; // 'all' | 'one' | 'none'
+    let repeatMode = 'all';
     let isSeeking = false;
     let audio = null;
 
@@ -822,11 +836,10 @@
       }
 
       startScheduleAlarmChecker();
-
       document.getElementById('bg-video-1').play().catch(() => {});
     };
 
-    /* --- 뮤직 플레이어 로직 --- */
+    /* --- 뮤직 플레이어 --- */
     function initMusicPlayer() {
       audio = document.getElementById('bgm-player');
       try {
@@ -849,7 +862,6 @@
         document.getElementById('total-time-txt').innerText = formatTime(audio.duration);
       });
 
-      // 곡이 끝났을 때 반복 모드 분기
       audio.addEventListener('ended', () => {
         if (repeatMode === 'one') {
           audio.currentTime = 0;
@@ -905,7 +917,7 @@
     }
 
     function togglePlayPause() {
-      if (playlist.length === 0) return alert('재생할 곡이 없습니다. 곡을 먼저 추가해 주세요.');
+      if (playlist.length === 0) return alert('재생할 곡이 없습니다.');
       if (audio.paused) {
         if (!audio.src || audio.src === window.location.href) {
           updatePlayerTrackInfo();
@@ -913,7 +925,7 @@
         audio.play().then(() => {
           updatePlayBtnState(true);
         }).catch(err => {
-          alert('음악 파일을 불러올 수 없습니다. GitHub에 올린 파일명과 일치하는지 확인해 주세요!');
+          alert('음악 파일을 불러올 수 없습니다. GitHub의 파일명과 일치하는지 확인해 주세요!');
         });
       } else {
         audio.pause();
@@ -1003,7 +1015,7 @@
     function openMusicPlayer() { document.getElementById('music-modal').style.display = 'flex'; }
     function closeMusicPlayer() { document.getElementById('music-modal').style.display = 'none'; }
 
-    /* --- 구글 스크립트 싱크 및 타이머 --- */
+    /* --- 구글 싱크 & 타이머 --- */
     function syncSchedulesToGas() {
       if (!settings.gasUrl) return;
       fetch(settings.gasUrl, {
@@ -1032,10 +1044,7 @@
             localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
 
             if (currentRoom === 'sched') {
-              const chatBox = document.getElementById('chat-box');
-              chatBox.appendChild(renderMessage('ai', reminderText));
-              chatBox.scrollTop = chatBox.scrollHeight;
-              setBackgroundByTag('토라짐');
+              playAiMessageSequence(reminderText);
             }
           }
         });
@@ -1063,6 +1072,50 @@
       try { schedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHED_CHAT)) || []; } catch(e) { schedHistory = []; }
     }
 
+    /* --- 문장 분해 유틸 함수 --- */
+    function parseAiResponse(fullText) {
+      let cleanText = fullText;
+      let emotion = '기본';
+
+      const tagMatch = fullText.match(/\[감정:([^\]]+)\]/);
+      if (tagMatch) {
+        emotion = tagMatch[1].trim();
+        cleanText = fullText.replace(/\[감정:[^\]]+\]/g, '').trim();
+      }
+
+      const rawParts = cleanText.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
+      const items = [];
+
+      rawParts.forEach(part => {
+        if (!part) return;
+        const trimmed = part.trim();
+        if (!trimmed) return;
+
+        if ((trimmed.startsWith('*') && trimmed.endsWith('*')) || (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
+          const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
+          if (raw) items.push({ type: 'narration', text: `「 ${raw} 」` });
+        } else {
+          const dialogueMatches = trimmed.match(/"([^"]+)"/g);
+          if (dialogueMatches && dialogueMatches.length > 0) {
+            dialogueMatches.forEach(d => {
+              const cleaned = d.replace(/^"+|"+$/g, '').trim();
+              if (cleaned) items.push({ type: 'dialogue', text: cleaned });
+            });
+            const withoutQuotes = trimmed.replace(/"[^"]+"/g, '').trim();
+            if (withoutQuotes && withoutQuotes.length > 1) {
+              items.push({ type: 'dialogue', text: withoutQuotes });
+            }
+          } else {
+            let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
+            if (dialogue) items.push({ type: 'dialogue', dialogue });
+          }
+        }
+      });
+
+      return { emotion, items };
+    }
+
+    /* ★ 즉각 렌더러 (기존 기록 로딩용) */
     function renderMessage(role, text) {
       const group = document.createElement('div');
       group.className = `msg-group ${role}-group`;
@@ -1112,6 +1165,63 @@
         }
       });
       return group;
+    }
+
+    /* ★ 비주얼 노벨식 순차 렌더러 (한 글자씩 타자 타이핑 + 말풍선 퐁퐁 팝인) */
+    async function playAiMessageSequence(fullText) {
+      const chatBox = document.getElementById('chat-box');
+      const { emotion, items } = parseAiResponse(fullText);
+
+      // 1. 감정 태그 즉시 반영 -> 배경 영상 먼저 교체!
+      setBackgroundByTag(emotion);
+
+      // 2. 소명이 메시지 그룹 컨테이너 생성
+      const group = document.createElement('div');
+      group.className = 'msg-group ai-group';
+
+      const avatarAnchor = document.createElement('div');
+      avatarAnchor.className = 'ai-avatar-anchor';
+      avatarAnchor.innerHTML = `
+        <video class="ai-avatar-video" src="${currentVideoSrc}" autoplay muted loop playsinline></video>
+        <div class="ai-star-badge">★MAX</div>
+      `;
+      group.appendChild(avatarAnchor);
+
+      const info = document.createElement('div');
+      info.className = 'ai-sender-info';
+      info.innerHTML = `<span class="ai-sender-name">${settings.name || '유소명'}</span>`;
+      group.appendChild(info);
+
+      chatBox.appendChild(group);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // 3. 지문과 말풍선을 순서대로 재생
+      for (const item of items) {
+        if (item.type === 'narration') {
+          // 상황 텍스트: 읽어가듯 한 글자씩 타자 치며 출력 (25ms 속도)
+          const narEl = document.createElement('div');
+          narEl.className = 'narration';
+          group.appendChild(narEl);
+
+          for (let i = 0; i < item.text.length; i++) {
+            narEl.innerText += item.text[i];
+            chatBox.scrollTop = chatBox.scrollHeight;
+            await new Promise(r => setTimeout(r, 26)); // 타자 속도
+          }
+          await new Promise(r => setTimeout(r, 300)); // 지문 후 짧은 호흡
+        } else if (item.type === 'dialogue') {
+          // 말풍선: 한 번에 안 뜨고 하나씩 퐁! 팝업
+          const bubble = document.createElement('div');
+          bubble.className = 'p5-bubble ai-bubble';
+          bubble.innerHTML = `<span class="bubble-inner-text">${item.text}</span>`;
+          group.appendChild(bubble);
+          chatBox.scrollTop = chatBox.scrollHeight;
+
+          // 다음 말풍선이 나오기 전 자연스러운 읽기 시간 (말풍선 간격 0.5초)
+          const delay = Math.min(800, 480 + (item.text.length * 10));
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
     }
 
     function renderChatRoom() {
@@ -1253,12 +1363,12 @@
     }
 
     function exportData() {
-      const payload = { version: 13, settings, dailyHistory, schedHistory, schedules, playlist };
+      const payload = { version: 14, settings, dailyHistory, schedHistory, schedules, playlist };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 복사되었습니다! (플레이리스트 포함)');
+          alert('✅ 백업 코드가 복사되었습니다!');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -1333,6 +1443,7 @@
       alert('설정이 저장되었습니다!');
     }
 
+    /* --- 대화 전송 및 실시간 비주얼 노벨 렌더링 호출 --- */
     async function sendMessage() {
       const inputEl = document.getElementById('user-input');
       const sendBtn = document.getElementById('send-btn');
@@ -1346,6 +1457,8 @@
       }
 
       const chatBox = document.getElementById('chat-box');
+
+      // 1. 성주 메시지 즉시 출력
       chatBox.appendChild(renderMessage('user', userText));
       chatBox.scrollTop = chatBox.scrollHeight;
       inputEl.value = '';
@@ -1354,6 +1467,26 @@
       const currentHistory = currentRoom === 'daily' ? dailyHistory : schedHistory;
       currentHistory.push({ role: 'user', parts: [{ text: userText }] });
 
+      // 2. 소명이 '생각 중...' 인디케이터 즉시 띄우기 (대기 지루함 해소)
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'msg-group ai-group';
+      typingIndicator.id = 'ai-typing-temp';
+      typingIndicator.innerHTML = `
+        <div class="ai-avatar-anchor">
+          <video class="ai-avatar-video" src="${currentVideoSrc}" autoplay muted loop playsinline></video>
+          <div class="ai-star-badge">★MAX</div>
+        </div>
+        <div class="ai-sender-info">
+          <span class="ai-sender-name">${settings.name || '유소명'}</span>
+        </div>
+        <div class="narration" style="opacity: 0.85;">
+          <span>「 생각하는 중<span class="thinking-dots">...</span> 」</span>
+        </div>
+      `;
+      chatBox.appendChild(typingIndicator);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // 프롬프트 구성
       let systemInstructionText = settings.prompt || DEFAULT_PROMPT;
       if (currentRoom === 'daily') {
         systemInstructionText += `\n\n[현재 채널: 💬 일상 대화방]
@@ -1392,8 +1525,12 @@ ${schedSummary}
         const data = await response.json();
         const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[감정:기본] ...(가만히 바라본다)';
 
-        chatBox.appendChild(renderMessage('ai', reply));
-        chatBox.scrollTop = chatBox.scrollHeight;
+        // 생각 중 인디케이터 제거
+        const tempEl = document.getElementById('ai-typing-temp');
+        if (tempEl) tempEl.remove();
+
+        // 3. 순차적 타자기 & 말풍선 퐁퐁 팝업 연출 실행!
+        await playAiMessageSequence(reply);
 
         currentHistory.push({ role: 'model', parts: [{ text: reply }] });
 
@@ -1404,6 +1541,8 @@ ${schedSummary}
         }
 
       } catch (err) {
+        const tempEl = document.getElementById('ai-typing-temp');
+        if (tempEl) tempEl.remove();
         chatBox.appendChild(renderMessage('ai', `[감정:기본] *살짝 곤란한 표정을 지으며* "통신에 문제가 생긴 것 같아: ${err.message}"`));
         chatBox.scrollTop = chatBox.scrollHeight;
       } finally {
@@ -1414,4 +1553,3 @@ ${schedSummary}
   </script>
 </body>
 </html>
-
