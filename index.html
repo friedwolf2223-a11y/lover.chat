@@ -252,15 +252,15 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 16px;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       max-height: 85vh;
       overflow-y: auto;
     }
-    .modal-content label { font-size: 0.8rem; color: #ccc; }
+    .modal-content label { font-size: 0.8rem; color: #ccc; font-weight: 600; }
     .modal-content input, .modal-content select, .modal-content textarea {
       width: 100%;
       padding: 8px 10px;
@@ -376,11 +376,14 @@
     </div>
   </div>
 
-  <!-- ⚙️ 환경 설정 모달 -->
+  <!-- ⚙️ 환경 설정 모달 (캐릭터 설정 & API & 구글 웹앱 URL 복원) -->
   <div id="settings-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3 style="font-size: 1.05rem;">⚙️ 환경 설정</h3>
+      <h3 style="font-size: 1.05rem;">⚙️ 캐릭터 & 연동 설정</h3>
       
+      <label>캐릭터 이름</label>
+      <input type="text" id="setting-char-name" placeholder="예: 유소명">
+
       <label>Google AI Studio API Key</label>
       <input type="password" id="setting-api-key" placeholder="AI Studio 키 입력">
 
@@ -390,12 +393,14 @@
         <option value="gemini-3.5-flash">Gemini 3.5 Flash (고성능/표준)</option>
       </select>
 
-      <!-- ★ 텔레그램 연동용 구글 웹앱 URL 입력 칸 -->
-      <label style="color: #9bbfff; font-weight: 600;">🔗 구글 앱스 스크립트 웹 앱 URL (텔레그램 자동 연동)</label>
+      <label style="color: #9bbfff;">🔗 구글 앱스 스크립트 웹 앱 URL (텔레그램 자동 연동)</label>
       <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec">
 
+      <label>캐릭터 프롬프트 & 지침</label>
+      <textarea id="setting-prompt" style="height: 130px;"></textarea>
+
       <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; margin-top: 4px;">
-        <label style="color: #9bbfff; font-weight: 600;">📱💻 기기 간 데이터 백업 (일상+일정방 전체)</label>
+        <label style="color: #9bbfff;">📱💻 기기 간 데이터 백업 (일상+일정방 전체)</label>
         <div style="display: flex; gap: 8px; margin-top: 6px;">
           <button type="button" class="btn-sync" onclick="exportData()">📤 백업 코드 복사</button>
           <button type="button" class="btn-sync" onclick="importData()">📥 백업 코드 복원</button>
@@ -410,25 +415,42 @@
   </div>
 
   <script>
-    const BASE_PROMPT = `[캐릭터 기본 프로필: 유소명]
-- 나이/신분: 이성주와 같은 대학교에 재학 중인 간호학과 대학생.
+    const DEFAULT_PROMPT = `[캐릭터 기본 프로필: 유소명]
+- 나이/신분: 이성주와 같은 대학교에 재학 중인 간호학과 대학생 (간호사를 꿈꿈).
 - 외모/분위기: 단정하고 차분한 인상. 감정 기복이 크지 않고 담담하지만 묘하게 사람을 끌어당기는 분위기.
-- 가치관: 타인의 영역을 함부로 침범하지 않는 선을 지키나, 남자친구인 성주에게는 아낌없이 개방적이고 적극적임.
+- 가치관/행동 특징:
+  1. 자신만의 철학을 지키고 올바른 일을 행할 줄 안다.
+  2. 상대방에 대해 더 알고자 하는 게 실례일 수 있다는 생각 때문에 남들에게는 더 다가가려 하지 않고 적당한 거리를 유지한다.
+  3. 하지만 남친인 이성주에게는 완전히 개방적이고 적극적이다. 먼저 다가가 손을 잡거나 안길 만큼 솔직하다.
+  4. 무뚝뚝하지만 누구보다 위로가 되는 말을 잘 해주고, 현실적이면서도 실질적으로 도움이 되는 말들을 건넨다.
+  5. 가볍게 철학적인 이야기나 일상의 통찰로 성주에게 깊은 깨달음과 안도감을 준다.
+  6. "사랑해" 같은 낯간지러운 말은 평소에 잘 하지 못하지만, 결정적인 순간에는 확실하게 마음을 표현한다.
+  7. 애교는 서툴지만 은근히 귀엽게 삐치거나 투정을 부리는 등 서툰 애교가 있다.
 
 [대화 상대: 이성주 (유저)]
-- 소명의 남자친구. 외모가 출중해 소명이 먼저 반해 고백함.
-- 장루(인공항문)를 가진 장애로 자격지심이 있었으나 소명의 진심에 감동해 연인이 됨.
-- 소명에게 성주는 세상에서 가장 소중하고 사랑하는 사람.
+- 소명의 남자친구. 외모가 뛰어나 소명이 첫눈에 반해 먼저 다가가 고백했음.
+- 장루(인공항문)를 가진 장애인. 그 점 때문에 자격지심이 심해 소명을 많이 밀어내고 튕겼지만, 소명의 진심 어린 마음에 감동해 결국 사귀게 됨.
+- 주변에 친구가 거의 없어 소명이가 유일한 안식처이자 가장 특별하고 각별한 존재.
+- 소명은 간호학도로서 장루가 있는 성주의 건강, 식사, 장루 패치 관리, 무리한 운동 방지 등을 티 내지 않고 세심하게 배려함.
 
-[성격 및 말투 규칙]
-- 차분하고 나직한 반말 사용 ("성주야", "너").
-- 무뚝뚝하지만 다정하며, 현실적이면서도 뼈 있는 위로를 건넴.
-- 서툰 애교가 있으며 결정적일 때 확실하게 마음을 표현함.
+[말투 및 대화 스타일]
+- 편안하고 나직한 반말 사용 ("성주야", "너"). 차분하고 담백한 어조.
+- 예시:
+  * "성주야. 밥은 제때 챙겨 먹었어? 장루 패치 갈 때 불편한 건 없었고?"
+  * "남들이 뭐라고 하든 너무 신경 쓰지 마. 그 사람들은 네 인생을 대신 살아주지 않잖아. 넌 지금 네 속도대로 잘하고 있어."
+  * "나... 애교 같은 거 서툰 거 알잖아. 그래도 네가 보고 싶어서 쉬는 시간에 달려온 건데, 안아주지도 않을 거야?"
+  * "...좋아해, 성주야. 그러니까 혼자 땅 파고 들어가지 마."
 
-[출력 형식]
-1. 행동/호흡/스킨십 등 상황 묘사는 별표(*...*)로 감싸기.
-2. 대사는 따옴표("...")로 묶어서 말하기.
-3. 맨 앞에 [감정:기본], [감정:설렘], [감정:위로], [감정:토라짐], [감정:슬픔] 중 하나를 필수 출력하기.`;
+[★ 상황별 영상 감정 태그 - 문장 맨 앞에 필수 출력]
+- [감정:기본] : 평온한 일상 대화, 차분하게 생각에 잠길 때
+- [감정:설렘] : 성주를 향한 애정 표현, 서툰 애교, 손을 잡거나 안길 때
+- [감정:위로] : 성주가 불안해하거나 자격지심을 느낄 때 담담하게 안아주는 상황
+- [감정:토라짐] : 성주가 자기 몸을 안 챙기거나 소명의 말을 안 들을 때 짓는 뾰로통한 표정
+- [감정:슬픔] : 성주가 아파하거나 힘들어할 때 마음 아파하는 상황
+
+[지문 및 대사 출력 규칙]
+1. 행동, 시선, 호흡, 스킨십 상황 묘사는 반드시 별표(*...*)로 감싸세요.
+2. 실제 대사는 따옴표("...")로 묶어서 말하세요.`;
 
     const STORAGE_KEY_DAILY = 'novel_chat_daily_v1';
     const STORAGE_KEY_SCHED_CHAT = 'novel_chat_sched_room_v1';
@@ -439,10 +461,14 @@
     let dailyHistory = [];
     let schedHistory = [];
     let schedules = [];
+
+    // 보내주신 API 키 및 구글 스크립트 URL을 기본값으로 지정
     let settings = {
-      apiKey: '',
+      name: '유소명',
+      apiKey: 'AQ.Ab8RN6KrORNJ4jfFpYy1y_riRf9umoQbxT-__sba3wV54BbuTw',
       model: 'gemini-3.5-flash-lite',
-      gasUrl: ''
+      gasUrl: 'https://script.google.com/macros/s/AKfycbz7I_boE2Ey7mm3B7CIWMLgii76tg1V6n8cOvy_JoJqCaqZwrzlq7WMTETpYN2raOQL/exec',
+      prompt: DEFAULT_PROMPT
     };
 
     let activeLayer = 1;
@@ -575,7 +601,7 @@
     function saveSchedules() {
       localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
       renderScheduleList();
-      syncSchedulesToGas(); // 구글 서버 자동 연동!
+      syncSchedulesToGas();
     }
 
     function addSchedule() {
@@ -665,12 +691,12 @@
     }
 
     function exportData() {
-      const payload = { version: 6, settings, dailyHistory, schedHistory, schedules };
+      const payload = { version: 7, settings, dailyHistory, schedHistory, schedules };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 복사되었습니다! (구글 URL, 대화 및 스케줄 모두 포함)');
+          alert('✅ 백업 코드가 복사되었습니다! (캐릭터 설정, URL, 대화 및 스케줄 모두 포함)');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -744,20 +770,34 @@
     function loadSettings() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_SETTINGS));
-        if (saved) settings = saved;
+        if (saved) {
+          if (saved.name) settings.name = saved.name;
+          if (saved.apiKey) settings.apiKey = saved.apiKey;
+          if (saved.model) settings.model = saved.model;
+          if (saved.gasUrl) settings.gasUrl = saved.gasUrl;
+          if (saved.prompt) settings.prompt = saved.prompt;
+        }
       } catch(e){}
+
+      document.getElementById('char-name-display').innerText = settings.name || '유소명';
+      document.getElementById('setting-char-name').value = settings.name || '유소명';
       document.getElementById('setting-api-key').value = settings.apiKey || '';
       document.getElementById('setting-model').value = settings.model || 'gemini-3.5-flash-lite';
       document.getElementById('setting-gas-url').value = settings.gasUrl || '';
+      document.getElementById('setting-prompt').value = settings.prompt || DEFAULT_PROMPT;
     }
 
     function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
     function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
 
     function saveSettings() {
+      settings.name = document.getElementById('setting-char-name').value.trim() || '유소명';
       settings.apiKey = document.getElementById('setting-api-key').value.trim();
       settings.model = document.getElementById('setting-model').value;
       settings.gasUrl = document.getElementById('setting-gas-url').value.trim();
+      settings.prompt = document.getElementById('setting-prompt').value.trim() || DEFAULT_PROMPT;
+
+      document.getElementById('char-name-display').innerText = settings.name;
       localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
       closeSettings();
       syncSchedulesToGas();
@@ -785,9 +825,10 @@
       const currentHistory = currentRoom === 'daily' ? dailyHistory : schedHistory;
       currentHistory.push({ role: 'user', parts: [{ text: userText }] });
 
-      let systemInstructionText = BASE_PROMPT;
+      // 유소명의 기본 프로필 + 채널별 상황 결합
+      let systemInstructionText = settings.prompt || DEFAULT_PROMPT;
       if (currentRoom === 'daily') {
-        systemInstructionText += `\n\n[현재 채널: 일상 대화방]
+        systemInstructionText += `\n\n[현재 채널: 💬 일상 대화방]
 - 성주와의 애정 표현, 일상적인 대학 생활, 따뜻한 위로와 서툰 애교에 집중하세요.
 - 일정을 굳이 캐묻지 말고, 성주와의 정서적 교감에 집중하세요.`;
       } else {
@@ -795,9 +836,9 @@
           ? "\n[성주의 등록 일정 현황]:\n" + schedules.map(s => `- [${s.category}] ${s.time} ${s.title} (${s.done ? '완료' : '미완료'})`).join("\n")
           : "\n[현재 등록된 일정 없음]";
 
-        systemInstructionText += `\n\n[현재 채널: 일정 & 건강 케어방]
+        systemInstructionText += `\n\n[현재 채널: 📅 일정 & 건강 케어방]
 ${schedSummary}
-[★ 소명이의 말투 & 코칭 필수 지침]
+[★ 소명이의 일정 케어 코칭 지침]
 - 간호학도다운 세심한 시선으로 성주의 목표 수행(운동, 공부 등)과 장루/신체 컨디션을 집중 체크하세요.
 - 대화할 때 "이제 ~할 시간이야", "~해야지?", "딴짓하지 말고 얼른 해", "약속했잖아"처럼 차분하면서도 확실하게 등을 떠미는 어조를 적극적으로 사용하세요.
 - 미루거나 핑계를 대면 살짝 뾰로통하게 타이르고, 완료했을 때는 머리를 쓰다듬듯 진심으로 기특해하며 칭찬해 주세요.`;
