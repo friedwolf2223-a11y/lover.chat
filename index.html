@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>유소명 - P5X CHAT</title>
+  <title>유소명 - P5X CHAT & CO-OP</title>
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -623,7 +623,220 @@
       box-shadow: 1px 1px 0 #000;
     }
 
-    /* 일반 모달 스타일 */
+    /* ========================================================
+       ★ P5X 미연시 코옵(인연) 전용 화면 UI ★
+    ======================================================== */
+    #coop-screen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 40;
+      background: transparent;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* 코옵 상단 HUD */
+    .coop-header {
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, transparent 100%);
+      z-index: 50;
+    }
+    .coop-rank-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #000;
+      border: 2px solid #ffdd59;
+      padding: 3px 8px;
+      box-shadow: 3px 3px 0 #000;
+      transform: skewX(-10deg);
+    }
+    .coop-rank-num {
+      background: #e60012;
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.75rem;
+      padding: 2px 5px;
+    }
+    .coop-rank-title {
+      color: #ffdd59;
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    /* 호감도 게이지 */
+    .coop-gauge-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.7);
+      padding: 4px 8px;
+      border: 1.5px solid #5ce1e6;
+      transform: skewX(-8deg);
+    }
+    .coop-gauge-bar {
+      width: 80px; height: 8px;
+      background: #222;
+      border: 1px solid #fff;
+      overflow: hidden;
+    }
+    .coop-gauge-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ffdd59, #ff3344);
+      transition: width 0.3s ease;
+    }
+
+    .coop-top-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    /* 음표 파티클 애니메이션 */
+    .note-particle {
+      position: fixed;
+      font-size: 1.8rem;
+      color: #ffdd59;
+      font-weight: 900;
+      text-shadow: 0 0 10px rgba(255, 221, 89, 0.9), 2px 2px 0 #000;
+      pointer-events: none;
+      z-index: 100;
+      animation: noteFloatUp 1.2s ease-out forwards;
+    }
+    @keyframes noteFloatUp {
+      0% { opacity: 0; transform: translateY(0) scale(0.6) rotate(0deg); }
+      30% { opacity: 1; transform: translateY(-25px) scale(1.2) rotate(-15deg); }
+      100% { opacity: 0; transform: translateY(-70px) scale(1) rotate(15deg); }
+    }
+
+    /* 랭크업 스플래시 팝업 */
+    #coop-rankup-splash {
+      display: none;
+      position: fixed;
+      top: 35%; left: 50%;
+      transform: translate(-50%, -50%) skewX(-12deg);
+      background: #e60012;
+      border: 4px solid #fff;
+      color: #fff;
+      padding: 16px 28px;
+      text-align: center;
+      box-shadow: 8px 8px 0 #000;
+      z-index: 250;
+      animation: rankUpAnim 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+    @keyframes rankUpAnim {
+      0% { transform: translate(-50%, -50%) scale(0.4) skewX(-12deg); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1) skewX(-12deg); opacity: 1; }
+    }
+
+    /* 미연시 전용 와이드 텍스트 박스 */
+    .coop-vn-box {
+      margin: 0 auto;
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(13,27,42,0.92) 80%, rgba(13,27,42,0.7) 100%);
+      border-top: 3px solid #5ce1e6;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.8);
+      padding: 14px 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      z-index: 50;
+    }
+
+    .coop-nameplate {
+      display: inline-block;
+      align-self: flex-start;
+      background: #e60012;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 900;
+      padding: 3px 14px;
+      border: 2px solid #fff;
+      box-shadow: 3px 3px 0 #000;
+      transform: skewX(-12deg);
+      letter-spacing: -0.3px;
+    }
+    .coop-text-content {
+      min-height: 70px;
+      font-size: 0.96rem;
+      line-height: 1.6;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .coop-text-narration {
+      color: #ffdd59;
+      font-style: italic;
+      font-size: 0.88rem;
+    }
+
+    /* 선택지 버튼 컨테이너 */
+    #coop-choices-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .coop-choice-btn {
+      background: #000;
+      color: #fff;
+      border: 2px solid #5ce1e6;
+      padding: 9px 12px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-align: left;
+      cursor: pointer;
+      transform: skewX(-8deg);
+      box-shadow: 3px 3px 0 #000;
+      transition: all 0.15s ease;
+    }
+    .coop-choice-btn:active {
+      transform: skewX(-8deg) translate(2px, 2px);
+      background: #5ce1e6;
+      color: #000;
+    }
+
+    .coop-input-bar {
+      display: flex;
+      gap: 6px;
+    }
+    .coop-input-bar input {
+      flex: 1;
+      padding: 10px 12px;
+      background: #000;
+      border: 2px solid #fff;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      outline: none;
+      transform: skewX(-8deg);
+    }
+
+    /* 세이브/로드 카드 */
+    .save-slot-card {
+      background: #000;
+      border: 2px solid #5ce1e6;
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transform: skewX(-6deg);
+    }
+    .save-slot-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* 일반 모달 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -680,9 +893,7 @@
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
     }
 
-    /* ========================================================
-       ★ 신규: P5X 스마트 루틴 & 시간 설정 UI 스타일 ★
-    ======================================================== */
+    /* P5X 루틴 & 시간 설정 */
     .p5x-routine-card {
       background: #14141e;
       border: 2px solid #5ce1e6;
@@ -719,7 +930,6 @@
       border-color: #5ce1e6;
     }
 
-    /* P5X 커스텀 시간 선택기 */
     .custom-time-picker-wrap {
       display: flex;
       align-items: center;
@@ -747,6 +957,7 @@
       color: #5ce1e6;
     }
 
+    /* P5X 뮤직 플레이어 */
     .p5x-player-card {
       background: #14141e;
       border: 2.5px solid #5ce1e6;
@@ -961,7 +1172,7 @@
 </head>
 <body>
 
-  <!-- 배경 영상 레이어 -->
+  <!-- 1. 배경 영상 레이어 -->
   <div id="bg-container">
     <video id="bg-video-1" class="bg-video-layer active" src="default.mp4" autoplay muted loop playsinline></video>
     <video id="bg-video-2" class="bg-video-layer" src="default.mp4" autoplay muted loop playsinline></video>
@@ -979,7 +1190,7 @@
     </svg>
   </button>
 
-  <!-- 메인 메신저 앱 -->
+  <!-- 2. 메인 메신저 앱 -->
   <div id="app">
     <header>
       <div class="p5-logo-wrap">
@@ -1009,6 +1220,63 @@
       </div>
       <button id="send-btn" class="btn-p5-send" onclick="sendMessage()">보내기</button>
     </footer>
+  </div>
+
+  <!-- ========================================================
+       ★ P5X 미연시 코옵 인연 모드 화면 (CO-OP MODE) ★
+  ======================================================== -->
+  <div id="coop-screen">
+    <div class="coop-header">
+      <div class="coop-rank-badge">
+        <span id="coop-rank-display" class="coop-rank-num">RANK 01</span>
+        <span id="coop-rank-title" class="coop-rank-title">우연의 도서관</span>
+      </div>
+
+      <div class="coop-gauge-wrap">
+        <span style="font-size:0.75rem; font-weight:900; color:#ffdd59;">♪</span>
+        <div class="coop-gauge-bar">
+          <div id="coop-gauge-fill" class="coop-gauge-fill" style="width: 0%;"></div>
+        </div>
+        <span id="coop-gauge-txt" style="font-size:0.7rem; font-family:monospace; color:#5ce1e6;">0%</span>
+      </div>
+
+      <div class="coop-top-actions">
+        <button class="btn-p5-icon" onclick="openSaveModal('save')" style="padding:4px 6px;">SAVE</button>
+        <button class="btn-p5-icon" onclick="openSaveModal('load')" style="padding:4px 6px;">LOAD</button>
+        <button class="btn-p5-icon" onclick="exitCoopMode()" style="background:#e60012; color:#fff; border-color:#fff; padding:4px 6px;">나가기</button>
+      </div>
+    </div>
+
+    <!-- 랭크업 스플래시 팝업 -->
+    <div id="coop-rankup-splash">
+      <div style="font-size:0.8rem; font-weight:900; letter-spacing:2px; color:#ffdd59;">COOPERATOR</div>
+      <div style="font-size:1.8rem; font-weight:900; font-style:italic;">RANK UP!</div>
+      <div id="coop-rankup-desc" style="font-size:0.88rem; font-weight:800; margin-top:4px;">소명과의 인연이 깊어졌다</div>
+    </div>
+
+    <!-- 미연시 하단 텍스트 박스 -->
+    <div class="coop-vn-box">
+      <div class="coop-nameplate">유소명</div>
+      <div id="coop-text-content" class="coop-text-content">
+        <!-- 타자기로 타이핑되는 대사/지문 영역 -->
+      </div>
+
+      <div id="coop-choices-container"></div>
+
+      <div class="coop-input-bar">
+        <input type="text" id="coop-user-input" placeholder="소명에게 말 건네기..." onkeydown="if(event.key==='Enter') sendCoopMessage()">
+        <button class="btn-p5-send" onclick="sendCoopMessage()">전달</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 세이브/로드 모달 -->
+  <div id="coop-save-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 id="coop-save-title">💾 MEMORY SLOTS</h3>
+      <div id="save-slots-container"></div>
+      <button class="btn-cancel" onclick="closeSaveModal()">닫기</button>
+    </div>
   </div>
 
   <!-- P5X 스마트폰 메뉴 모달 -->
@@ -1041,14 +1309,24 @@
       </div>
 
       <div class="p5x-apps-grid">
+        <!-- 1. 미연시 코옵 모드 -->
+        <button class="p5x-app-item" onclick="launchApp('coop')">
+          <div class="p5x-icon-box" style="border-color:#ff3344;">
+            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span class="p5x-badge-new">COOP</span>
+          </div>
+          <span class="p5x-app-label" style="border-color:#ff3344;">협력자·미연시</span>
+        </button>
+
+        <!-- 2. 일정 -->
         <button class="p5x-app-item" onclick="launchApp('schedule')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-            <span class="p5x-badge-new">NEW</span>
           </div>
           <span class="p5x-app-label">루틴·일정</span>
         </button>
 
+        <!-- 3. 환경 설정 -->
         <button class="p5x-app-item" onclick="launchApp('settings')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -1056,6 +1334,7 @@
           <span class="p5x-app-label">환경설정</span>
         </button>
 
+        <!-- 4. 비움 -->
         <button class="p5x-app-item" onclick="launchApp('clear')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
@@ -1063,6 +1342,7 @@
           <span class="p5x-app-label">기록비움</span>
         </button>
 
+        <!-- 5. 플레이어 -->
         <button class="p5x-app-item" onclick="launchApp('music')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
@@ -1070,6 +1350,7 @@
           <span class="p5x-app-label">플레이어</span>
         </button>
 
+        <!-- 6. 동기백업 -->
         <button class="p5x-app-item" onclick="launchApp('backup')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
@@ -1077,6 +1358,7 @@
           <span class="p5x-app-label">동기백업</span>
         </button>
 
+        <!-- 7. 감상모드 -->
         <button class="p5x-app-item" onclick="launchApp('clean')">
           <div class="p5x-icon-box">
             <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
@@ -1084,35 +1366,25 @@
           <span class="p5x-app-label">감상모드</span>
         </button>
 
+        <!-- 8. 소명메모 -->
         <button class="p5x-app-item" onclick="launchApp('diary')">
           <div class="p5x-icon-box" style="border-style: dashed; opacity: 0.85;">
             <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
-            <span class="p5x-badge-new">NEW</span>
+            <span class="p5x-badge-new">MEMO</span>
           </div>
           <span class="p5x-app-label">소명메모</span>
-        </button>
-
-        <button class="p5x-app-item" onclick="launchApp('soon')">
-          <div class="p5x-icon-box" style="border-style: dashed; opacity: 0.6;">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-          </div>
-          <span class="p5x-app-label">확장슬롯</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ========================================================
-       ★ 개선: P5X 스마트 루틴 & 시간 설정 모달 (원터치 시간/추천 칩) ★
-  ======================================================== -->
+  <!-- 루틴 & 시간 설정 모달 -->
   <div id="schedule-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>📅 ROUTINE & MISSION</h3>
 
-      <!-- 1. 시간 선택 패널 (구식 시계판 제거) -->
       <div class="p5x-routine-card">
-        <label>⏰ 목표 시간 (24시간 기준 자동 적용)</label>
-        
+        <label>⏰ 목표 시간</label>
         <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
           <div class="custom-time-picker-wrap">
             <select id="sched-hour"></select>
@@ -1127,7 +1399,6 @@
           </select>
         </div>
 
-        <!-- 빠른 시간 추가 칩 -->
         <label style="margin-top: 4px; font-size: 0.75rem;">⚡ 빠른 시간 세팅</label>
         <div class="quick-chip-container">
           <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(5)">+5분 뒤</button>
@@ -1139,7 +1410,6 @@
         </div>
       </div>
 
-      <!-- 2. 목표 입력 및 원터치 루틴 추천 -->
       <div style="display: flex; flex-direction: column; gap: 6px;">
         <label>🎯 목표 내용</label>
         <div style="display: flex; gap: 6px;">
@@ -1147,7 +1417,6 @@
           <button class="btn-save" style="padding: 6px 14px; white-space: nowrap;" onclick="addSchedule()">등록</button>
         </div>
 
-        <!-- 원터치 추천 칩 -->
         <div class="quick-chip-container">
           <button type="button" class="quick-chip" onclick="applyPresetRoutine('운동', '턱걸이 5세트')">💪 턱걸이 5세트</button>
           <button type="button" class="quick-chip" onclick="applyPresetRoutine('공부', '영어 단어 암기')">📖 영단어 암기</button>
@@ -1157,7 +1426,6 @@
         </div>
       </div>
 
-      <!-- 3. 등록된 미션 목록 -->
       <label style="margin-top: 4px;">📋 오늘의 등록 미션</label>
       <div id="schedule-list" style="max-height: 180px; overflow-y: auto;"></div>
 
@@ -1207,14 +1475,14 @@
         </div>
       </div>
 
-      <label>📋 TRACK LIST</label>
+      <label>📋 TRACK LIST (총 8곡 기본 탑재)</label>
       <div id="playlist-container" class="playlist-box"></div>
 
       <div style="border-top: 1.5px dashed #444; padding-top: 8px; margin-top: 4px;">
         <label>➕ 새 노래 등록 (GitHub 업로드 파일명)</label>
         <div style="display: flex; gap: 4px; margin-top: 4px;">
           <input type="text" id="new-song-title" placeholder="곡 제목" style="flex: 1;">
-          <input type="text" id="new-song-file" placeholder="파일명 (예: bgm.mp3)" style="flex: 1;">
+          <input type="text" id="new-song-file" placeholder="파일명" style="flex: 1;">
           <button class="btn-save" style="padding: 6px 10px; font-size: 0.78rem;" onclick="addNewTrack()">추가</button>
         </div>
       </div>
@@ -1223,7 +1491,7 @@
     </div>
   </div>
 
-  <!-- ⚙️ 환경 설정 모달 -->
+  <!-- 환경 설정 모달 -->
   <div id="settings-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>⚙️ 캐릭터 & 시스템 설정</h3>
@@ -1247,7 +1515,7 @@
       <textarea id="setting-prompt" style="height: 120px;"></textarea>
 
       <div style="border-top: 2px dashed #444; padding-top: 8px; margin-top: 4px;">
-        <label>📱💻 데이터 백업 (일상+일정방 전체)</label>
+        <label>📱💻 데이터 백업 (일상+일정방+코옵 전체)</label>
         <div style="display: flex; gap: 8px; margin-top: 6px;">
           <button type="button" class="btn-sync" onclick="exportData()">📤 백업 코드 복사</button>
           <button type="button" class="btn-sync" onclick="importData()">📥 백업 코드 복원</button>
@@ -1306,16 +1574,48 @@
       '슬픔': 'sad.mp4'
     };
 
+    /* ★ 캡처의 8개 MP3 음원 기본 플레이리스트 탑재 ★ */
+    const DEFAULT_PLAYLIST = [
+      { id: 1, title: 'Changing Seasons (-Reload-)', file: 'Changing Seasons -Reload-.mp3' },
+      { id: 2, title: 'Airdrive', file: 'Airdrive.mp3' },
+      { id: 3, title: 'HELLO', file: 'HELLO.mp3' },
+      { id: 4, title: 'Rising Sun (순수)', file: 'Rising Sun(순수).mp3' },
+      { id: 5, title: '눈사람', file: '눈사람.mp3' },
+      { id: 6, title: '시공을 달리다', file: '시공을 달리다.mp3' },
+      { id: 7, title: '오늘만 I love you', file: '오늘만 I love you.mp3' },
+      { id: 8, title: '춘람', file: '춘람.mp3' }
+    ];
+
+    /* 코옵 10단계 챕터 정의 */
+    const COOP_RANKS = [
+      { rank: 1, title: '우연의 도서관', desc: '의학 서적을 찾다 처음 마주침. 차분하지만 아직 거리를 둔다.' },
+      { rank: 2, title: '어색한 티타임', desc: '캠퍼스 자판기 앞 재회. 성주의 단정한 분위기에 묘한 호기심을 품음.' },
+      { rank: 3, title: '서툰 다정함', desc: '실습 과제를 나누며 처음으로 희미한 미소를 보여줌.' },
+      { rank: 4, title: '비 오는 날의 벤치', desc: '갑작스러운 소나기를 피하며 둘만의 가치관을 깊이 나눔.' },
+      { rank: 5, title: '비밀의 무게', desc: '장루에 대한 자격지심으로 밀어내려는 성주에게 다가서는 소명.' },
+      { rank: 6, title: '간호학도의 온기', desc: '편견 없이 성주의 상처를 감싸안으며 진심 어린 위로를 건넴.' },
+      { rank: 7, title: '자각한 감정', desc: '성주를 향한 두근거림을 자각하고 서툰 애교와 부끄러움을 보임.' },
+      { rank: 8, title: '거리 좁히기', desc: '방과 후 카페 데이트. 맞닿은 손끝에서 느껴지는 설렘.' },
+      { rank: 9, title: '고백 (Confession)', desc: '옥상 벤치에서 소명이 먼저 붉어진 얼굴로 마음을 고백함.' },
+      { rank: 10, title: '★ MAX: 연인', desc: '세상에서 서로에게 가장 특별하고 소중한 단 한 사람이 됨.' }
+    ];
+
     const STORAGE_KEY_DAILY = 'novel_chat_daily_v1';
     const STORAGE_KEY_SCHED_CHAT = 'novel_chat_sched_room_v1';
     const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v1';
     const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v1';
-    const STORAGE_KEY_PLAYLIST = 'novel_music_playlist_v1';
+    const STORAGE_KEY_PLAYLIST = 'novel_music_playlist_v2';
+    const STORAGE_KEY_COOP_SAVE = 'novel_coop_saves_v1';
 
     let currentRoom = 'daily';
     let dailyHistory = [];
     let schedHistory = [];
     let schedules = [];
+    let playlist = DEFAULT_PLAYLIST;
+    let currentTrackIndex = 0;
+    let repeatMode = 'all';
+    let isSeeking = false;
+    let audio = null;
 
     let settings = {
       name: '유소명',
@@ -1328,14 +1628,14 @@
     let activeLayer = 1;
     let currentVideoSrc = 'default.mp4';
 
-    let playlist = [
-      { id: 1, title: 'Changing Seasons (-Reload-)', file: 'Changing Seasons -Reload-.mp3' },
-      { id: 2, title: '기본 BGM', file: 'bgm.mp3' }
-    ];
-    let currentTrackIndex = 0;
-    let repeatMode = 'all';
-    let isSeeking = false;
-    let audio = null;
+    /* 미연시 코옵 모드 상태 */
+    let coopState = {
+      rank: 1,
+      affection: 0, // 0 ~ 100
+      history: [],
+      lastText: ''
+    };
+    let coopSaves = [null, null, null]; // 3개 슬롯
 
     window.onload = function() {
       loadSettings();
@@ -1344,6 +1644,7 @@
       loadChatHistories();
       initMusicPlayer();
       initLiveClock();
+      loadCoopSaves();
 
       if (window.location.hash === '#sched') {
         switchChatRoom('sched');
@@ -1355,7 +1656,6 @@
       document.getElementById('bg-video-1').play().catch(() => {});
     };
 
-    /* --- P5X 스마트폰 시계 --- */
     function initLiveClock() {
       function updateTime() {
         const now = new Date();
@@ -1368,7 +1668,6 @@
       setInterval(updateTime, 1000);
     }
 
-    /* --- P5X 메뉴 모달 제어 --- */
     function openP5Menu() {
       document.getElementById('p5x-menu-modal').style.display = 'flex';
       document.getElementById('menu-char-name').innerText = settings.name || '유소명';
@@ -1383,7 +1682,9 @@
 
     function launchApp(appId) {
       closeP5Menu();
-      if (appId === 'schedule') {
+      if (appId === 'coop') {
+        enterCoopMode();
+      } else if (appId === 'schedule') {
         openSchedule();
       } else if (appId === 'settings') {
         openSettings();
@@ -1396,17 +1697,278 @@
       } else if (appId === 'clean') {
         toggleCleanMode();
       } else if (appId === 'diary') {
-        alert('📖 [소명 메모]\n성주에게 해주고 싶은 말이나 장루 관리 팁을 소명이가 매일 기록해두는 공간입니다. (다음 업데이트 준비 중!)');
-      } else if (appId === 'soon') {
-        alert('✨ 괴도단의 새로운 기능이 곧 추가될 예정입니다!');
+        alert('📖 [소명 메모]\n성주에게 해주고 싶은 말이나 장루 관리 팁을 소명이가 매일 기록해두는 공간입니다.');
       }
     }
 
-    /* --- ★ 신규: P5X 스마트 시간 선택기 로직 --- */
+    /* ========================================================
+       ★ 미연시 코옵 인연 모드 로직 ★
+    ======================================================== */
+    function enterCoopMode() {
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('coop-screen').style.display = 'flex';
+
+      if (coopState.history.length === 0) {
+        // 첫 진입 프롤로그
+        const startText = `[감정:기본] *캠퍼스 중앙 도서관 의학 서가 앞, 두꺼운 간호학 전공 서적을 꺼내려다 당신과 손끝이 살짝 닿는다. 흠칫하며 한 걸음 물러선다.* "...아, 죄송합니다. 책 먼저 꺼내세요."`;
+        coopState.history.push({ role: 'model', parts: [{ text: startText }] });
+        renderCoopSequence(startText, [
+          "아닙니다, 먼저 꺼내셔도 돼요.",
+          "간호학과 책인가요? 저도 보건 계열이라서요.",
+          "(살짝 미소 지으며 책을 대신 꺼내 건넨다)"
+        ]);
+      } else {
+        const lastMsg = coopState.history[coopState.history.length - 1];
+        renderCoopSequence(lastMsg.parts[0].text);
+      }
+      updateCoopHUD();
+    }
+
+    function exitCoopMode() {
+      document.getElementById('coop-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      setBackgroundByTag('기본');
+    }
+
+    function updateCoopHUD() {
+      const cur = COOP_RANKS[coopState.rank - 1];
+      document.getElementById('coop-rank-display').innerText = `RANK 0${cur.rank}`;
+      document.getElementById('coop-rank-title').innerText = cur.title;
+      document.getElementById('coop-gauge-fill').style.width = `${coopState.affection}%`;
+      document.getElementById('coop-gauge-txt').innerText = `${coopState.affection}%`;
+    }
+
+    // 호감도 음표 파티클 연출
+    function spawnNoteParticles(count = 3) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const note = document.createElement('div');
+          note.className = 'note-particle';
+          note.innerText = '♪';
+          note.style.left = `${window.innerWidth * 0.5 + (Math.random() * 80 - 40)}px`;
+          note.style.top = `${window.innerHeight * 0.45 + (Math.random() * 30 - 15)}px`;
+          document.body.appendChild(note);
+          setTimeout(() => note.remove(), 1200);
+        }, i * 180);
+      }
+    }
+
+    // 랭크업 연출
+    function triggerRankUp() {
+      if (coopState.rank >= 10) return;
+      coopState.rank += 1;
+      coopState.affection = 0;
+      updateCoopHUD();
+
+      const next = COOP_RANKS[coopState.rank - 1];
+      const splash = document.getElementById('coop-rankup-splash');
+      document.getElementById('coop-rankup-desc').innerText = `RANK 0${next.rank} [${next.title}]\n${next.desc}`;
+      splash.style.display = 'block';
+      spawnNoteParticles(6);
+
+      setTimeout(() => {
+        splash.style.display = 'none';
+      }, 2600);
+    }
+
+    // 코옵 대사 출력 및 타자기
+    async function renderCoopSequence(fullText, choices = []) {
+      const container = document.getElementById('coop-text-content');
+      const choiceBox = document.getElementById('coop-choices-container');
+      container.innerHTML = '';
+      choiceBox.innerHTML = '';
+
+      let cleanText = fullText;
+      const tagMatch = fullText.match(/\[감정:([^\]]+)\]/);
+      if (tagMatch) {
+        setBackgroundByTag(tagMatch[1].trim());
+        cleanText = fullText.replace(/\[감정:[^\]]+\]/g, '').trim();
+      }
+
+      // 호감도 태그 파싱
+      const affMatch = cleanText.match(/\[호감도:\+?(\d+)\]/);
+      if (affMatch) {
+        const pts = parseInt(affMatch[1], 10) || 1;
+        cleanText = cleanText.replace(/\[호감도:\+?\d+\]/g, '').trim();
+        coopState.affection = Math.min(100, coopState.affection + pts * 20);
+        updateCoopHUD();
+        spawnNoteParticles(pts);
+        if (coopState.affection >= 100) {
+          setTimeout(triggerRankUp, 800);
+        }
+      }
+
+      coopState.lastText = cleanText;
+
+      // 타자기 출력
+      for (let i = 0; i < cleanText.length; i++) {
+        container.textContent += cleanText[i];
+        await new Promise(r => setTimeout(r, 22));
+      }
+
+      // 선택지 버튼 렌더링
+      if (choices.length > 0) {
+        choices.forEach(ch => {
+          const btn = document.createElement('button');
+          btn.className = 'coop-choice-btn';
+          btn.innerText = `▶ ${ch}`;
+          btn.onclick = () => {
+            choiceBox.innerHTML = '';
+            handleCoopPlayerReply(ch);
+          };
+          choiceBox.appendChild(btn);
+        });
+      }
+    }
+
+    async function sendCoopMessage() {
+      const input = document.getElementById('coop-user-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      document.getElementById('coop-choices-container').innerHTML = '';
+      await handleCoopPlayerReply(text);
+    }
+
+    async function handleCoopPlayerReply(playerText) {
+      if (!settings.apiKey) {
+        alert('우측 상단 MENU -> [환경설정]에서 Google AI Studio API 키를 입력해 주세요!');
+        return;
+      }
+
+      const container = document.getElementById('coop-text-content');
+      container.innerHTML = `<span class="coop-text-narration">「 소명이가 당신의 말에 반응을 생각하고 있다... 」</span>`;
+
+      coopState.history.push({ role: 'user', parts: [{ text: playerText }] });
+
+      const curRank = COOP_RANKS[coopState.rank - 1];
+      const coopSystemPrompt = `[모드: 페르소나 5 코옵(인연) 미연시 시스템]
+- 현재 인연 상태: RANK 0${curRank.rank} [${curRank.title}] - ${curRank.desc}
+- 당신(유소명): 아직 성주와 깊은 연인이 아니거나 랭크에 따라 관계가 발전 중인 상태.
+- 상대방(이성주): 잘생긴 외모를 지녔지만 장루 장애로 인해 자격지심을 품고 있음.
+- 행동 지침:
+  1. 현재 RANK 단계의 거리감과 분위기를 엄격히 유지할 것.
+  2. 성주의 대답이 마음에 와닿거나 진솔하면 [호감도:+1], [호감도:+2], [호감도:+3] 중 하나를 문장 속에 포함할 것.
+  3. 반드시 맨 앞에 [감정:기본/설렘/위로/토라짐/슬픔] 태그를 붙일 것.
+  4. 지문은 *...*로, 대사는 "..."로 출력할 것.
+  5. 필요하다면 맨 뒤에 성주가 고를 수 있는 2~3개의 선택지를 [선택지: 옵션1 | 옵션2] 형태로 제안해도 좋음.`;
+
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${settings.model}:generateContent?key=${settings.apiKey}`;
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: coopSystemPrompt }] },
+            contents: coopState.history,
+            generationConfig: { temperature: 0.85 }
+          })
+        });
+
+        const data = await response.json();
+        let reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[감정:기본] "...네, 그렇네요."';
+
+        // 선택지 추출
+        let choices = [];
+        const chMatch = reply.match(/\[선택지:([^\]]+)\]/);
+        if (chMatch) {
+          choices = chMatch[1].split('|').map(c => c.trim());
+          reply = reply.replace(/\[선택지:[^\]]+\]/g, '').trim();
+        }
+
+        coopState.history.push({ role: 'model', parts: [{ text: reply }] });
+        await renderCoopSequence(reply, choices);
+
+      } catch (err) {
+        container.innerHTML = `<span style="color:#ff3344;">통신 오류: ${err.message}</span>`;
+      }
+    }
+
+    /* 세이브 & 로드 */
+    function loadCoopSaves() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_COOP_SAVE));
+        if (saved && Array.isArray(saved)) coopSaves = saved;
+      } catch(e){}
+    }
+
+    function openSaveModal(mode) {
+      document.getElementById('coop-save-title').innerText = mode === 'save' ? '💾 RECORD IN MEMORY' : '📂 LOAD FROM MEMORY';
+      const container = document.getElementById('save-slots-container');
+      container.innerHTML = '';
+
+      for (let i = 0; i < 3; i++) {
+        const slot = coopSaves[i];
+        const div = document.createElement('div');
+        div.className = 'save-slot-card';
+
+        if (slot) {
+          div.innerHTML = `
+            <div class="save-slot-info">
+              <span style="font-weight:900; color:#ffdd59;">SLOT 0${i + 1} : RANK 0${slot.rank}</span>
+              <span style="font-size:0.75rem; color:#aaa; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${slot.lastText}</span>
+              <span style="font-size:0.68rem; color:#5ce1e6;">${slot.date}</span>
+            </div>
+            <div>
+              <button class="btn-save" style="padding:6px 10px; font-size:0.75rem;" onclick="handleSlotAction('${mode}', ${i})">${mode.toUpperCase()}</button>
+            </div>
+          `;
+        } else {
+          div.innerHTML = `
+            <div class="save-slot-info">
+              <span style="font-weight:900; color:#666;">SLOT 0${i + 1} : [ 비어 있음 ]</span>
+              <span style="font-size:0.75rem; color:#444;">새로운 기억을 기록할 수 있습니다.</span>
+            </div>
+            <div>
+              <button class="btn-save" style="padding:6px 10px; font-size:0.75rem; background:#444;" onclick="handleSlotAction('${mode}', ${i})">${mode.toUpperCase()}</button>
+            </div>
+          `;
+        }
+        container.appendChild(div);
+      }
+
+      document.getElementById('coop-save-modal').style.display = 'flex';
+    }
+
+    function closeSaveModal() {
+      document.getElementById('coop-save-modal').style.display = 'none';
+    }
+
+    function handleSlotAction(mode, index) {
+      if (mode === 'save') {
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        coopSaves[index] = {
+          rank: coopState.rank,
+          affection: coopState.affection,
+          history: JSON.parse(JSON.stringify(coopState.history)),
+          lastText: coopState.lastText || '기억 저장됨',
+          date: dateStr
+        };
+        localStorage.setItem(STORAGE_KEY_COOP_SAVE, JSON.stringify(coopSaves));
+        alert(`✅ SLOT 0${index + 1}에 인연의 기억이 저장되었습니다!`);
+        closeSaveModal();
+      } else {
+        const slot = coopSaves[index];
+        if (!slot) return alert('비어 있는 슬롯입니다!');
+        coopState = {
+          rank: slot.rank,
+          affection: slot.affection,
+          history: JSON.parse(JSON.stringify(slot.history)),
+          lastText: slot.lastText
+        };
+        updateCoopHUD();
+        closeSaveModal();
+        alert(`🎉 SLOT 0${index + 1}의 기억을 불러왔습니다!`);
+        const lastMsg = coopState.history[coopState.history.length - 1];
+        if (lastMsg) renderCoopSequence(lastMsg.parts[0].text);
+      }
+    }
+
+    /* --- 시간 셀렉터 옵션 및 빠른 시간 세팅 --- */
     function initTimePickerOptions() {
       const hSelect = document.getElementById('sched-hour');
       const mSelect = document.getElementById('sched-minute');
-
       hSelect.innerHTML = '';
       mSelect.innerHTML = '';
 
@@ -1426,16 +1988,13 @@
         mSelect.appendChild(opt);
       }
 
-      // 기본값: 현재 시각 + 10분 뒤
       setQuickTime(10);
     }
 
     function setQuickTime(plusMinutes) {
       const target = new Date(Date.now() + plusMinutes * 60000);
-      const hStr = String(target.getHours()).padStart(2, '0');
-      const mStr = String(target.getMinutes()).padStart(2, '0');
-      document.getElementById('sched-hour').value = hStr;
-      document.getElementById('sched-minute').value = mStr;
+      document.getElementById('sched-hour').value = String(target.getHours()).padStart(2, '0');
+      document.getElementById('sched-minute').value = String(target.getMinutes()).padStart(2, '0');
     }
 
     function setExactTime(hour, minute) {
@@ -1448,13 +2007,16 @@
       document.getElementById('sched-title').value = title;
     }
 
-    /* --- 뮤직 플레이어 --- */
+    /* --- 뮤직 플레이어 로직 --- */
     function initMusicPlayer() {
       audio = document.getElementById('bgm-player');
       try {
         const savedList = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAYLIST));
         if (savedList && savedList.length > 0) playlist = savedList;
-      } catch(e){}
+        else playlist = DEFAULT_PLAYLIST;
+      } catch(e){
+        playlist = DEFAULT_PLAYLIST;
+      }
 
       renderPlaylist();
       updatePlayerTrackInfo();
@@ -1888,12 +2450,11 @@
       syncSchedulesToGas();
     }
 
-    /* ★ 시간 셀렉터 기반 일정 추가 ★ */
     function addSchedule() {
       const cat = document.getElementById('sched-category').value;
       const hStr = document.getElementById('sched-hour').value;
       const mStr = document.getElementById('sched-minute').value;
-      const time = `${hStr}:${mStr}`; // 24시간 형식 유지 ("HH:mm")
+      const time = `${hStr}:${mStr}`;
       const title = document.getElementById('sched-title').value.trim();
 
       if (!title) return alert('목표 내용을 입력해 주세요!');
@@ -1979,12 +2540,12 @@
     }
 
     function exportData() {
-      const payload = { version: 17, settings, dailyHistory, schedHistory, schedules, playlist };
+      const payload = { version: 18, settings, dailyHistory, schedHistory, schedules, playlist, coopState, coopSaves };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 클립보드에 복사되었습니다!');
+          alert('✅ 백업 코드가 클립보드에 복사되었습니다! (미연시 코옵 진행상황 포함)');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -2000,12 +2561,15 @@
         schedHistory = data.schedHistory || [];
         schedules = data.schedules || [];
         playlist = data.playlist || playlist;
+        coopState = data.coopState || coopState;
+        coopSaves = data.coopSaves || coopSaves;
 
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
         localStorage.setItem(STORAGE_KEY_DAILY, JSON.stringify(dailyHistory));
         localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
         localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
         localStorage.setItem(STORAGE_KEY_PLAYLIST, JSON.stringify(playlist));
+        localStorage.setItem(STORAGE_KEY_COOP_SAVE, JSON.stringify(coopSaves));
 
         loadSettings();
         loadSchedules();
@@ -2072,7 +2636,6 @@
       }
 
       const chatBox = document.getElementById('chat-box');
-
       chatBox.appendChild(renderMessage('user', userText));
       chatBox.scrollTop = chatBox.scrollHeight;
       inputEl.value = '';
