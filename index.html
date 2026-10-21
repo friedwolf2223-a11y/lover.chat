@@ -409,13 +409,14 @@
     body.clean-mode .bg-gradient-overlay { opacity: 0.05; }
 
     /* ========================================================
-       ★ 개선: P5X 미연시 코옵 인연 모드 HUD (2단 개편으로 글자 깨짐 해결) ★
+       ★ 개선: 미연시 코옵 인연 모드 화면 (스크롤 분리 & 입력창 고정) ★
     ======================================================== */
     #coop-screen {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
+      height: 100dvh; /* 모바일 동적 뷰포트 */
       z-index: 40;
       background: transparent;
       flex-direction: column;
@@ -467,11 +468,10 @@
       color: #ffdd59;
       font-size: 0.84rem;
       font-weight: 900;
-      white-space: nowrap; /* 세로 꺾임 방지! */
+      white-space: nowrap;
       letter-spacing: -0.3px;
     }
 
-    /* 호감도 게이지 */
     .coop-gauge-wrap {
       display: flex;
       align-items: center;
@@ -500,7 +500,7 @@
       flex-shrink: 0;
     }
 
-    /* 호감도 상승/하락 음표 파티클 애니메이션 */
+    /* 음표 파티클 */
     .note-particle {
       position: fixed;
       font-size: 1.8rem;
@@ -548,24 +548,34 @@
       100% { transform: translate(-50%, -50%) scale(1) skewX(-12deg); opacity: 1; }
     }
 
+    /* ★ 미연시 하단 텍스트 박스: 높이 한도 제한 & 입력창 고정 레이아웃 */
     .coop-vn-box {
       margin: 0 auto;
       width: 100%;
       max-width: 440px;
-      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(13,27,42,0.92) 80%, rgba(13,27,42,0.7) 100%);
+      max-height: 65vh;
+      max-height: 65dvh;
+      background: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(13,27,42,0.94) 85%, rgba(13,27,42,0.75) 100%);
       border-top: 3px solid #5ce1e6;
       box-shadow: 0 -4px 20px rgba(0,0,0,0.8);
-      padding: 14px 16px 12px;
+      padding: 10px 14px;
+      padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       position: relative;
       z-index: 50;
     }
 
+    .coop-vn-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
     .coop-nameplate {
       display: inline-block;
-      align-self: flex-start;
       background: #e60012;
       color: #fff;
       font-size: 0.95rem;
@@ -576,10 +586,23 @@
       transform: skewX(-12deg);
       letter-spacing: -0.3px;
     }
+
+    /* ★ 대사 및 선택지 전용 독립 스크롤 영역 (입력창 절대 안 밀려남!) */
+    .coop-scroll-area {
+      flex: 1 1 auto;
+      min-height: 50px;
+      max-height: 38dvh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+      scroll-behavior: smooth;
+    }
+
     .coop-text-content {
-      min-height: 70px;
-      font-size: 0.96rem;
-      line-height: 1.6;
+      font-size: 0.94rem;
+      line-height: 1.55;
       color: #fff;
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
       white-space: pre-wrap;
@@ -595,7 +618,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-bottom: 4px;
+      margin-top: 2px;
     }
     .coop-choice-btn {
       background: #000;
@@ -616,9 +639,12 @@
       color: #000;
     }
 
+    /* ★ 하단 입력창 고정 (flex-shrink: 0) */
     .coop-input-bar {
       display: flex;
       gap: 6px;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
     .coop-input-bar input {
       flex: 1;
@@ -1245,11 +1271,10 @@
   </div>
 
   <!-- ========================================================
-       ★ 개선: P5X 미연시 코옵 인연 모드 화면 (2단 HUD로 제목 펴기) ★
+       ★ 개선: P5X 미연시 코옵 모드 (스크롤 분리 & 입력창 영구 고정) ★
   ======================================================== -->
   <div id="coop-screen">
     <div class="coop-header">
-      <!-- 1단: 랭크 배지 + 조작 버튼들 (우측 쏠림 방지) -->
       <div class="coop-header-row1">
         <div class="coop-rank-badge">
           <span id="coop-rank-display" class="coop-rank-num">RANK 01</span>
@@ -1263,7 +1288,6 @@
         </div>
       </div>
 
-      <!-- 2단: 호감도 진행 게이지 바 -->
       <div class="coop-header-row2">
         <div class="coop-gauge-wrap" style="width: 100%;">
           <span style="font-size:0.75rem; font-weight:900; color:#ffdd59;">♪ AFFECTION</span>
@@ -1282,16 +1306,45 @@
       <div id="coop-rankup-desc" style="font-size:0.88rem; font-weight:800; margin-top:4px;">소명과의 인연이 깊어졌다</div>
     </div>
 
-    <!-- 미연시 하단 텍스트 박스 -->
+    <!-- 미연시 하단 대사 상자 (입력창 절대 안 잘림!) -->
     <div class="coop-vn-box">
-      <div class="coop-nameplate">유소명</div>
-      <div id="coop-text-content" class="coop-text-content"></div>
+      <div class="coop-vn-top-row">
+        <div class="coop-nameplate">유소명</div>
+        <!-- ★ 미연시 독자 배경설정 버튼 ★ -->
+        <button class="btn-p5-icon" onclick="openCoopSettingsModal()" style="font-size:0.72rem; padding:2px 8px; border-color:#ffdd59; color:#ffdd59; background:#000;">⚙️ 스토리설정</button>
+      </div>
 
-      <div id="coop-choices-container"></div>
+      <!-- ★ 대사 + 선택지 독립 스크롤 영역 ★ -->
+      <div id="coop-scroll-area" class="coop-scroll-area">
+        <div id="coop-text-content" class="coop-text-content"></div>
+        <div id="coop-choices-container"></div>
+      </div>
 
+      <!-- ★ 하단 입력바 (항상 화면 아래에 고정) ★ -->
       <div class="coop-input-bar">
         <input type="text" id="coop-user-input" placeholder="소명에게 말 건네기..." onkeydown="if(event.key==='Enter') sendCoopMessage()">
         <button class="btn-p5-send" onclick="sendCoopMessage()">전달</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ★ 신규: 미연시 독자 배경설정 & 시나리오 모달 ★ -->
+  <div id="coop-settings-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>📜 CO-OP SCENARIO & LORE</h3>
+      
+      <p style="font-size:0.78rem; color:#bbb; line-height:1.4;">
+        💡 일상 채팅방과 완전히 분리된 <b>미연시 인연 스토리 전용 독자 배경설정</b>입니다.<br>
+        원하는 시나리오(축제, 동아리, 병원 실습, 시험 기간 등)나 소명이와의 특별한 설정을 자유롭게 적어보세요.
+      </p>
+
+      <label>미연시 전용 세계관 & 배경설정</label>
+      <textarea id="coop-custom-lore" style="height: 150px; font-size: 0.82rem; line-height: 1.45;"></textarea>
+
+      <div style="display: flex; gap: 8px; margin-top: 6px;">
+        <button class="btn-save" style="flex:1;" onclick="saveCoopSettings()">저장</button>
+        <button class="btn-cancel" style="width:80px;" onclick="resetCoopSettings()">기본값</button>
+        <button class="btn-cancel" style="width:70px;" onclick="closeCoopSettingsModal()">닫기</button>
       </div>
     </div>
   </div>
@@ -1451,7 +1504,7 @@
     </div>
   </div>
 
-  <!-- 🎵 P5X 뮤직 플레이어 모달 -->
+  <!-- 뮤직 플레이어 모달 -->
   <div id="music-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>
@@ -1616,12 +1669,20 @@
       { rank: 10, title: '★ MAX: 연인', desc: '세상에서 서로에게 가장 특별하고 소중한 단 한 사람이 됨.' }
     ];
 
+    /* ★ 미연시 전용 기본 독자 배경설정 ★ */
+    const DEFAULT_COOP_PROMPT = `[미연시(코옵) 전용 독자 배경설정 & 세계관]
+- 배경: 같은 대학교 캠퍼스 (보건의료/간호 계열 단과대 도서관 및 캠퍼스).
+- 유소명(여주인공): 차분하고 이성적인 간호학과 대학생. 타인의 영역을 함부로 침범하지 않으려는 선이 있으나, 성주에게 묘한 호기심과 특별한 감정을 느낌.
+- 이성주(유저/남주인공): 훈훈한 외모를 지녔으나 장루(인공항문)를 지니고 있어 마음속에 깊은 자격지심과 상처를 안고 있음.
+- 특별 지침: 성주의 행동과 대화에 진정성이 있거나 배려심이 느껴질 때 서서히 마음의 벽을 허물어감.`;
+
     const STORAGE_KEY_DAILY = 'novel_chat_daily_v1';
     const STORAGE_KEY_SCHED_CHAT = 'novel_chat_sched_room_v1';
     const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v1';
     const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v1';
     const STORAGE_KEY_PLAYLIST = 'novel_music_playlist_v2';
     const STORAGE_KEY_COOP_SAVE = 'novel_coop_saves_v1';
+    const STORAGE_KEY_COOP_SETTINGS = 'novel_coop_settings_v1';
 
     let currentRoom = 'daily';
     let dailyHistory = [];
@@ -1651,6 +1712,9 @@
       lastText: ''
     };
     let coopSaves = [null, null, null];
+    let coopSettings = {
+      customLore: DEFAULT_COOP_PROMPT
+    };
 
     window.onload = function() {
       loadSettings();
@@ -1660,6 +1724,7 @@
       initMusicPlayer();
       initLiveClock();
       loadCoopSaves();
+      loadCoopSettings();
 
       if (window.location.hash === '#sched') {
         switchChatRoom('sched');
@@ -1717,7 +1782,45 @@
     }
 
     /* ========================================================
-       ★ 개선: 미연시 코옵 모드 로직 (호감도 하락 & 정체성 고정) ★
+       ★ 미연시 독자 설정 로드 & 저장 함수 ★
+    ======================================================== */
+    function loadCoopSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_COOP_SETTINGS));
+        if (saved && saved.customLore) {
+          coopSettings.customLore = saved.customLore;
+        }
+      } catch(e){}
+    }
+
+    function openCoopSettingsModal() {
+      document.getElementById('coop-custom-lore').value = coopSettings.customLore || DEFAULT_COOP_PROMPT;
+      document.getElementById('coop-settings-modal').style.display = 'flex';
+    }
+
+    function closeCoopSettingsModal() {
+      document.getElementById('coop-settings-modal').style.display = 'none';
+    }
+
+    function saveCoopSettings() {
+      const val = document.getElementById('coop-custom-lore').value.trim();
+      coopSettings.customLore = val || DEFAULT_COOP_PROMPT;
+      localStorage.setItem(STORAGE_KEY_COOP_SETTINGS, JSON.stringify(coopSettings));
+      closeCoopSettingsModal();
+      alert('✅ 미연시 전용 독자 배경설정이 저장되었습니다!');
+    }
+
+    function resetCoopSettings() {
+      if (confirm('미연시 배경설정을 기본값으로 되돌리시겠습니까?')) {
+        coopSettings.customLore = DEFAULT_COOP_PROMPT;
+        document.getElementById('coop-custom-lore').value = DEFAULT_COOP_PROMPT;
+        localStorage.setItem(STORAGE_KEY_COOP_SETTINGS, JSON.stringify(coopSettings));
+        alert('기본값으로 복원되었습니다.');
+      }
+    }
+
+    /* ========================================================
+       ★ 미연시 코옵 모드 로직 ★
     ======================================================== */
     function enterCoopMode() {
       document.getElementById('app').style.display = 'none';
@@ -1752,7 +1855,6 @@
       document.getElementById('coop-gauge-txt').innerText = `${coopState.affection}%`;
     }
 
-    /* 호감도 상승(♪) 및 하락(💔) 파티클 연출 */
     function spawnNoteParticles(count = 3, isNegative = false) {
       for (let i = 0; i < count; i++) {
         setTimeout(() => {
@@ -1787,6 +1889,7 @@
     async function renderCoopSequence(fullText, choices = []) {
       const container = document.getElementById('coop-text-content');
       const choiceBox = document.getElementById('coop-choices-container');
+      const scrollArea = document.getElementById('coop-scroll-area');
       container.innerHTML = '';
       choiceBox.innerHTML = '';
 
@@ -1797,7 +1900,6 @@
         cleanText = fullText.replace(/\[감정:[^\]]+\]/g, '').trim();
       }
 
-      /* ★ 호감도 증감(+ 또는 -) 처리 로직 ★ */
       const affMatch = cleanText.match(/\[호감도:([+-]?\d+)\]/);
       if (affMatch) {
         const pts = parseInt(affMatch[1], 10);
@@ -1810,7 +1912,6 @@
             setTimeout(triggerRankUp, 800);
           }
         } else if (pts < 0) {
-          // 호감도 하락 처리 (0% 미만으로는 안 내려감)
           coopState.affection = Math.max(0, coopState.affection + pts * 20);
           spawnNoteParticles(Math.abs(pts), true);
         }
@@ -1821,6 +1922,7 @@
 
       for (let i = 0; i < cleanText.length; i++) {
         container.textContent += cleanText[i];
+        if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
         await new Promise(r => setTimeout(r, 22));
       }
 
@@ -1835,6 +1937,7 @@
           };
           choiceBox.appendChild(btn);
         });
+        if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
       }
     }
 
@@ -1860,9 +1963,12 @@
 
       const curRank = COOP_RANKS[coopState.rank - 1];
 
-      /* ★ 화자 절대 고정 및 호감도 증감 필수 지침 ★ */
+      /* ★ 일상방과 독립된 미연시 전용 커스텀 로어 결합 ★ */
       const coopSystemPrompt = `[모드: 페르소나 5 코옵(인연) 미연시 시스템]
 - 현재 인연 상태: RANK 0${curRank.rank} [${curRank.title}] - ${curRank.desc}
+
+[★ 미연시 전용 독자 배경설정 & 세계관]
+${coopSettings.customLore || DEFAULT_COOP_PROMPT}
 
 [★ 화자 및 인칭 절대 엄수 규칙 - 위반 절대 금지]
 1. 당신의 정체는 오직 '유소명'(여성, 간호학과 대학생)입니다.
@@ -1878,7 +1984,7 @@
 - 반대로 성주가 무례하게 굴거나, 소명에게 시비를 걸거나, 차갑게 선을 긋거나, 억지를 부려 기분을 상하게 하면 반드시 [호감도:-1] 또는 [호감도:-2]를 붙여 호감도를 깎으세요!
 - 문장 맨 앞에는 [감정:기본/설렘/위로/토라짐/슬픔] 중 하나를 필수 출력하세요.
 - 지문은 *...*로, 대사는 "..."로 출력하세요.
-- 필요하다면 대화 끝에 성주가 누를 수 있는 2~3개의 선택지를 [선택지: 옵션1 | 옵션2] 형태로 제안하세요.`;
+- 대사 끝에는 성주가 고를 수 있는 2~3개의 선택지를 [선택지: 옵션1 | 옵션2 | 옵션3] 형태로 항상 제안하세요.`;
 
       try {
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${settings.model}:generateContent?key=${settings.apiKey}`;
@@ -1991,7 +2097,7 @@
       }
     }
 
-    /* 시간 선택기 옵션 */
+    /* 시간 선택기 */
     function initTimePickerOptions() {
       const hSelect = document.getElementById('sched-hour');
       const mSelect = document.getElementById('sched-minute');
@@ -2566,12 +2672,12 @@
     }
 
     function exportData() {
-      const payload = { version: 19, settings, dailyHistory, schedHistory, schedules, playlist, coopState, coopSaves };
+      const payload = { version: 20, settings, dailyHistory, schedHistory, schedules, playlist, coopState, coopSaves, coopSettings };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 클립보드에 복사되었습니다!');
+          alert('✅ 백업 코드가 클립보드에 복사되었습니다! (미연시 독자 설정 포함)');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -2589,6 +2695,7 @@
         playlist = data.playlist || playlist;
         coopState = data.coopState || coopState;
         coopSaves = data.coopSaves || coopSaves;
+        coopSettings = data.coopSettings || coopSettings;
 
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
         localStorage.setItem(STORAGE_KEY_DAILY, JSON.stringify(dailyHistory));
@@ -2596,6 +2703,7 @@
         localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
         localStorage.setItem(STORAGE_KEY_PLAYLIST, JSON.stringify(playlist));
         localStorage.setItem(STORAGE_KEY_COOP_SAVE, JSON.stringify(coopSaves));
+        localStorage.setItem(STORAGE_KEY_COOP_SETTINGS, JSON.stringify(coopSettings));
 
         loadSettings();
         loadSchedules();
@@ -2662,6 +2770,7 @@
       }
 
       const chatBox = document.getElementById('chat-box');
+
       chatBox.appendChild(renderMessage('user', userText));
       chatBox.scrollTop = chatBox.scrollHeight;
       inputEl.value = '';
