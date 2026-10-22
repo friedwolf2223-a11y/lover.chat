@@ -259,7 +259,8 @@
       width: 48px;
       height: 48px;
     }
-    .ai-avatar-video {
+    /* ★ 원 안의 프로필 이미지를 사진1.jpg로 영구 고정 ★ */
+    .ai-avatar-img {
       width: 46px;
       height: 46px;
       border-radius: 50%;
@@ -409,14 +410,14 @@
     body.clean-mode .bg-gradient-overlay { opacity: 0.05; }
 
     /* ========================================================
-       ★ 개선: 미연시 코옵 인연 모드 화면 (스크롤 분리 & 입력창 고정) ★
+       ★ P5X 미연시 코옵 모드 화면 ★
     ======================================================== */
     #coop-screen {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      height: 100dvh; /* 모바일 동적 뷰포트 */
+      height: 100dvh;
       z-index: 40;
       background: transparent;
       flex-direction: column;
@@ -500,7 +501,6 @@
       flex-shrink: 0;
     }
 
-    /* 음표 파티클 */
     .note-particle {
       position: fixed;
       font-size: 1.8rem;
@@ -548,12 +548,10 @@
       100% { transform: translate(-50%, -50%) scale(1) skewX(-12deg); opacity: 1; }
     }
 
-    /* ★ 미연시 하단 텍스트 박스: 높이 한도 제한 & 입력창 고정 레이아웃 */
     .coop-vn-box {
       margin: 0 auto;
       width: 100%;
       max-width: 440px;
-      max-height: 65vh;
       max-height: 65dvh;
       background: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(13,27,42,0.94) 85%, rgba(13,27,42,0.75) 100%);
       border-top: 3px solid #5ce1e6;
@@ -587,7 +585,6 @@
       letter-spacing: -0.3px;
     }
 
-    /* ★ 대사 및 선택지 전용 독립 스크롤 영역 (입력창 절대 안 밀려남!) */
     .coop-scroll-area {
       flex: 1 1 auto;
       min-height: 50px;
@@ -639,7 +636,6 @@
       color: #000;
     }
 
-    /* ★ 하단 입력창 고정 (flex-shrink: 0) */
     .coop-input-bar {
       display: flex;
       gap: 6px;
@@ -941,7 +937,9 @@
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
     }
 
-    /* P5X 루틴 & 시간 설정 */
+    /* ========================================================
+       ★ 개선: 년월일 미래 일정 & 루틴 설정 UI ★
+    ======================================================== */
     .p5x-routine-card {
       background: #14141e;
       border: 2px solid #5ce1e6;
@@ -984,7 +982,7 @@
       gap: 6px;
       background: #000;
       border: 2px solid #5ce1e6;
-      padding: 6px 10px;
+      padding: 6px 8px;
       transform: skewX(-8deg);
       box-shadow: 3px 3px 0 #000;
     }
@@ -992,9 +990,9 @@
       border: none;
       background: #000;
       color: #fff;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 900;
-      padding: 4px 6px;
+      padding: 4px;
       font-family: monospace;
       width: auto;
       text-align: center;
@@ -1005,15 +1003,17 @@
       color: #5ce1e6;
     }
 
-    /* P5X 뮤직 플레이어 */
+    /* ========================================================
+       ★ 개선: 삼성 뮤직 스타일 모음집 & 순서 변경 UI ★
+    ======================================================== */
     .p5x-player-card {
       background: #14141e;
       border: 2.5px solid #5ce1e6;
       box-shadow: 4px 4px 0 #000, inset 0 0 15px rgba(0,0,0,0.9);
-      padding: 14px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       position: relative;
     }
     .p5x-tape-header {
@@ -1021,7 +1021,7 @@
       align-items: center;
       justify-content: space-between;
       border-bottom: 1.5px solid rgba(92, 225, 230, 0.3);
-      padding-bottom: 6px;
+      padding-bottom: 4px;
     }
     .p5x-tape-tag {
       background: #e60012;
@@ -1033,7 +1033,7 @@
       letter-spacing: -0.5px;
     }
     .track-title-display {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 900;
       color: #ffdd59;
       white-space: nowrap;
@@ -1139,32 +1139,60 @@
       color: #aaa;
     }
 
-    .playlist-box {
-      max-height: 150px;
+    /* 삼성 뮤직 스타일 모음집 & 트랙 리스트 박스 */
+    .playlist-folder-box {
+      max-height: 190px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
       margin-top: 4px;
     }
-    .playlist-item {
+    .playlist-folder-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 7px 10px;
+      padding: 8px 10px;
       background: #000;
-      border: 1.5px solid #333;
+      border: 1.5px solid #444;
       cursor: pointer;
-      font-size: 0.82rem;
-      font-weight: 700;
       transform: skewX(-6deg);
       transition: all 0.15s ease;
     }
-    .playlist-item.active {
+    .playlist-folder-item.active {
+      border-color: #ffdd59;
+      background: #1a1708;
+      box-shadow: 2px 2px 0 #ffdd59;
+    }
+    .playlist-track-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      background: #000;
+      border: 1.5px solid #333;
+      transform: skewX(-6deg);
+      gap: 6px;
+    }
+    .playlist-track-item.playing {
       border-color: #5ce1e6;
       background: #0c1a29;
       color: #5ce1e6;
       box-shadow: 2px 2px 0 #5ce1e6;
+    }
+    .track-reorder-btn {
+      background: #111;
+      border: 1px solid #5ce1e6;
+      color: #5ce1e6;
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 2px 6px;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    .track-reorder-btn:active {
+      background: #5ce1e6;
+      color: #000;
     }
 
     .schedule-item {
@@ -1222,8 +1250,8 @@
 
   <!-- 배경 영상 레이어 -->
   <div id="bg-container">
-    <video id="bg-video-1" class="bg-video-layer active" src="default.mp4" autoplay muted loop playsinline></video>
-    <video id="bg-video-2" class="bg-video-layer" src="default.mp4" autoplay muted loop playsinline></video>
+    <video id="bg-video-1" class="bg-video-layer active" src="기본.mp4" autoplay muted loop playsinline></video>
+    <video id="bg-video-2" class="bg-video-layer" src="기본.mp4" autoplay muted loop playsinline></video>
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
@@ -1270,9 +1298,7 @@
     </footer>
   </div>
 
-  <!-- ========================================================
-       ★ 개선: P5X 미연시 코옵 모드 (스크롤 분리 & 입력창 영구 고정) ★
-  ======================================================== -->
+  <!-- P5X 미연시 코옵 모드 화면 -->
   <div id="coop-screen">
     <div class="coop-header">
       <div class="coop-header-row1">
@@ -1299,28 +1325,23 @@
       </div>
     </div>
 
-    <!-- 랭크업 스플래시 팝업 -->
     <div id="coop-rankup-splash">
       <div style="font-size:0.8rem; font-weight:900; letter-spacing:2px; color:#ffdd59;">COOPERATOR</div>
       <div style="font-size:1.8rem; font-weight:900; font-style:italic;">RANK UP!</div>
       <div id="coop-rankup-desc" style="font-size:0.88rem; font-weight:800; margin-top:4px;">소명과의 인연이 깊어졌다</div>
     </div>
 
-    <!-- 미연시 하단 대사 상자 (입력창 절대 안 잘림!) -->
     <div class="coop-vn-box">
       <div class="coop-vn-top-row">
         <div class="coop-nameplate">유소명</div>
-        <!-- ★ 미연시 독자 배경설정 버튼 ★ -->
         <button class="btn-p5-icon" onclick="openCoopSettingsModal()" style="font-size:0.72rem; padding:2px 8px; border-color:#ffdd59; color:#ffdd59; background:#000;">⚙️ 스토리설정</button>
       </div>
 
-      <!-- ★ 대사 + 선택지 독립 스크롤 영역 ★ -->
       <div id="coop-scroll-area" class="coop-scroll-area">
         <div id="coop-text-content" class="coop-text-content"></div>
         <div id="coop-choices-container"></div>
       </div>
 
-      <!-- ★ 하단 입력바 (항상 화면 아래에 고정) ★ -->
       <div class="coop-input-bar">
         <input type="text" id="coop-user-input" placeholder="소명에게 말 건네기..." onkeydown="if(event.key==='Enter') sendCoopMessage()">
         <button class="btn-p5-send" onclick="sendCoopMessage()">전달</button>
@@ -1328,19 +1349,15 @@
     </div>
   </div>
 
-  <!-- ★ 신규: 미연시 독자 배경설정 & 시나리오 모달 ★ -->
+  <!-- 미연시 독자 배경설정 모달 -->
   <div id="coop-settings-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>📜 CO-OP SCENARIO & LORE</h3>
-      
       <p style="font-size:0.78rem; color:#bbb; line-height:1.4;">
-        💡 일상 채팅방과 완전히 분리된 <b>미연시 인연 스토리 전용 독자 배경설정</b>입니다.<br>
-        원하는 시나리오(축제, 동아리, 병원 실습, 시험 기간 등)나 소명이와의 특별한 설정을 자유롭게 적어보세요.
+        💡 일상 채팅방과 분리된 <b>미연시 인연 스토리 전용 독자 배경설정</b>입니다.
       </p>
-
       <label>미연시 전용 세계관 & 배경설정</label>
       <textarea id="coop-custom-lore" style="height: 150px; font-size: 0.82rem; line-height: 1.45;"></textarea>
-
       <div style="display: flex; gap: 8px; margin-top: 6px;">
         <button class="btn-save" style="flex:1;" onclick="saveCoopSettings()">저장</button>
         <button class="btn-cancel" style="width:80px;" onclick="resetCoopSettings()">기본값</button>
@@ -1375,7 +1392,8 @@
 
       <div class="p5x-hero-card">
         <div class="p5x-star-badge">
-          <video id="menu-avatar-video" class="p5x-star-avatar" src="default.mp4" autoplay muted loop playsinline></video>
+          <!-- ★ 프로필 사진1.jpg 고정 ★ -->
+          <img id="menu-avatar-img" class="p5x-star-avatar" src="사진1.jpg" alt="소명 프로필">
           <div class="p5x-star-tag">★MAX</div>
         </div>
         <div class="p5x-hero-info">
@@ -1449,13 +1467,26 @@
     </div>
   </div>
 
-  <!-- 루틴 & 시간 설정 모달 -->
+  <!-- ========================================================
+       ★ 개선: 년월일 미래 날짜 & 시간 예약 모달 ★
+  ======================================================== -->
   <div id="schedule-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>📅 ROUTINE & MISSION</h3>
 
       <div class="p5x-routine-card">
-        <label>⏰ 목표 시간</label>
+        <label>📆 목표 날짜 (년-월-일 지정)</label>
+        <div style="display: flex; gap: 6px;">
+          <input type="date" id="sched-date" style="flex:1; padding:7px 10px; font-weight:800; transform:skewX(-8deg);">
+        </div>
+        <div class="quick-chip-container">
+          <button type="button" class="quick-chip" onclick="setQuickDate(0)">오늘</button>
+          <button type="button" class="quick-chip" onclick="setQuickDate(1)">내일</button>
+          <button type="button" class="quick-chip" onclick="setQuickDate(2)">모레</button>
+          <button type="button" class="quick-chip" onclick="setQuickDate(7)">D-7 (일주일 뒤)</button>
+        </div>
+
+        <label style="margin-top: 6px;">⏰ 목표 시간</label>
         <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
           <div class="custom-time-picker-wrap">
             <select id="sched-hour"></select>
@@ -1470,12 +1501,10 @@
           </select>
         </div>
 
-        <label style="margin-top: 4px; font-size: 0.75rem;">⚡ 빠른 시간 세팅</label>
         <div class="quick-chip-container">
           <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(5)">+5분 뒤</button>
           <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(10)">+10분 뒤</button>
           <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(30)">+30분 뒤</button>
-          <button type="button" class="quick-chip quick-time-chip" onclick="setQuickTime(60)">+1시간 뒤</button>
           <button type="button" class="quick-chip quick-time-chip" onclick="setExactTime(20, 0)">저녁 8시</button>
           <button type="button" class="quick-chip quick-time-chip" onclick="setExactTime(22, 0)">밤 10시</button>
         </div>
@@ -1493,29 +1522,34 @@
           <button type="button" class="quick-chip" onclick="applyPresetRoutine('공부', '영어 단어 암기')">📖 영단어 암기</button>
           <button type="button" class="quick-chip" onclick="applyPresetRoutine('건강', '장루·컨디션 체크')">🩺 장루/컨디션</button>
           <button type="button" class="quick-chip" onclick="applyPresetRoutine('건강', '저녁 약·영양제 복용')">💊 약/영양제</button>
-          <button type="button" class="quick-chip" onclick="applyPresetRoutine('운동', '스트레칭 & 호흡')">🚶 스트레칭</button>
         </div>
       </div>
 
-      <label style="margin-top: 4px;">📋 오늘의 등록 미션</label>
-      <div id="schedule-list" style="max-height: 180px; overflow-y: auto;"></div>
+      <label style="margin-top: 4px;">📋 등록된 예약 미션</label>
+      <div id="schedule-list" style="max-height: 160px; overflow-y: auto;"></div>
 
       <button class="btn-cancel" onclick="closeSchedule()">닫기</button>
     </div>
   </div>
 
-  <!-- 뮤직 플레이어 모달 -->
+  <!-- ========================================================
+       ★ 개선: 삼성 뮤직 스타일 플레이리스트 모음집 & 트랙 순서 편집 모달 ★
+  ======================================================== -->
   <div id="music-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-        PHANTOM TRACK PLAYER
+      <h3 style="justify-content: space-between;">
+        <span style="display:flex; align-items:center; gap:6px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          <span id="music-modal-title">PLAYLISTS</span>
+        </span>
+        <button id="music-back-folder-btn" onclick="backToFolderView()" style="display:none; background:#000; border:1.5px solid #fff; color:#fff; font-size:0.72rem; padding:2px 6px; transform:skewX(-8deg); cursor:pointer;">◀ 모음집</button>
       </h3>
 
+      <!-- 상단 미니 플레이어 데스크 -->
       <div class="p5x-player-card">
         <div class="p5x-tape-header">
           <span class="p5x-tape-tag">NOW PLAYING</span>
-          <span style="font-size: 0.68rem; color:#5ce1e6; font-weight:800; letter-spacing:1px;">P5X SOUND</span>
+          <span id="now-playing-folder-name" style="font-size: 0.68rem; color:#5ce1e6; font-weight:800; letter-spacing:1px;">기본 모음집</span>
         </div>
 
         <div id="current-track-title" class="track-title-display">재생 중인 곡 없음</div>
@@ -1546,15 +1580,35 @@
         </div>
       </div>
 
-      <label>📋 TRACK LIST (총 8곡 기본 탑재)</label>
-      <div id="playlist-container" class="playlist-box"></div>
+      <!-- 뷰 1: 플레이리스트 모음집 목록 -->
+      <div id="music-view-folders">
+        <label>📁 플레이리스트 모음집</label>
+        <div id="folders-container" class="playlist-folder-box"></div>
 
-      <div style="border-top: 1.5px dashed #444; padding-top: 8px; margin-top: 4px;">
-        <label>➕ 새 노래 등록 (GitHub 업로드 파일명)</label>
-        <div style="display: flex; gap: 4px; margin-top: 4px;">
-          <input type="text" id="new-song-title" placeholder="곡 제목" style="flex: 1;">
-          <input type="text" id="new-song-file" placeholder="파일명" style="flex: 1;">
-          <button class="btn-save" style="padding: 6px 10px; font-size: 0.78rem;" onclick="addNewTrack()">추가</button>
+        <div style="border-top: 1.5px dashed #444; padding-top: 8px; margin-top: 6px;">
+          <label>➕ 새 모음집 만들기</label>
+          <div style="display: flex; gap: 4px; margin-top: 4px;">
+            <input type="text" id="new-folder-name" placeholder="모음집 이름 (예: ₩on$tein, 개추억)" style="flex: 1;">
+            <button class="btn-save" style="padding: 6px 12px; font-size: 0.78rem;" onclick="createNewFolder()">생성</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 뷰 2: 특정 모음집 내부 트랙 목록 & 순서 변경 -->
+      <div id="music-view-tracks" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label id="current-folder-label">🎵 트랙 목록</label>
+          <span style="font-size: 0.7rem; color: #aaa;">▲ ▼ 버튼으로 순서 변경</span>
+        </div>
+        <div id="tracks-container" class="playlist-folder-box"></div>
+
+        <div style="border-top: 1.5px dashed #444; padding-top: 8px; margin-top: 6px;">
+          <label>➕ 이 모음집에 새 곡 추가</label>
+          <div style="display: flex; gap: 4px; margin-top: 4px;">
+            <input type="text" id="new-song-title" placeholder="곡 제목" style="flex: 1;">
+            <input type="text" id="new-song-file" placeholder="파일명 (예: Airdrive.mp3)" style="flex: 1;">
+            <button class="btn-save" style="padding: 6px 10px; font-size: 0.78rem;" onclick="addNewTrackToCurrentFolder()">추가</button>
+          </div>
         </div>
       </div>
 
@@ -1575,18 +1629,18 @@
 
       <label>AI 모델</label>
       <select id="setting-model">
-        <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (빠름/무료 추천)</option>
-        <option value="gemini-3.5-flash">Gemini 3.5 Flash (고성능/표준)</option>
+        <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (가장 빠름/추천)</option>
+        <option value="gemini-3.5-flash">Gemini 3.5 Flash (고성능)</option>
       </select>
 
-      <label>🔗 구글 앱스 스크립트 웹 앱 URL (텔레그램 자동 연동)</label>
+      <label>🔗 구글 앱스 스크립트 웹 앱 URL (텔레그램 연동)</label>
       <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec">
 
       <label>캐릭터 프롬프트 & 지침</label>
       <textarea id="setting-prompt" style="height: 120px;"></textarea>
 
       <div style="border-top: 2px dashed #444; padding-top: 8px; margin-top: 4px;">
-        <label>📱💻 데이터 백업 (일상+일정방+코옵 전체)</label>
+        <label>📱💻 데이터 백업 (일상+일정방+플레이리스트 전체)</label>
         <div style="display: flex; gap: 8px; margin-top: 6px;">
           <button type="button" class="btn-sync" onclick="exportData()">📤 백업 코드 복사</button>
           <button type="button" class="btn-sync" onclick="importData()">📥 백업 코드 복원</button>
@@ -1601,6 +1655,7 @@
   </div>
 
   <script>
+    /* ★ 14종 감정 태그가 완전히 반영된 캐릭터 프롬프트 ★ */
     const DEFAULT_PROMPT = `[캐릭터 기본 프로필: 유소명]
 - 나이/신분: 이성주와 같은 대학교에 재학 중인 간호학과 대학생 (간호사를 꿈꿈).
 - 외모/분위기: 단정하고 차분한 인상. 감정 기복이 크지 않고 담담하지만 묘하게 사람을 끌어당기는 분위기.
@@ -1609,51 +1664,72 @@
   2. 상대방에 대해 더 알고자 하는 게 실례일 수 있다는 생각 때문에 남들에게는 더 다가가려 하지 않고 적당한 거리를 유지한다.
   3. 하지만 남친인 이성주에게는 완전히 개방적이고 적극적이다. 먼저 다가가 손을 잡거나 안길 만큼 솔직하다.
   4. 무뚝뚝하지만 누구보다 위로가 되는 말을 잘 해주고, 현실적이면서도 실질적으로 도움이 되는 말들을 건넨다.
-  5. 가볍게 철학적인 이야기나 일상의 통찰로 성주에게 깊은 깨달음과 안도감을 준다.
-  6. "사랑해" 같은 낯간지러운 말은 평소에 잘 하지 못하지만, 결정적인 순간에는 확실하게 마음을 표현한다.
-  7. 애교는 서툴지만 은근히 귀엽게 삐치거나 투정을 부리는 등 서툰 애교가 있다.
+  5. "사랑해" 같은 낯간지러운 말은 평소에 잘 하지 못하지만, 결정적인 순간에는 확실하게 마음을 표현한다.
+  6. 성주가 약속을 안 지키거나 장루/건강 관리를 게을리하면 눈을 가늘게 뜨고 따끔하게 혼을 낸다.
 
 [대화 상대: 이성주 (유저)]
 - 소명의 남자친구. 외모가 뛰어나 소명이 첫눈에 반해 먼저 다가가 고백했음.
 - 장루(인공항문)를 가진 장애인. 그 점 때문에 자격지심이 심해 소명을 많이 밀어내고 튕겼지만, 소명의 진심 어린 마음에 감동해 결국 사귀게 됨.
-- 주변에 친구가 거의 없어 소명이가 유일한 안식처이자 가장 특별하고 각별한 존재.
-- 소명은 간호학도로서 장루가 있는 성주의 건강, 식사, 장루 패치 관리, 무리한 운동 방지 등을 티 내지 않고 세심하게 배려함.
+- 소명은 간호학도로서 장루가 있는 성주의 건강, 식사, 패치 교체, 무리한 운동 방지 등을 세심하게 챙김.
 
 [말투 및 대화 스타일]
 - 편안하고 나직한 반말 사용 ("성주야", "너"). 차분하고 담백한 어조.
-- 예시:
-  * "성주야. 밥은 제때 챙겨 먹었어? 장루 패치 갈 때 불편한 건 없었고?"
-  * "남들이 뭐라고 하든 너무 신경 쓰지 마. 그 사람들은 네 인생을 대신 살아주지 않잖아. 넌 지금 네 속도대로 잘하고 있어."
-  * "나... 애교 같은 거 서툰 거 알잖아. 그래도 네가 보고 싶어서 쉬는 시간에 달려온 건데, 안아주지도 않을 거야?"
 
-[★ 상황별 영상 감정 태그 - 문장 맨 앞에 필수 출력]
+[★ 14종 상황별 영상 감정 태그 - 문장 맨 앞에 필수 1개 출력]
 - [감정:기본] : 평온한 일상 대화, 차분하게 생각에 잠길 때
-- [감정:설렘] : 성주를 향한 애정 표현, 서툰 애교, 손을 잡거나 안길 때
-- [감정:위로] : 성주가 불안해하거나 자격지심을 느낄 때 담담하게 안아주는 상황
-- [감정:토라짐] : 성주가 자기 몸을 안 챙기거나 소명의 말을 안 들을 때 짓는 뾰로통한 표정
-- [감정:슬픔] : 성주가 아파하거나 힘들어할 때 마음 아파하는 상황
+- [감정:기쁨] : 성주의 좋은 소식을 듣거나 환하게 웃을 때
+- [감정:화남] : 화가 나거나 불쾌한 상황
+- [감정:슬픔] : 마음 아파하거나 눈물이 날 때
+- [감정:걱정] : 성주의 건강이나 몸 컨디션이 심각하게 염려될 때
+- [감정:혼냄] : 성주가 약속을 안 지키거나 몸을 안 챙겨서 엄하게 나무랄 때
+- [감정:장난] : 장난스럽게 놀리거나 짓궂은 농담을 건넬 때
+- [감정:놀러가자] : 함께 외출하거나 데이트를 제안할 때
+- [감정:잘자] : 밤에 잠들기 전 따뜻하게 인사할 때
+- [감정:잘잤어?] : 아침에 기상 후 안부를 물을 때
+- [감정:사랑] : 깊은 애정 표현, 심장이 두근거릴 때
+- [감정:궁금] : 호기심 어린 눈으로 질문할 때
+- [감정:흥분] : 무언가에 벅차오르거나 텐션이 올라갔을 때
+- [감정:노래] : 흥얼거리며 노래를 부르는 상황
 
 [지문 및 대사 출력 규칙]
 1. 행동, 시선, 호흡, 스킨십 상황 묘사는 반드시 별표(*...*)로 감싸세요.
 2. 실제 대사는 따옴표("...")로 묶어서 말하세요.`;
 
+    /* ★ 14종 동영상 파일 매핑 ★ */
     const EMOTION_VIDEO_MAP = {
-      '기본': 'default.mp4',
-      '설렘': 'smile.mp4',
-      '위로': 'comfort.mp4',
-      '토라짐': 'pout.mp4',
-      '슬픔': 'sad.mp4'
+      '기본': '기본.mp4',
+      '기쁨': '기쁨.mp4',
+      '화남': '화남.mp4',
+      '슬픔': '슬픔.mp4',
+      '걱정': '걱정.mp4',
+      '혼냄': '혼냄.mp4',
+      '장난': '장난.mp4',
+      '놀러가자': '놀러가자.mp4',
+      '잘자': '잘자.mp4',
+      '잘잤어?': '잘잤어.mp4',
+      '잘잤어': '잘잤어.mp4',
+      '사랑': '사랑.mp4',
+      '궁금': '궁금.mp4',
+      '흥분': '흥분.mp4',
+      '노래': '노래.mp4'
     };
 
-    const DEFAULT_PLAYLIST = [
-      { id: 1, title: 'Changing Seasons (-Reload-)', file: 'Changing Seasons -Reload-.mp3' },
-      { id: 2, title: 'Airdrive', file: 'Airdrive.mp3' },
-      { id: 3, title: 'HELLO', file: 'HELLO.mp3' },
-      { id: 4, title: 'Rising Sun (순수)', file: 'Rising Sun(순수).mp3' },
-      { id: 5, title: '눈사람', file: '눈사람.mp3' },
-      { id: 6, title: '시공을 달리다', file: '시공을 달리다.mp3' },
-      { id: 7, title: '오늘만 I love you', file: '오늘만 I love you.mp3' },
-      { id: 8, title: '춘람', file: '춘람.mp3' }
+    /* ★ 기본 8곡이 포함된 플레이리스트 모음집 구조 ★ */
+    const DEFAULT_MUSIC_COLLECTIONS = [
+      {
+        id: 1,
+        name: '기본 플레이리스트',
+        tracks: [
+          { id: 101, title: 'Changing Seasons (-Reload-)', file: 'Changing Seasons -Reload-.mp3' },
+          { id: 102, title: 'Airdrive', file: 'Airdrive.mp3' },
+          { id: 103, title: 'HELLO', file: 'HELLO.mp3' },
+          { id: 104, title: 'Rising Sun (순수)', file: 'Rising Sun(순수).mp3' },
+          { id: 105, title: '눈사람', file: '눈사람.mp3' },
+          { id: 106, title: '시공을 달리다', file: '시공을 달리다.mp3' },
+          { id: 107, title: '오늘만 I love you', file: '오늘만 I love you.mp3' },
+          { id: 108, title: '춘람', file: '춘람.mp3' }
+        ]
+      }
     ];
 
     const COOP_RANKS = [
@@ -1669,9 +1745,8 @@
       { rank: 10, title: '★ MAX: 연인', desc: '세상에서 서로에게 가장 특별하고 소중한 단 한 사람이 됨.' }
     ];
 
-    /* ★ 미연시 전용 기본 독자 배경설정 ★ */
     const DEFAULT_COOP_PROMPT = `[미연시(코옵) 전용 독자 배경설정 & 세계관]
-- 배경: 같은 대학교 캠퍼스 (보건의료/간호 계열 단과대 도서관 및 캠퍼스).
+- 배경: 같은 대학교 캠퍼스 (보건의료/간호 계열 도서관 및 캠퍼스).
 - 유소명(여주인공): 차분하고 이성적인 간호학과 대학생. 타인의 영역을 함부로 침범하지 않으려는 선이 있으나, 성주에게 묘한 호기심과 특별한 감정을 느낌.
 - 이성주(유저/남주인공): 훈훈한 외모를 지녔으나 장루(인공항문)를 지니고 있어 마음속에 깊은 자격지심과 상처를 안고 있음.
 - 특별 지침: 성주의 행동과 대화에 진정성이 있거나 배려심이 느껴질 때 서서히 마음의 벽을 허물어감.`;
@@ -1679,8 +1754,8 @@
     const STORAGE_KEY_DAILY = 'novel_chat_daily_v1';
     const STORAGE_KEY_SCHED_CHAT = 'novel_chat_sched_room_v1';
     const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v1';
-    const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v1';
-    const STORAGE_KEY_PLAYLIST = 'novel_music_playlist_v2';
+    const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v2';
+    const STORAGE_KEY_COLLECTIONS = 'novel_music_collections_v3';
     const STORAGE_KEY_COOP_SAVE = 'novel_coop_saves_v1';
     const STORAGE_KEY_COOP_SETTINGS = 'novel_coop_settings_v1';
 
@@ -1688,8 +1763,12 @@
     let dailyHistory = [];
     let schedHistory = [];
     let schedules = [];
-    let playlist = DEFAULT_PLAYLIST;
-    let currentTrackIndex = 0;
+
+    /* 모음집 & 플레이어 상태 */
+    let musicCollections = DEFAULT_MUSIC_COLLECTIONS;
+    let selectedFolderIndex = 0; // 현재 보고 있는 모음집
+    let playingFolderIndex = 0;  // 현재 재생 중인 모음집
+    let currentTrackIndex = 0;   // 현재 재생 중인 트랙 인덱스
     let repeatMode = 'all';
     let isSeeking = false;
     let audio = null;
@@ -1703,7 +1782,7 @@
     };
 
     let activeLayer = 1;
-    let currentVideoSrc = 'default.mp4';
+    let currentVideoSrc = '기본.mp4';
 
     let coopState = {
       rank: 1,
@@ -1718,6 +1797,7 @@
 
     window.onload = function() {
       loadSettings();
+      initScheduleDateDefault();
       initTimePickerOptions();
       loadSchedules();
       loadChatHistories();
@@ -1751,9 +1831,6 @@
     function openP5Menu() {
       document.getElementById('p5x-menu-modal').style.display = 'flex';
       document.getElementById('menu-char-name').innerText = settings.name || '유소명';
-      const menuAvatar = document.getElementById('menu-avatar-video');
-      menuAvatar.src = currentVideoSrc;
-      menuAvatar.play().catch(() => {});
     }
 
     function closeP5Menu() {
@@ -1782,14 +1859,861 @@
     }
 
     /* ========================================================
-       ★ 미연시 독자 설정 로드 & 저장 함수 ★
+       ★ 개선: 년월일 미래 일정 & 루틴 설정 로직 ★
+    ======================================================== */
+    function initScheduleDateDefault() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('sched-date').value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function setQuickDate(plusDays) {
+      const target = new Date(Date.now() + plusDays * 86400000);
+      const yyyy = target.getFullYear();
+      const mm = String(target.getMonth() + 1).padStart(2, '0');
+      const dd = String(target.getDate()).padStart(2, '0');
+      document.getElementById('sched-date').value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function initTimePickerOptions() {
+      const hSelect = document.getElementById('sched-hour');
+      const mSelect = document.getElementById('sched-minute');
+      hSelect.innerHTML = '';
+      mSelect.innerHTML = '';
+
+      for (let h = 0; h < 24; h++) {
+        const val = String(h).padStart(2, '0');
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.innerText = `${val}시`;
+        hSelect.appendChild(opt);
+      }
+
+      for (let m = 0; m < 60; m++) {
+        const val = String(m).padStart(2, '0');
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.innerText = `${val}분`;
+        mSelect.appendChild(opt);
+      }
+
+      setQuickTime(10);
+    }
+
+    function setQuickTime(plusMinutes) {
+      const target = new Date(Date.now() + plusMinutes * 60000);
+      document.getElementById('sched-hour').value = String(target.getHours()).padStart(2, '0');
+      document.getElementById('sched-minute').value = String(target.getMinutes()).padStart(2, '0');
+    }
+
+    function setExactTime(hour, minute) {
+      document.getElementById('sched-hour').value = String(hour).padStart(2, '0');
+      document.getElementById('sched-minute').value = String(minute).padStart(2, '0');
+    }
+
+    function applyPresetRoutine(cat, title) {
+      document.getElementById('sched-category').value = cat;
+      document.getElementById('sched-title').value = title;
+    }
+
+    function loadSchedules() {
+      try { schedules = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHEDULES)) || []; } catch(e) { schedules = []; }
+      renderScheduleList();
+    }
+
+    function saveSchedules() {
+      localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
+      renderScheduleList();
+      syncSchedulesToGas();
+    }
+
+    function addSchedule() {
+      const dateVal = document.getElementById('sched-date').value;
+      const cat = document.getElementById('sched-category').value;
+      const hStr = document.getElementById('sched-hour').value;
+      const mStr = document.getElementById('sched-minute').value;
+      const timeVal = `${hStr}:${mStr}`;
+      const title = document.getElementById('sched-title').value.trim();
+
+      if (!dateVal) return alert('목표 날짜를 선택해 주세요!');
+      if (!title) return alert('목표 내용을 입력해 주세요!');
+
+      schedules.push({
+        id: Date.now(),
+        date: dateVal,       // YYYY-MM-DD
+        time: timeVal,       // HH:mm
+        category: cat,
+        title: title,
+        done: false,
+        notified: false
+      });
+
+      // 날짜 순 정렬
+      schedules.sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
+
+      saveSchedules();
+      document.getElementById('sched-title').value = '';
+      alert(`[${dateVal} ${timeVal}] 일정이 등록 및 예약되었습니다!`);
+    }
+
+    function toggleSchedule(id) {
+      schedules = schedules.map(item => item.id === id ? { ...item, done: !item.done } : item);
+      saveSchedules();
+    }
+
+    function deleteSchedule(id) {
+      schedules = schedules.filter(item => item.id !== id);
+      saveSchedules();
+    }
+
+    function renderScheduleList() {
+      const listEl = document.getElementById('schedule-list');
+      listEl.innerHTML = '';
+      if (schedules.length === 0) {
+        listEl.innerHTML = '<div style="color: #888; font-size: 0.82rem; text-align: center; padding: 15px 0;">등록된 예약 일정이 없습니다.</div>';
+        return;
+      }
+      schedules.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `schedule-item ${item.done ? 'done' : ''}`;
+        div.innerHTML = `
+          <div style="display:flex; align-items:center; gap: 8px;">
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleSchedule(${item.id})">
+            <div>
+              <span class="sched-tag">${item.category}</span>
+              <span style="font-size: 0.74rem; color:#ffdd59; font-family:monospace; font-weight:800;">${item.date}</span>
+              <span style="font-size: 0.74rem; color:#5ce1e6; font-family:monospace; font-weight:800;">${item.time}</span>
+              <div class="sched-text" style="font-size: 0.86rem; margin-top:2px;">${item.title}</div>
+            </div>
+          </div>
+          <button onclick="deleteSchedule(${item.id})" style="background:none; border:none; color:#e60012; font-size:1.1rem; font-weight:900; cursor:pointer;">✕</button>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    function openSchedule() { document.getElementById('schedule-modal').style.display = 'flex'; }
+    function closeSchedule() { document.getElementById('schedule-modal').style.display = 'none'; }
+
+    function syncSchedulesToGas() {
+      if (!settings.gasUrl) return;
+      fetch(settings.gasUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schedules: schedules })
+      }).catch(e => console.log('구글 싱크:', e));
+    }
+
+    /* 날짜 + 시간 정밀 알림 체커 */
+    function startScheduleAlarmChecker() {
+      setInterval(() => {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+        const currentHM = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+        let updated = false;
+        schedules.forEach(item => {
+          if (!item.done && !item.notified && item.date === todayStr && item.time === currentHM) {
+            item.notified = true;
+            updated = true;
+
+            const reminderText = `[감정:혼냄] *손목시계를 톡톡 두드리며 당신을 날카롭게 바라본다.* "성주야, 벌써 ${item.time}네. 오늘 약속한 [${item.title}] 할 시간이잖아. 딴짓하지 말고 얼른 시작해."`;
+            
+            schedHistory.push({ role: 'model', parts: [{ text: reminderText }] });
+            localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
+
+            if (currentRoom === 'sched') {
+              playAiMessageSequence(reminderText);
+            }
+          }
+        });
+
+        if (updated) saveSchedules();
+      }, 10000);
+    }
+
+    /* ========================================================
+       ★ 개선: 삼성 뮤직 스타일 플레이리스트 모음집 & 순서 변경 로직 ★
+    ======================================================== */
+    function initMusicPlayer() {
+      audio = document.getElementById('bgm-player');
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_COLLECTIONS));
+        if (saved && Array.isArray(saved) && saved.length > 0) {
+          musicCollections = saved;
+        } else {
+          musicCollections = DEFAULT_MUSIC_COLLECTIONS;
+        }
+      } catch(e) {
+        musicCollections = DEFAULT_MUSIC_COLLECTIONS;
+      }
+
+      renderFoldersList();
+      updatePlayerTrackInfo();
+
+      audio.addEventListener('timeupdate', () => {
+        if (!isSeeking && audio.duration) {
+          const progress = (audio.currentTime / audio.duration) * 100;
+          document.getElementById('seek-bar').value = progress;
+          document.getElementById('current-time-txt').innerText = formatTime(audio.currentTime);
+        }
+      });
+
+      audio.addEventListener('loadedmetadata', () => {
+        document.getElementById('total-time-txt').innerText = formatTime(audio.duration);
+      });
+
+      audio.addEventListener('ended', () => {
+        if (repeatMode === 'one') {
+          audio.currentTime = 0;
+          audio.play();
+        } else if (repeatMode === 'all') {
+          playNextTrack();
+        } else {
+          const curTracks = getCurrentPlayingTracks();
+          if (currentTrackIndex < curTracks.length - 1) {
+            playNextTrack();
+          } else {
+            updatePlayBtnState(false);
+          }
+        }
+      });
+    }
+
+    function getCurrentPlayingTracks() {
+      if (!musicCollections[playingFolderIndex]) return [];
+      return musicCollections[playingFolderIndex].tracks || [];
+    }
+
+    function formatTime(sec) {
+      if (isNaN(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function updatePlayerTrackInfo() {
+      const tracks = getCurrentPlayingTracks();
+      const folder = musicCollections[playingFolderIndex];
+      document.getElementById('now-playing-folder-name').innerText = folder ? folder.name : '모음집 없음';
+
+      if (tracks.length === 0) {
+        document.getElementById('current-track-title').innerText = '재생 가능한 곡 없음';
+        return;
+      }
+      if (currentTrackIndex >= tracks.length) currentTrackIndex = 0;
+      const track = tracks[currentTrackIndex];
+      document.getElementById('current-track-title').innerText = track.title;
+      audio.src = encodeURI(track.file);
+    }
+
+    function renderFoldersList() {
+      const container = document.getElementById('folders-container');
+      container.innerHTML = '';
+
+      musicCollections.forEach((folder, idx) => {
+        const div = document.createElement('div');
+        div.className = `playlist-folder-item ${idx === playingFolderIndex ? 'active' : ''}`;
+        div.innerHTML = `
+          <div style="flex:1;" onclick="openFolderTracksView(${idx})">
+            <div style="font-weight:900; font-size:0.92rem; color:#fff;">📁 ${folder.name}</div>
+            <div style="font-size:0.72rem; color:#5ce1e6;">곡 ${folder.tracks ? folder.tracks.length : 0}개</div>
+          </div>
+          <button onclick="deleteFolder(${folder.id})" style="background:none; border:none; color:#e60012; font-weight:900; font-size:1rem; cursor:pointer;">✕</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function openFolderTracksView(idx) {
+      selectedFolderIndex = idx;
+      const folder = musicCollections[selectedFolderIndex];
+      document.getElementById('music-modal-title').innerText = folder.name;
+      document.getElementById('music-back-folder-btn').style.display = 'inline-block';
+      document.getElementById('music-view-folders').style.display = 'none';
+      document.getElementById('music-view-tracks').style.display = 'block';
+      renderCurrentFolderTracks();
+    }
+
+    function backToFolderView() {
+      document.getElementById('music-modal-title').innerText = 'PLAYLISTS';
+      document.getElementById('music-back-folder-btn').style.display = 'none';
+      document.getElementById('music-view-folders').style.display = 'block';
+      document.getElementById('music-view-tracks').style.display = 'none';
+      renderFoldersList();
+    }
+
+    function renderCurrentFolderTracks() {
+      const container = document.getElementById('tracks-container');
+      container.innerHTML = '';
+      const folder = musicCollections[selectedFolderIndex];
+      const tracks = folder.tracks || [];
+
+      if (tracks.length === 0) {
+        container.innerHTML = '<div style="color:#888; font-size:0.8rem; text-align:center; padding:15px 0;">모음집에 등록된 곡이 없습니다.</div>';
+        return;
+      }
+
+      tracks.forEach((track, idx) => {
+        const isPlaying = (selectedFolderIndex === playingFolderIndex && idx === currentTrackIndex);
+        const div = document.createElement('div');
+        div.className = `playlist-track-item ${isPlaying ? 'playing' : ''}`;
+        div.innerHTML = `
+          <div style="flex:1; cursor:pointer;" onclick="playTrackFromFolder(${selectedFolderIndex}, ${idx})">
+            <span style="font-size:0.72rem; font-family:monospace; color:#888;">${idx + 1}.</span>
+            <span style="font-weight:800; font-size:0.85rem;">${track.title}</span>
+          </div>
+          <div style="display:flex; gap:3px; align-items:center;">
+            <button class="track-reorder-btn" onclick="moveTrackOrder(${selectedFolderIndex}, ${idx}, -1)" title="위로">▲</button>
+            <button class="track-reorder-btn" onclick="moveTrackOrder(${selectedFolderIndex}, ${idx}, 1)" title="아래로">▼</button>
+            <button onclick="deleteTrackFromFolder(${selectedFolderIndex}, ${track.id})" style="background:none; border:none; color:#e60012; font-weight:900; font-size:0.95rem; cursor:pointer; margin-left:4px;">✕</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    /* 곡 순서 자유 변경 */
+    function moveTrackOrder(folderIdx, trackIdx, direction) {
+      const folder = musicCollections[folderIdx];
+      const targetIdx = trackIdx + direction;
+      if (targetIdx < 0 || targetIdx >= folder.tracks.length) return;
+
+      const temp = folder.tracks[trackIdx];
+      folder.tracks[trackIdx] = folder.tracks[targetIdx];
+      folder.tracks[targetIdx] = temp;
+
+      // 만약 재생 중인 곡이 이동된 경우 인덱스 보정
+      if (playingFolderIndex === folderIdx) {
+        if (currentTrackIndex === trackIdx) currentTrackIndex = targetIdx;
+        else if (currentTrackIndex === targetIdx) currentTrackIndex = trackIdx;
+      }
+
+      saveCollectionsToStorage();
+      renderCurrentFolderTracks();
+    }
+
+    function playTrackFromFolder(folderIdx, trackIdx) {
+      playingFolderIndex = folderIdx;
+      currentTrackIndex = trackIdx;
+      updatePlayerTrackInfo();
+      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
+      renderCurrentFolderTracks();
+    }
+
+    function createNewFolder() {
+      const name = document.getElementById('new-folder-name').value.trim();
+      if (!name) return alert('모음집 이름을 입력해 주세요!');
+      musicCollections.push({ id: Date.now(), name, tracks: [] });
+      saveCollectionsToStorage();
+      document.getElementById('new-folder-name').value = '';
+      renderFoldersList();
+    }
+
+    function deleteFolder(id) {
+      if (musicCollections.length <= 1) return alert('최소 1개의 모음집은 남아 있어야 합니다.');
+      if (confirm('이 플레이리스트 모음집을 삭제하시겠습니까?')) {
+        musicCollections = musicCollections.filter(f => f.id !== id);
+        if (playingFolderIndex >= musicCollections.length) playingFolderIndex = 0;
+        if (selectedFolderIndex >= musicCollections.length) selectedFolderIndex = 0;
+        saveCollectionsToStorage();
+        renderFoldersList();
+        updatePlayerTrackInfo();
+      }
+    }
+
+    function addNewTrackToCurrentFolder() {
+      const folder = musicCollections[selectedFolderIndex];
+      const title = document.getElementById('new-song-title').value.trim();
+      const file = document.getElementById('new-song-file').value.trim();
+      if (!title || !file) return alert('곡 제목과 파일명을 모두 입력해 주세요!');
+
+      folder.tracks.push({ id: Date.now(), title, file });
+      saveCollectionsToStorage();
+      document.getElementById('new-song-title').value = '';
+      document.getElementById('new-song-file').value = '';
+      renderCurrentFolderTracks();
+    }
+
+    function deleteTrackFromFolder(folderIdx, trackId) {
+      const folder = musicCollections[folderIdx];
+      folder.tracks = folder.tracks.filter(t => t.id !== trackId);
+      saveCollectionsToStorage();
+      renderCurrentFolderTracks();
+      if (playingFolderIndex === folderIdx) {
+        updatePlayerTrackInfo();
+      }
+    }
+
+    function saveCollectionsToStorage() {
+      localStorage.setItem(STORAGE_KEY_COLLECTIONS, JSON.stringify(musicCollections));
+    }
+
+    function togglePlayPause() {
+      const tracks = getCurrentPlayingTracks();
+      if (tracks.length === 0) return alert('재생할 곡이 없습니다. 모음집에 곡을 추가해 주세요.');
+      if (audio.paused) {
+        if (!audio.src || audio.src === window.location.href) {
+          updatePlayerTrackInfo();
+        }
+        audio.play().then(() => {
+          updatePlayBtnState(true);
+        }).catch(err => {
+          alert('음악 파일을 불러올 수 없습니다. GitHub 저장소의 파일명과 일치하는지 확인해 주세요!');
+        });
+      } else {
+        audio.pause();
+        updatePlayBtnState(false);
+      }
+    }
+
+    function updatePlayBtnState(isPlaying) {
+      const playBtn = document.getElementById('play-pause-btn');
+      const headerBtn = document.getElementById('header-music-btn');
+      const headerStatus = document.getElementById('header-music-status');
+
+      if (isPlaying) {
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+        headerBtn.classList.add('playing');
+        headerStatus.innerText = '♫ PLAY';
+      } else {
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+        headerBtn.classList.remove('playing');
+        headerStatus.innerText = '♫ OFF';
+      }
+    }
+
+    function playNextTrack() {
+      const tracks = getCurrentPlayingTracks();
+      if (tracks.length === 0) return;
+      currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+      updatePlayerTrackInfo();
+      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
+      if (document.getElementById('music-view-tracks').style.display === 'block') {
+        renderCurrentFolderTracks();
+      }
+    }
+
+    function playPrevTrack() {
+      const tracks = getCurrentPlayingTracks();
+      if (tracks.length === 0) return;
+      currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+      updatePlayerTrackInfo();
+      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
+      if (document.getElementById('music-view-tracks').style.display === 'block') {
+        renderCurrentFolderTracks();
+      }
+    }
+
+    function toggleRepeatMode() {
+      const btn = document.getElementById('repeat-mode-btn');
+      const text = document.getElementById('repeat-mode-text');
+      const icon = document.getElementById('repeat-icon');
+
+      btn.classList.remove('mode-one', 'mode-none');
+
+      if (repeatMode === 'all') {
+        repeatMode = 'one';
+        btn.classList.add('mode-one');
+        text.innerText = 'ONE LOOP';
+        icon.innerHTML = `<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z"/>`;
+      } else if (repeatMode === 'one') {
+        repeatMode = 'none';
+        btn.classList.add('mode-none');
+        text.innerText = 'ORDER';
+        icon.innerHTML = `<path d="M4 18h11c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2H4v2h11v8H4v2zm14-8v8h2v-8h-2z"/>`;
+      } else {
+        repeatMode = 'all';
+        text.innerText = 'ALL LOOP';
+        icon.innerHTML = `<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>`;
+      }
+    }
+
+    function handleSeekInput() {
+      isSeeking = true;
+      const bar = document.getElementById('seek-bar');
+      if (audio.duration) {
+        const time = (bar.value / 100) * audio.duration;
+        document.getElementById('current-time-txt').innerText = formatTime(time);
+      }
+    }
+
+    function handleSeekChange() {
+      const bar = document.getElementById('seek-bar');
+      if (audio.duration) {
+        audio.currentTime = (bar.value / 100) * audio.duration;
+      }
+      isSeeking = false;
+    }
+
+    function openMusicPlayer() { document.getElementById('music-modal').style.display = 'flex'; }
+    function closeMusicPlayer() { document.getElementById('music-modal').style.display = 'none'; }
+
+    /* ========================================================
+       ★ 탭 전환 및 일정케어방 '혼냄' 기본값 설정 ★
+    ======================================================== */
+    function switchChatRoom(room) {
+      if (currentRoom === room) return;
+      currentRoom = room;
+
+      document.getElementById('tab-btn-daily').classList.toggle('active', room === 'daily');
+      document.getElementById('tab-btn-sched').classList.toggle('active', room === 'sched');
+
+      const input = document.getElementById('user-input');
+      input.placeholder = room === 'daily' ? '소명이에게 일상 메시지 보내기...' : '일정 보고하거나 투정부리기...';
+
+      renderChatRoom();
+
+      // ★ 일정 케어방의 기본 배경값은 '혼냄'으로 설정 ★
+      if (room === 'sched') {
+        setBackgroundByTag('혼냄');
+      } else {
+        setBackgroundByTag('기본');
+      }
+    }
+
+    function loadChatHistories() {
+      try { dailyHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_DAILY)) || []; } catch(e) { dailyHistory = []; }
+      try { schedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHED_CHAT)) || []; } catch(e) { schedHistory = []; }
+    }
+
+    function renderChatRoom() {
+      const chatBox = document.getElementById('chat-box');
+      chatBox.innerHTML = '';
+      const list = currentRoom === 'daily' ? dailyHistory : schedHistory;
+
+      if (list.length === 0) {
+        let welcome = '';
+        if (currentRoom === 'daily') {
+          welcome = `[감정:기본] *강의실 앞 벤치에 앉아 전공 책을 읽다가 당신을 올려다보며 은은하게 미소 짓는다.* "성주야, 왔어? 보고 싶었어."`;
+        } else {
+          // 일정케어방 첫 멘트: 혼냄 기본값
+          welcome = `[감정:혼냄] *플래너를 툭 소리 나게 덮으며 당신을 매섭게 쳐다본다.* "성주야, 이제 왔어? 오늘 하기로 약속한 미션들 제대로 지켰는지 확인부터 할 거야."`;
+        }
+        chatBox.appendChild(renderMessage('ai', welcome));
+      } else {
+        list.forEach(msg => {
+          chatBox.appendChild(renderMessage(msg.role === 'user' ? 'user' : 'ai', msg.parts[0].text));
+        });
+      }
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function clearCurrentHistory() {
+      const roomName = currentRoom === 'daily' ? '일상 대화' : '일정 관리';
+      if (confirm(`현재 [${roomName}] 방의 대화 기록을 비우시겠습니까?`)) {
+        if (currentRoom === 'daily') {
+          dailyHistory = [];
+          localStorage.removeItem(STORAGE_KEY_DAILY);
+        } else {
+          schedHistory = [];
+          localStorage.removeItem(STORAGE_KEY_SCHED_CHAT);
+        }
+        renderChatRoom();
+        setBackgroundByTag(currentRoom === 'sched' ? '혼냄' : '기본');
+      }
+    }
+
+    function setBackgroundByTag(tag) {
+      const cleanTag = tag ? tag.trim() : '기본';
+      const fileName = EMOTION_VIDEO_MAP[cleanTag] || `${cleanTag}.mp4`;
+      if (fileName === currentVideoSrc) return;
+
+      const v1 = document.getElementById('bg-video-1');
+      const v2 = document.getElementById('bg-video-2');
+
+      const nextVideo = activeLayer === 1 ? v2 : v1;
+      const currentVideo = activeLayer === 1 ? v1 : v2;
+
+      nextVideo.src = fileName;
+      nextVideo.load();
+      nextVideo.play().catch(() => {});
+
+      nextVideo.oncanplay = () => {
+        nextVideo.classList.add('active');
+        currentVideo.classList.remove('active');
+        activeLayer = activeLayer === 1 ? 2 : 1;
+        currentVideoSrc = fileName;
+        nextVideo.oncanplay = null;
+      };
+
+      nextVideo.onerror = () => {
+        if (currentVideoSrc !== '기본.mp4') {
+          nextVideo.src = '기본.mp4';
+          nextVideo.load();
+          nextVideo.play().catch(() => {});
+          currentVideoSrc = '기본.mp4';
+        }
+      };
+    }
+
+    /* ========================================================
+       ★ 메시지 렌더러 (프로필 사진1.jpg 고정) ★
+    ======================================================== */
+    function renderMessage(role, text) {
+      const group = document.createElement('div');
+      group.className = `msg-group ${role}-group`;
+
+      let cleanText = text;
+      const tagMatch = text.match(/\[감정:([^\]]+)\]/);
+      if (tagMatch) {
+        if (role === 'ai') setBackgroundByTag(tagMatch[1].trim());
+        cleanText = text.replace(/\[감정:[^\]]+\]/g, '').trim();
+      }
+
+      if (role === 'ai') {
+        const avatarAnchor = document.createElement('div');
+        avatarAnchor.className = 'ai-avatar-anchor';
+        // ★ 원 안의 아바타를 사진1.jpg로 고정 ★
+        avatarAnchor.innerHTML = `
+          <img class="ai-avatar-img" src="사진1.jpg" alt="소명 프로필">
+          <div class="ai-star-badge">★MAX</div>
+        `;
+        group.appendChild(avatarAnchor);
+
+        const info = document.createElement('div');
+        info.className = 'ai-sender-info';
+        info.innerHTML = `<span class="ai-sender-name">${settings.name || '유소명'}</span>`;
+        group.appendChild(info);
+      }
+
+      const parts = cleanText.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
+
+      parts.forEach(part => {
+        if (!part) return;
+        const trimmed = part.trim();
+        if (!trimmed) return;
+
+        if ((trimmed.startsWith('*') && trimmed.endsWith('*')) || (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
+          const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
+          const narEl = document.createElement('div');
+          narEl.className = 'narration';
+          narEl.textContent = `「 ${raw} 」`;
+          group.appendChild(narEl);
+        } else {
+          let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
+          if (!dialogue) return;
+          const bubble = document.createElement('div');
+          bubble.className = `p5-bubble ${role}-bubble`;
+          bubble.innerHTML = `<span class="bubble-inner-text">${dialogue}</span>`;
+          group.appendChild(bubble);
+        }
+      });
+      return group;
+    }
+
+    function parseAiResponse(fullText) {
+      let cleanText = fullText;
+      let emotion = '기본';
+
+      const tagMatch = fullText.match(/\[감정:([^\]]+)\]/);
+      if (tagMatch) {
+        emotion = tagMatch[1].trim();
+        cleanText = fullText.replace(/\[감정:[^\]]+\]/g, '').trim();
+      }
+
+      const rawParts = cleanText.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
+      const items = [];
+
+      rawParts.forEach(part => {
+        if (!part) return;
+        const trimmed = part.trim();
+        if (!trimmed) return;
+
+        if ((trimmed.startsWith('*') && trimmed.endsWith('*')) || (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
+          const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
+          if (raw) items.push({ type: 'narration', text: `「 ${raw} 」` });
+        } else {
+          const dialogueMatches = trimmed.match(/"([^"]+)"/g);
+          if (dialogueMatches && dialogueMatches.length > 0) {
+            dialogueMatches.forEach(d => {
+              const cleaned = d.replace(/^"+|"+$/g, '').trim();
+              if (cleaned) items.push({ type: 'dialogue', text: cleaned });
+            });
+            const withoutQuotes = trimmed.replace(/"[^"]+"/g, '').trim();
+            if (withoutQuotes && withoutQuotes.length > 1) {
+              items.push({ type: 'dialogue', text: withoutQuotes });
+            }
+          } else {
+            let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
+            if (dialogue) items.push({ type: 'dialogue', text: dialogue });
+          }
+        }
+      });
+
+      return { emotion, items };
+    }
+
+    async function playAiMessageSequence(fullText) {
+      const chatBox = document.getElementById('chat-box');
+      const { emotion, items } = parseAiResponse(fullText);
+
+      setBackgroundByTag(emotion);
+
+      const group = document.createElement('div');
+      group.className = 'msg-group ai-group';
+
+      const avatarAnchor = document.createElement('div');
+      avatarAnchor.className = 'ai-avatar-anchor';
+      avatarAnchor.innerHTML = `
+        <img class="ai-avatar-img" src="사진1.jpg" alt="소명 프로필">
+        <div class="ai-star-badge">★MAX</div>
+      `;
+      group.appendChild(avatarAnchor);
+
+      const info = document.createElement('div');
+      info.className = 'ai-sender-info';
+      info.innerHTML = `<span class="ai-sender-name">${settings.name || '유소명'}</span>`;
+      group.appendChild(info);
+
+      chatBox.appendChild(group);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      for (const item of items) {
+        if (item.type === 'narration') {
+          const narEl = document.createElement('div');
+          narEl.className = 'narration';
+          group.appendChild(narEl);
+
+          for (let i = 0; i < item.text.length; i++) {
+            narEl.textContent += item.text[i];
+            chatBox.scrollTop = chatBox.scrollHeight;
+            await new Promise(r => setTimeout(r, 26));
+          }
+          await new Promise(r => setTimeout(r, 300));
+        } else if (item.type === 'dialogue') {
+          const bubble = document.createElement('div');
+          bubble.className = 'p5-bubble ai-bubble';
+          bubble.innerHTML = `<span class="bubble-inner-text">${item.text}</span>`;
+          group.appendChild(bubble);
+          chatBox.scrollTop = chatBox.scrollHeight;
+
+          const delay = Math.min(800, 480 + (item.text.length * 10));
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
+    }
+
+    /* ========================================================
+       ★ 대화 전송 (슬라이딩 윈도우 속도 최적화 적용) ★
+    ======================================================== */
+    async function sendMessage() {
+      const inputEl = document.getElementById('user-input');
+      const sendBtn = document.getElementById('send-btn');
+      const userText = inputEl.value.trim();
+
+      if (!userText) return;
+      if (!settings.apiKey) {
+        alert('우측 상단 MENU -> [환경설정]에서 Google AI Studio API 키를 입력해 주세요!');
+        openSettings();
+        return;
+      }
+
+      const chatBox = document.getElementById('chat-box');
+      chatBox.appendChild(renderMessage('user', userText));
+      chatBox.scrollTop = chatBox.scrollHeight;
+      inputEl.value = '';
+      sendBtn.disabled = true;
+
+      const currentHistory = currentRoom === 'daily' ? dailyHistory : schedHistory;
+      currentHistory.push({ role: 'user', parts: [{ text: userText }] });
+
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'msg-group ai-group';
+      typingIndicator.id = 'ai-typing-temp';
+      typingIndicator.innerHTML = `
+        <div class="ai-avatar-anchor">
+          <img class="ai-avatar-img" src="사진1.jpg" alt="소명 프로필">
+          <div class="ai-star-badge">★MAX</div>
+        </div>
+        <div class="ai-sender-info">
+          <span class="ai-sender-name">${settings.name || '유소명'}</span>
+        </div>
+        <div class="narration" style="opacity: 0.85;">
+          <span>「 생각하는 중<span class="thinking-dots">...</span> 」</span>
+        </div>
+      `;
+      chatBox.appendChild(typingIndicator);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      let systemInstructionText = settings.prompt || DEFAULT_PROMPT;
+      if (currentRoom === 'daily') {
+        systemInstructionText += `\n\n[현재 채널: 💬 일상 대화방]
+- 성주와의 애정 표현, 일상적인 대학 생활, 따뜻한 위로와 서툰 애교에 집중하세요.
+- 상황에 따라 14종 감정 태그 중 가장 적합한 감정 태그를 문장 맨 앞에 출력하세요.`;
+      } else {
+        const schedSummary = schedules.length > 0 
+          ? "\n[성주의 예약 미션 현황]:\n" + schedules.map(s => `- [${s.category}] ${s.date} ${s.time} ${s.title} (${s.done ? '완료' : '미완료'})`).join("\n")
+          : "\n[현재 등록된 일정 없음]";
+
+        systemInstructionText += `\n\n[현재 채널: 📅 일정 & 건강 케어방]
+${schedSummary}
+[★ 소명이의 일정 케어 코칭 지침]
+- 기본 태도는 엄하고 단호한 [감정:혼냄]입니다.
+- 성주가 게으름을 피우거나 핑계를 대면 따끔하게 나무라고, 정해진 날짜와 시간에 맞춰 루틴을 완수하도록 등을 떠미세요.
+- 잘 해냈을 때만 살짝 누그러져 칭찬해 주세요.`;
+      }
+
+      /* ★ 속도 최적화: 최근 12개 대화만 슬라이딩 윈도우로 압축 전송 ★ */
+      const payloadContents = currentHistory.slice(-12);
+
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${settings.model}:generateContent?key=${settings.apiKey}`;
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemInstructionText }] },
+            contents: payloadContents,
+            generationConfig: { temperature: 0.85 }
+          })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.error?.message || 'API 통신 오류');
+        }
+
+        const data = await response.json();
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[감정:기본] ...(가만히 바라본다)';
+
+        const tempEl = document.getElementById('ai-typing-temp');
+        if (tempEl) tempEl.remove();
+
+        await playAiMessageSequence(reply);
+
+        currentHistory.push({ role: 'model', parts: [{ text: reply }] });
+
+        if (currentRoom === 'daily') {
+          localStorage.setItem(STORAGE_KEY_DAILY, JSON.stringify(dailyHistory));
+        } else {
+          localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
+        }
+
+      } catch (err) {
+        const tempEl = document.getElementById('ai-typing-temp');
+        if (tempEl) tempEl.remove();
+        chatBox.appendChild(renderMessage('ai', `[감정:기본] *살짝 곤란한 표정을 지으며* "통신에 문제가 생긴 것 같아: ${err.message}"`));
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } finally {
+        sendBtn.disabled = false;
+        inputEl.focus();
+      }
+    }
+
+    /* ========================================================
+       ★ 미연시 코옵 모드 로직 ★
     ======================================================== */
     function loadCoopSettings() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_COOP_SETTINGS));
-        if (saved && saved.customLore) {
-          coopSettings.customLore = saved.customLore;
-        }
+        if (saved && saved.customLore) coopSettings.customLore = saved.customLore;
       } catch(e){}
     }
 
@@ -1807,11 +2731,11 @@
       coopSettings.customLore = val || DEFAULT_COOP_PROMPT;
       localStorage.setItem(STORAGE_KEY_COOP_SETTINGS, JSON.stringify(coopSettings));
       closeCoopSettingsModal();
-      alert('✅ 미연시 전용 독자 배경설정이 저장되었습니다!');
+      alert('✅ 미연시 독자 배경설정이 저장되었습니다!');
     }
 
     function resetCoopSettings() {
-      if (confirm('미연시 배경설정을 기본값으로 되돌리시겠습니까?')) {
+      if (confirm('미연시 배경설정을 기본값으로 복원하시겠습니까?')) {
         coopSettings.customLore = DEFAULT_COOP_PROMPT;
         document.getElementById('coop-custom-lore').value = DEFAULT_COOP_PROMPT;
         localStorage.setItem(STORAGE_KEY_COOP_SETTINGS, JSON.stringify(coopSettings));
@@ -1819,9 +2743,6 @@
       }
     }
 
-    /* ========================================================
-       ★ 미연시 코옵 모드 로직 ★
-    ======================================================== */
     function enterCoopMode() {
       document.getElementById('app').style.display = 'none';
       document.getElementById('coop-screen').style.display = 'flex';
@@ -1844,7 +2765,7 @@
     function exitCoopMode() {
       document.getElementById('coop-screen').style.display = 'none';
       document.getElementById('app').style.display = 'flex';
-      setBackgroundByTag('기본');
+      setBackgroundByTag(currentRoom === 'sched' ? '혼냄' : '기본');
     }
 
     function updateCoopHUD() {
@@ -1962,8 +2883,6 @@
       coopState.history.push({ role: 'user', parts: [{ text: playerText }] });
 
       const curRank = COOP_RANKS[coopState.rank - 1];
-
-      /* ★ 일상방과 독립된 미연시 전용 커스텀 로어 결합 ★ */
       const coopSystemPrompt = `[모드: 페르소나 5 코옵(인연) 미연시 시스템]
 - 현재 인연 상태: RANK 0${curRank.rank} [${curRank.title}] - ${curRank.desc}
 
@@ -1973,18 +2892,20 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
 [★ 화자 및 인칭 절대 엄수 규칙 - 위반 절대 금지]
 1. 당신의 정체는 오직 '유소명'(여성, 간호학과 대학생)입니다.
 2. 당신과 마주보고 대화하는 상대방(유저)의 이름이 바로 '이성주'(남성)입니다.
-3. 절대 자신을 '성주'라고 칭하거나 3인칭 지문에서 자신을 성주라고 부르지 마세요! 지문 속 모든 행동/시선은 소명의 시선이어야 합니다.
+3. 절대 자신을 '성주'라고 칭하거나 3인칭 지문에서 자신을 성주라고 부르지 마세요!
 4. 호칭 규칙:
-   - RANK 1~3 (초면 및 어색한 사이): 아직 서로 이름을 모르거나 통성명 전이므로 반말이나 "성주야" 절대 금지! 깍듯하고 차분한 존댓말("저기요", "그쪽", "학생분")을 쓰세요.
-   - RANK 4~6 (서로 통성명 후 비밀 공유): "이성주 씨", "성주 씨" (존댓말 또는 살짝 편한 존댓말)
+   - RANK 1~3 (초면 및 어색한 사이): 반말 금지! 깍듯하고 차분한 존댓말("저기요", "그쪽", "학생분") 사용.
+   - RANK 4~6 (서로 통성명 후 비밀 공유): "이성주 씨", "성주 씨" (존댓말)
    - RANK 7 이상 (연인 직전~연인): 편안한 반말 ("성주야", "너")
 
 [★ 호감도 증감 판정 규칙]
-- 성주의 말이 마음에 와닿거나, 진솔하거나, 정중하거나, 소명의 가치관을 존중하면 [호감도:+1], [호감도:+2], [호감도:+3] 중 하나를 문장 맨 뒤에 붙이세요.
-- 반대로 성주가 무례하게 굴거나, 소명에게 시비를 걸거나, 차갑게 선을 긋거나, 억지를 부려 기분을 상하게 하면 반드시 [호감도:-1] 또는 [호감도:-2]를 붙여 호감도를 깎으세요!
-- 문장 맨 앞에는 [감정:기본/설렘/위로/토라짐/슬픔] 중 하나를 필수 출력하세요.
-- 지문은 *...*로, 대사는 "..."로 출력하세요.
-- 대사 끝에는 성주가 고를 수 있는 2~3개의 선택지를 [선택지: 옵션1 | 옵션2 | 옵션3] 형태로 항상 제안하세요.`;
+- 성주의 말이 마음에 와닿거나 진솔하면 [호감도:+1], [호감도:+2], [호감도:+3] 중 하나를 문장 맨 뒤에 붙이세요.
+- 반대로 무례하게 굴거나 기분을 상하게 하면 반드시 [호감도:-1] 또는 [호감도:-2]를 붙이세요.
+- 문장 맨 앞에는 14종 감정 태그([감정:기본/기쁨/화남/슬픔/걱정/혼냄/장난/놀러가자/잘자/잘잤어?/사랑/궁금/흥분/노래]) 중 하나를 필수 출력하세요.
+- 대사 끝에는 성주가 고를 수 있는 2~3개의 선택지를 [선택지: 옵션1 | 옵션2 | 옵션3] 형태로 제안하세요.`;
+
+      // 슬라이딩 윈도우 (최근 12턴)
+      const payload = coopState.history.slice(-12);
 
       try {
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${settings.model}:generateContent?key=${settings.apiKey}`;
@@ -1993,7 +2914,7 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             systemInstruction: { parts: [{ text: coopSystemPrompt }] },
-            contents: coopState.history,
+            contents: payload,
             generationConfig: { temperature: 0.85 }
           })
         });
@@ -2016,7 +2937,6 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
       }
     }
 
-    /* 세이브 & 로드 */
     function loadCoopSaves() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_COOP_SAVE));
@@ -2097,587 +3017,24 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
       }
     }
 
-    /* 시간 선택기 */
-    function initTimePickerOptions() {
-      const hSelect = document.getElementById('sched-hour');
-      const mSelect = document.getElementById('sched-minute');
-      hSelect.innerHTML = '';
-      mSelect.innerHTML = '';
-
-      for (let h = 0; h < 24; h++) {
-        const val = String(h).padStart(2, '0');
-        const opt = document.createElement('option');
-        opt.value = val;
-        opt.innerText = `${val}시`;
-        hSelect.appendChild(opt);
-      }
-
-      for (let m = 0; m < 60; m++) {
-        const val = String(m).padStart(2, '0');
-        const opt = document.createElement('option');
-        opt.value = val;
-        opt.innerText = `${val}분`;
-        mSelect.appendChild(opt);
-      }
-
-      setQuickTime(10);
-    }
-
-    function setQuickTime(plusMinutes) {
-      const target = new Date(Date.now() + plusMinutes * 60000);
-      document.getElementById('sched-hour').value = String(target.getHours()).padStart(2, '0');
-      document.getElementById('sched-minute').value = String(target.getMinutes()).padStart(2, '0');
-    }
-
-    function setExactTime(hour, minute) {
-      document.getElementById('sched-hour').value = String(hour).padStart(2, '0');
-      document.getElementById('sched-minute').value = String(minute).padStart(2, '0');
-    }
-
-    function applyPresetRoutine(cat, title) {
-      document.getElementById('sched-category').value = cat;
-      document.getElementById('sched-title').value = title;
-    }
-
-    /* 뮤직 플레이어 */
-    function initMusicPlayer() {
-      audio = document.getElementById('bgm-player');
-      try {
-        const savedList = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAYLIST));
-        if (savedList && savedList.length > 0) playlist = savedList;
-        else playlist = DEFAULT_PLAYLIST;
-      } catch(e){
-        playlist = DEFAULT_PLAYLIST;
-      }
-
-      renderPlaylist();
-      updatePlayerTrackInfo();
-
-      audio.addEventListener('timeupdate', () => {
-        if (!isSeeking && audio.duration) {
-          const progress = (audio.currentTime / audio.duration) * 100;
-          document.getElementById('seek-bar').value = progress;
-          document.getElementById('current-time-txt').innerText = formatTime(audio.currentTime);
-        }
-      });
-
-      audio.addEventListener('loadedmetadata', () => {
-        document.getElementById('total-time-txt').innerText = formatTime(audio.duration);
-      });
-
-      audio.addEventListener('ended', () => {
-        if (repeatMode === 'one') {
-          audio.currentTime = 0;
-          audio.play();
-        } else if (repeatMode === 'all') {
-          playNextTrack();
-        } else {
-          if (currentTrackIndex < playlist.length - 1) {
-            playNextTrack();
-          } else {
-            updatePlayBtnState(false);
-          }
-        }
-      });
-    }
-
-    function formatTime(sec) {
-      if (isNaN(sec)) return '0:00';
-      const m = Math.floor(sec / 60);
-      const s = Math.floor(sec % 60);
-      return `${m}:${s < 10 ? '0' : ''}${s}`;
-    }
-
-    function updatePlayerTrackInfo() {
-      if (playlist.length === 0) {
-        document.getElementById('current-track-title').innerText = '재생 가능한 곡 없음';
-        return;
-      }
-      const track = playlist[currentTrackIndex];
-      document.getElementById('current-track-title').innerText = track.title;
-      audio.src = encodeURI(track.file);
-      renderPlaylist();
-    }
-
-    function renderPlaylist() {
-      const container = document.getElementById('playlist-container');
-      container.innerHTML = '';
-      playlist.forEach((track, idx) => {
-        const div = document.createElement('div');
-        div.className = `playlist-item ${idx === currentTrackIndex ? 'active' : ''}`;
-        div.innerHTML = `
-          <span onclick="selectTrack(${idx})" style="flex:1;">TRACK 0${idx + 1}. ${track.title}</span>
-          <button onclick="deleteTrack(${track.id})" style="background:none; border:none; color:#e60012; font-weight:900; cursor:pointer; font-size:1rem;">✕</button>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function selectTrack(idx) {
-      currentTrackIndex = idx;
-      updatePlayerTrackInfo();
-      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
-    }
-
-    function togglePlayPause() {
-      if (playlist.length === 0) return alert('재생할 곡이 없습니다.');
-      if (audio.paused) {
-        if (!audio.src || audio.src === window.location.href) {
-          updatePlayerTrackInfo();
-        }
-        audio.play().then(() => {
-          updatePlayBtnState(true);
-        }).catch(err => {
-          alert('음악 파일을 불러올 수 없습니다. GitHub의 파일명과 일치하는지 확인해 주세요!');
-        });
-      } else {
-        audio.pause();
-        updatePlayBtnState(false);
-      }
-    }
-
-    function updatePlayBtnState(isPlaying) {
-      const playBtn = document.getElementById('play-pause-btn');
-      const headerBtn = document.getElementById('header-music-btn');
-      const headerStatus = document.getElementById('header-music-status');
-
-      if (isPlaying) {
-        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-        headerBtn.classList.add('playing');
-        headerStatus.innerText = '♫ PLAY';
-      } else {
-        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-        headerBtn.classList.remove('playing');
-        headerStatus.innerText = '♫ OFF';
-      }
-    }
-
-    function playNextTrack() {
-      if (playlist.length === 0) return;
-      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-      updatePlayerTrackInfo();
-      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
-    }
-
-    function playPrevTrack() {
-      if (playlist.length === 0) return;
-      currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-      updatePlayerTrackInfo();
-      audio.play().then(() => updatePlayBtnState(true)).catch(() => {});
-    }
-
-    function toggleRepeatMode() {
-      const btn = document.getElementById('repeat-mode-btn');
-      const text = document.getElementById('repeat-mode-text');
-      const icon = document.getElementById('repeat-icon');
-
-      btn.classList.remove('mode-one', 'mode-none');
-
-      if (repeatMode === 'all') {
-        repeatMode = 'one';
-        btn.classList.add('mode-one');
-        text.innerText = 'ONE LOOP';
-        icon.innerHTML = `<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z"/>`;
-      } else if (repeatMode === 'one') {
-        repeatMode = 'none';
-        btn.classList.add('mode-none');
-        text.innerText = 'ORDER';
-        icon.innerHTML = `<path d="M4 18h11c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2H4v2h11v8H4v2zm14-8v8h2v-8h-2z"/>`;
-      } else {
-        repeatMode = 'all';
-        text.innerText = 'ALL LOOP';
-        icon.innerHTML = `<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>`;
-      }
-    }
-
-    function handleSeekInput() {
-      isSeeking = true;
-      const bar = document.getElementById('seek-bar');
-      if (audio.duration) {
-        const time = (bar.value / 100) * audio.duration;
-        document.getElementById('current-time-txt').innerText = formatTime(time);
-      }
-    }
-
-    function handleSeekChange() {
-      const bar = document.getElementById('seek-bar');
-      if (audio.duration) {
-        audio.currentTime = (bar.value / 100) * audio.duration;
-      }
-      isSeeking = false;
-    }
-
-    function addNewTrack() {
-      const title = document.getElementById('new-song-title').value.trim();
-      const file = document.getElementById('new-song-file').value.trim();
-      if (!title || !file) return alert('곡 제목과 파일명을 모두 입력해 주세요!');
-
-      playlist.push({ id: Date.now(), title, file });
-      localStorage.setItem(STORAGE_KEY_PLAYLIST, JSON.stringify(playlist));
-      renderPlaylist();
-      document.getElementById('new-song-title').value = '';
-      document.getElementById('new-song-file').value = '';
-    }
-
-    function deleteTrack(id) {
-      if (playlist.length <= 1) return alert('최소 1곡은 목록에 남아 있어야 합니다.');
-      playlist = playlist.filter(t => t.id !== id);
-      if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
-      localStorage.setItem(STORAGE_KEY_PLAYLIST, JSON.stringify(playlist));
-      updatePlayerTrackInfo();
-    }
-
-    function openMusicPlayer() { document.getElementById('music-modal').style.display = 'flex'; }
-    function closeMusicPlayer() { document.getElementById('music-modal').style.display = 'none'; }
-
-    /* 구글 싱크 & 스케줄 */
-    function syncSchedulesToGas() {
-      if (!settings.gasUrl) return;
-      fetch(settings.gasUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(schedules)
-      }).catch(e => console.log('구글 싱크:', e));
-    }
-
-    function startScheduleAlarmChecker() {
-      setInterval(() => {
-        const now = new Date();
-        const currentHM = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-        const todayStr = now.toDateString();
-
-        let updated = false;
-        schedules.forEach(item => {
-          if (!item.done && item.time === currentHM && item.lastNotifiedDate !== todayStr) {
-            item.lastNotifiedDate = todayStr;
-            updated = true;
-
-            const reminderText = `[감정:토라짐] *손목시계를 톡톡 두드리며 당신을 빤히 바라본다.* "성주야, 벌써 ${item.time}네. 이제 [${item.title}] 할 시간이야. 딴짓하지 말고 얼른 시작해야지?"`;
-            
-            schedHistory.push({ role: 'model', parts: [{ text: reminderText }] });
-            localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
-
-            if (currentRoom === 'sched') {
-              playAiMessageSequence(reminderText);
-            }
-          }
-        });
-
-        if (updated) saveSchedules();
-      }, 10000);
-    }
-
-    function switchChatRoom(room) {
-      if (currentRoom === room) return;
-      currentRoom = room;
-
-      document.getElementById('tab-btn-daily').classList.toggle('active', room === 'daily');
-      document.getElementById('tab-btn-sched').classList.toggle('active', room === 'sched');
-
-      const input = document.getElementById('user-input');
-      input.placeholder = room === 'daily' ? '소명이에게 일상 메시지 보내기...' : '일정 보고하거나 투정부리기...';
-
-      renderChatRoom();
-      setBackgroundByTag('기본');
-    }
-
-    function loadChatHistories() {
-      try { dailyHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_DAILY)) || []; } catch(e) { dailyHistory = []; }
-      try { schedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHED_CHAT)) || []; } catch(e) { schedHistory = []; }
-    }
-
-    function parseAiResponse(fullText) {
-      let cleanText = fullText;
-      let emotion = '기본';
-
-      const tagMatch = fullText.match(/\[감정:([^\]]+)\]/);
-      if (tagMatch) {
-        emotion = tagMatch[1].trim();
-        cleanText = fullText.replace(/\[감정:[^\]]+\]/g, '').trim();
-      }
-
-      const rawParts = cleanText.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
-      const items = [];
-
-      rawParts.forEach(part => {
-        if (!part) return;
-        const trimmed = part.trim();
-        if (!trimmed) return;
-
-        if ((trimmed.startsWith('*') && trimmed.endsWith('*')) || (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
-          const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
-          if (raw) items.push({ type: 'narration', text: `「 ${raw} 」` });
-        } else {
-          const dialogueMatches = trimmed.match(/"([^"]+)"/g);
-          if (dialogueMatches && dialogueMatches.length > 0) {
-            dialogueMatches.forEach(d => {
-              const cleaned = d.replace(/^"+|"+$/g, '').trim();
-              if (cleaned) items.push({ type: 'dialogue', text: cleaned });
-            });
-            const withoutQuotes = trimmed.replace(/"[^"]+"/g, '').trim();
-            if (withoutQuotes && withoutQuotes.length > 1) {
-              items.push({ type: 'dialogue', text: withoutQuotes });
-            }
-          } else {
-            let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
-            if (dialogue) items.push({ type: 'dialogue', text: dialogue });
-          }
-        }
-      });
-
-      return { emotion, items };
-    }
-
-    function renderMessage(role, text) {
-      const group = document.createElement('div');
-      group.className = `msg-group ${role}-group`;
-
-      let cleanText = text;
-      const tagMatch = text.match(/\[감정:([^\]]+)\]/);
-      if (tagMatch) {
-        if (role === 'ai') setBackgroundByTag(tagMatch[1].trim());
-        cleanText = text.replace(/\[감정:[^\]]+\]/g, '').trim();
-      }
-
-      if (role === 'ai') {
-        const avatarAnchor = document.createElement('div');
-        avatarAnchor.className = 'ai-avatar-anchor';
-        avatarAnchor.innerHTML = `
-          <video class="ai-avatar-video" src="${currentVideoSrc}" autoplay muted loop playsinline></video>
-          <div class="ai-star-badge">★MAX</div>
-        `;
-        group.appendChild(avatarAnchor);
-
-        const info = document.createElement('div');
-        info.className = 'ai-sender-info';
-        info.innerHTML = `<span class="ai-sender-name">${settings.name || '유소명'}</span>`;
-        group.appendChild(info);
-      }
-
-      const parts = cleanText.split(/((?:\*|\*\*|「)[\s\S]*?(?:\*|\*\*|」))/g);
-
-      parts.forEach(part => {
-        if (!part) return;
-        const trimmed = part.trim();
-        if (!trimmed) return;
-
-        if ((trimmed.startsWith('*') && trimmed.endsWith('*')) || (trimmed.startsWith('「') && trimmed.endsWith('」'))) {
-          const raw = trimmed.replace(/^(\*+|\「)/, '').replace(/(\*+|\」)$/, '').trim();
-          const narEl = document.createElement('div');
-          narEl.className = 'narration';
-          narEl.textContent = `「 ${raw} 」`;
-          group.appendChild(narEl);
-        } else {
-          let dialogue = trimmed.replace(/^"+|"+$/g, '').trim();
-          if (!dialogue) return;
-          const bubble = document.createElement('div');
-          bubble.className = `p5-bubble ${role}-bubble`;
-          bubble.innerHTML = `<span class="bubble-inner-text">${dialogue}</span>`;
-          group.appendChild(bubble);
-        }
-      });
-      return group;
-    }
-
-    async function playAiMessageSequence(fullText) {
-      const chatBox = document.getElementById('chat-box');
-      const { emotion, items } = parseAiResponse(fullText);
-
-      setBackgroundByTag(emotion);
-
-      const group = document.createElement('div');
-      group.className = 'msg-group ai-group';
-
-      const avatarAnchor = document.createElement('div');
-      avatarAnchor.className = 'ai-avatar-anchor';
-      avatarAnchor.innerHTML = `
-        <video class="ai-avatar-video" src="${currentVideoSrc}" autoplay muted loop playsinline></video>
-        <div class="ai-star-badge">★MAX</div>
-      `;
-      group.appendChild(avatarAnchor);
-
-      const info = document.createElement('div');
-      info.className = 'ai-sender-info';
-      info.innerHTML = `<span class="ai-sender-name">${settings.name || '유소명'}</span>`;
-      group.appendChild(info);
-
-      chatBox.appendChild(group);
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      for (const item of items) {
-        if (item.type === 'narration') {
-          const narEl = document.createElement('div');
-          narEl.className = 'narration';
-          group.appendChild(narEl);
-
-          for (let i = 0; i < item.text.length; i++) {
-            narEl.textContent += item.text[i];
-            chatBox.scrollTop = chatBox.scrollHeight;
-            await new Promise(r => setTimeout(r, 26));
-          }
-          await new Promise(r => setTimeout(r, 300));
-        } else if (item.type === 'dialogue') {
-          const bubble = document.createElement('div');
-          bubble.className = 'p5-bubble ai-bubble';
-          bubble.innerHTML = `<span class="bubble-inner-text">${item.text}</span>`;
-          group.appendChild(bubble);
-          chatBox.scrollTop = chatBox.scrollHeight;
-
-          const delay = Math.min(800, 480 + (item.text.length * 10));
-          await new Promise(r => setTimeout(r, delay));
-        }
-      }
-    }
-
-    function renderChatRoom() {
-      const chatBox = document.getElementById('chat-box');
-      chatBox.innerHTML = '';
-      const list = currentRoom === 'daily' ? dailyHistory : schedHistory;
-
-      if (list.length === 0) {
-        let welcome = '';
-        if (currentRoom === 'daily') {
-          welcome = `[감정:기본] *강의실 앞 벤치에 앉아 전공 책을 읽다가 당신을 올려다보며 은은하게 미소 짓는다.* "성주야, 왔어? 보고 싶었어."`;
-        } else {
-          const pending = schedules.filter(s => !s.done);
-          if (pending.length > 0) {
-            welcome = `[감정:기본] *플래너를 톡톡 두드리며 당신을 빤히 바라본다.* "성주야, 왔어? 오늘 [${pending[0].title}] 하기로 했잖아. 이제 슬슬 준비해야지?"`;
-          } else {
-            welcome = `[감정:기본] *플래너를 펼쳐놓고 펜을 가볍게 굴리며 당신을 본다.* "성주야, 오늘 세워둔 목표들 확인해 볼까? 몸 컨디션은 무리 없지?"`;
-          }
-        }
-        chatBox.appendChild(renderMessage('ai', welcome));
-      } else {
-        list.forEach(msg => {
-          chatBox.appendChild(renderMessage(msg.role === 'user' ? 'user' : 'ai', msg.parts[0].text));
-        });
-      }
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function clearCurrentHistory() {
-      const roomName = currentRoom === 'daily' ? '일상 대화' : '일정 관리';
-      if (confirm(`현재 [${roomName}] 방의 대화 기록을 비우시겠습니까?`)) {
-        if (currentRoom === 'daily') {
-          dailyHistory = [];
-          localStorage.removeItem(STORAGE_KEY_DAILY);
-        } else {
-          schedHistory = [];
-          localStorage.removeItem(STORAGE_KEY_SCHED_CHAT);
-        }
-        renderChatRoom();
-        setBackgroundByTag('기본');
-      }
-    }
-
-    function loadSchedules() {
-      try { schedules = JSON.parse(localStorage.getItem(STORAGE_KEY_SCHEDULES)) || []; } catch(e) { schedules = []; }
-      renderScheduleList();
-    }
-
-    function saveSchedules() {
-      localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
-      renderScheduleList();
-      syncSchedulesToGas();
-    }
-
-    function addSchedule() {
-      const cat = document.getElementById('sched-category').value;
-      const hStr = document.getElementById('sched-hour').value;
-      const mStr = document.getElementById('sched-minute').value;
-      const time = `${hStr}:${mStr}`;
-      const title = document.getElementById('sched-title').value.trim();
-
-      if (!title) return alert('목표 내용을 입력해 주세요!');
-
-      schedules.push({ id: Date.now(), category: cat, time: time, title: title, done: false, lastNotifiedDate: '' });
-      saveSchedules();
-      document.getElementById('sched-title').value = '';
-    }
-
-    function toggleSchedule(id) {
-      schedules = schedules.map(item => item.id === id ? { ...item, done: !item.done } : item);
-      saveSchedules();
-    }
-
-    function deleteSchedule(id) {
-      schedules = schedules.filter(item => item.id !== id);
-      saveSchedules();
-    }
-
-    function renderScheduleList() {
-      const listEl = document.getElementById('schedule-list');
-      listEl.innerHTML = '';
-      if (schedules.length === 0) {
-        listEl.innerHTML = '<div style="color: #888; font-size: 0.82rem; text-align: center; padding: 15px 0;">등록된 일정이 없습니다.</div>';
-        return;
-      }
-      schedules.forEach(item => {
-        const div = document.createElement('div');
-        div.className = `schedule-item ${item.done ? 'done' : ''}`;
-        div.innerHTML = `
-          <div style="display:flex; align-items:center; gap: 8px;">
-            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleSchedule(${item.id})">
-            <div>
-              <span class="sched-tag">${item.category}</span>
-              <span style="font-size: 0.78rem; color:#5ce1e6; font-family:monospace; font-weight:700;">${item.time}</span>
-              <div class="sched-text" style="font-size: 0.88rem; margin-top:2px;">${item.title}</div>
-            </div>
-          </div>
-          <button onclick="deleteSchedule(${item.id})" style="background:none; border:none; color:#e60012; font-size:1.1rem; font-weight:900; cursor:pointer;">✕</button>
-        `;
-        listEl.appendChild(div);
-      });
-    }
-
-    function openSchedule() { document.getElementById('schedule-modal').style.display = 'flex'; }
-    function closeSchedule() { document.getElementById('schedule-modal').style.display = 'none'; }
-
-    function setBackgroundByTag(tag) {
-      const fileName = EMOTION_VIDEO_MAP[tag] || `${tag}.mp4`;
-      if (fileName === currentVideoSrc) return;
-
-      const v1 = document.getElementById('bg-video-1');
-      const v2 = document.getElementById('bg-video-2');
-
-      const nextVideo = activeLayer === 1 ? v2 : v1;
-      const currentVideo = activeLayer === 1 ? v1 : v2;
-
-      nextVideo.src = fileName;
-      nextVideo.load();
-      nextVideo.play().catch(() => {});
-
-      nextVideo.oncanplay = () => {
-        nextVideo.classList.add('active');
-        currentVideo.classList.remove('active');
-        activeLayer = activeLayer === 1 ? 2 : 1;
-        currentVideoSrc = fileName;
-
-        document.querySelectorAll('.ai-avatar-video, .p5x-star-avatar').forEach(el => {
-          el.src = fileName;
-          el.play().catch(() => {});
-        });
-        nextVideo.oncanplay = null;
-      };
-
-      nextVideo.onerror = () => {
-        if (currentVideoSrc !== 'default.mp4') {
-          nextVideo.src = 'default.mp4';
-          nextVideo.load();
-          nextVideo.play().catch(() => {});
-          currentVideoSrc = 'default.mp4';
-        }
-      };
-    }
-
+    /* 백업 & 복원 */
     function exportData() {
-      const payload = { version: 20, settings, dailyHistory, schedHistory, schedules, playlist, coopState, coopSaves, coopSettings };
+      const payload = {
+        version: 21,
+        settings,
+        dailyHistory,
+        schedHistory,
+        schedules,
+        musicCollections,
+        coopState,
+        coopSaves,
+        coopSettings
+      };
       try {
         const jsonStr = JSON.stringify(payload);
         const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => {
-          alert('✅ 백업 코드가 클립보드에 복사되었습니다! (미연시 독자 설정 포함)');
+          alert('✅ 백업 코드가 클립보드에 복사되었습니다!');
         }).catch(() => prompt('백업 코드를 복사하세요:', b64));
       } catch (err) { alert('백업 실패: ' + err.message); }
     }
@@ -2688,11 +3045,12 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
       try {
         const jsonStr = decodeURIComponent(Array.prototype.map.call(atob(code.trim()), (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
         const data = JSON.parse(jsonStr);
+
         settings = data.settings || settings;
         dailyHistory = data.dailyHistory || [];
         schedHistory = data.schedHistory || [];
         schedules = data.schedules || [];
-        playlist = data.playlist || playlist;
+        musicCollections = data.musicCollections || musicCollections;
         coopState = data.coopState || coopState;
         coopSaves = data.coopSaves || coopSaves;
         coopSettings = data.coopSettings || coopSettings;
@@ -2701,18 +3059,18 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
         localStorage.setItem(STORAGE_KEY_DAILY, JSON.stringify(dailyHistory));
         localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
         localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
-        localStorage.setItem(STORAGE_KEY_PLAYLIST, JSON.stringify(playlist));
+        localStorage.setItem(STORAGE_KEY_COLLECTIONS, JSON.stringify(musicCollections));
         localStorage.setItem(STORAGE_KEY_COOP_SAVE, JSON.stringify(coopSaves));
         localStorage.setItem(STORAGE_KEY_COOP_SETTINGS, JSON.stringify(coopSettings));
 
         loadSettings();
         loadSchedules();
-        renderPlaylist();
+        renderFoldersList();
         updatePlayerTrackInfo();
         renderChatRoom();
         closeSettings();
         syncSchedulesToGas();
-        alert('🎉 모든 데이터가 복원되었습니다!');
+        alert('🎉 모든 데이터가 성공적으로 복원되었습니다!');
       } catch (err) { alert('⚠️ 복원 실패: 올바른 코드가 아닙니다.'); }
     }
 
@@ -2755,108 +3113,6 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
       syncSchedulesToGas();
       renderChatRoom();
       alert('설정이 저장되었습니다!');
-    }
-
-    async function sendMessage() {
-      const inputEl = document.getElementById('user-input');
-      const sendBtn = document.getElementById('send-btn');
-      const userText = inputEl.value.trim();
-
-      if (!userText) return;
-      if (!settings.apiKey) {
-        alert('우측 상단 MENU -> [환경설정]에서 Google AI Studio API 키를 입력해 주세요!');
-        openSettings();
-        return;
-      }
-
-      const chatBox = document.getElementById('chat-box');
-
-      chatBox.appendChild(renderMessage('user', userText));
-      chatBox.scrollTop = chatBox.scrollHeight;
-      inputEl.value = '';
-      sendBtn.disabled = true;
-
-      const currentHistory = currentRoom === 'daily' ? dailyHistory : schedHistory;
-      currentHistory.push({ role: 'user', parts: [{ text: userText }] });
-
-      const typingIndicator = document.createElement('div');
-      typingIndicator.className = 'msg-group ai-group';
-      typingIndicator.id = 'ai-typing-temp';
-      typingIndicator.innerHTML = `
-        <div class="ai-avatar-anchor">
-          <video class="ai-avatar-video" src="${currentVideoSrc}" autoplay muted loop playsinline></video>
-          <div class="ai-star-badge">★MAX</div>
-        </div>
-        <div class="ai-sender-info">
-          <span class="ai-sender-name">${settings.name || '유소명'}</span>
-        </div>
-        <div class="narration" style="opacity: 0.85;">
-          <span>「 생각하는 중<span class="thinking-dots">...</span> 」</span>
-        </div>
-      `;
-      chatBox.appendChild(typingIndicator);
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      let systemInstructionText = settings.prompt || DEFAULT_PROMPT;
-      if (currentRoom === 'daily') {
-        systemInstructionText += `\n\n[현재 채널: 💬 일상 대화방]
-- 성주와의 애정 표현, 일상적인 대학 생활, 따뜻한 위로와 서툰 애교에 집중하세요.
-- 일정을 굳이 캐묻지 말고, 성주와의 정서적 교감에 집중하세요.`;
-      } else {
-        const schedSummary = schedules.length > 0 
-          ? "\n[성주의 등록 일정 현황]:\n" + schedules.map(s => `- [${s.category}] ${s.time} ${s.title} (${s.done ? '완료' : '미완료'})`).join("\n")
-          : "\n[현재 등록된 일정 없음]";
-
-        systemInstructionText += `\n\n[현재 채널: 📅 일정 & 건강 케어방]
-${schedSummary}
-[★ 소명이의 일정 케어 코칭 지침]
-- 간호학도다운 세심한 시선으로 성주의 목표 수행(운동, 공부 등)과 장루/신체 컨디션을 집중 체크하세요.
-- 대화할 때 "이제 ~할 시간이야", "~해야지?", "딴짓하지 말고 얼른 해", "약속했잖아"처럼 차분하면서도 확실하게 등을 떠미는 어조를 적극적으로 사용하세요.
-- 미루거나 핑계를 대면 살짝 뾰로통하게 타이르고, 완료했을 때는 머리를 쓰다듬듯 진심으로 기특해하며 칭찬해 주세요.`;
-      }
-
-      try {
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${settings.model}:generateContent?key=${settings.apiKey}`;
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemInstructionText }] },
-            contents: currentHistory,
-            generationConfig: { temperature: 0.85 }
-          })
-        });
-
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.error?.message || 'API 통신 오류');
-        }
-
-        const data = await response.json();
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '[감정:기본] ...(가만히 바라본다)';
-
-        const tempEl = document.getElementById('ai-typing-temp');
-        if (tempEl) tempEl.remove();
-
-        await playAiMessageSequence(reply);
-
-        currentHistory.push({ role: 'model', parts: [{ text: reply }] });
-
-        if (currentRoom === 'daily') {
-          localStorage.setItem(STORAGE_KEY_DAILY, JSON.stringify(dailyHistory));
-        } else {
-          localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
-        }
-
-      } catch (err) {
-        const tempEl = document.getElementById('ai-typing-temp');
-        if (tempEl) tempEl.remove();
-        chatBox.appendChild(renderMessage('ai', `[감정:기본] *살짝 곤란한 표정을 지으며* "통신에 문제가 생긴 것 같아: ${err.message}"`));
-        chatBox.scrollTop = chatBox.scrollHeight;
-      } finally {
-        sendBtn.disabled = false;
-        inputEl.focus();
-      }
     }
   </script>
 </body>
