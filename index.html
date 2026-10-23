@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>유소명 - P5X CHAT & CO-OP</title>
+  <title>유소명 - P5X CHAT & GOMOKU</title>
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -259,7 +259,6 @@
       width: 48px;
       height: 48px;
     }
-    /* ★ 원 안의 프로필 이미지를 사진1.jpg로 영구 고정 ★ */
     .ai-avatar-img {
       width: 46px;
       height: 46px;
@@ -937,9 +936,7 @@
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
     }
 
-    /* ========================================================
-       ★ 개선: 년월일 미래 일정 & 루틴 설정 UI ★
-    ======================================================== */
+    /* 루틴 설정 UI */
     .p5x-routine-card {
       background: #14141e;
       border: 2px solid #5ce1e6;
@@ -1003,9 +1000,7 @@
       color: #5ce1e6;
     }
 
-    /* ========================================================
-       ★ 개선: 삼성 뮤직 스타일 모음집 & 순서 변경 UI ★
-    ======================================================== */
+    /* 삼성 뮤직 스타일 모음집 & 트랙 */
     .p5x-player-card {
       background: #14141e;
       border: 2.5px solid #5ce1e6;
@@ -1139,7 +1134,6 @@
       color: #aaa;
     }
 
-    /* 삼성 뮤직 스타일 모음집 & 트랙 리스트 박스 */
     .playlist-folder-box {
       max-height: 190px;
       overflow-y: auto;
@@ -1215,6 +1209,81 @@
       color: #fff;
       font-weight: 800;
       margin-right: 6px;
+    }
+
+    /* ========================================================
+       ★ P5X 렌주룰 오목 미니게임 모달 스타일 ★
+    ======================================================== */
+    #omok-modal .modal-content {
+      max-width: 420px;
+      padding: 14px;
+      gap: 8px;
+    }
+    .omok-comment-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #14141e;
+      border: 2px solid #5ce1e6;
+      padding: 8px 10px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+      position: relative;
+    }
+    .omok-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 2px solid #e60012;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .omok-speech-bubble {
+      flex: 1;
+      font-size: 0.84rem;
+      line-height: 1.4;
+      color: #ffdd59;
+      font-weight: 700;
+    }
+    .omok-controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      background: #000;
+      padding: 6px;
+      border: 1.5px solid #fff;
+      transform: skewX(-6deg);
+    }
+    .omok-ctrl-btn {
+      background: #111;
+      color: #fff;
+      border: 1.5px solid #5ce1e6;
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 4px 7px;
+      cursor: pointer;
+      transform: skewX(6deg);
+    }
+    .omok-ctrl-btn.active {
+      background: #e60012;
+      border-color: #fff;
+      color: #fff;
+    }
+    .omok-board-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #1a1612;
+      border: 3px solid #ffdd59;
+      box-shadow: 4px 4px 0 #000, inset 0 0 15px rgba(0,0,0,0.8);
+      padding: 6px;
+      margin: 2px 0;
+    }
+    #omok-canvas {
+      background: #d4a359;
+      border: 2px solid #000;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+      cursor: pointer;
+      touch-action: none;
     }
 
     @keyframes p5FadeIn {
@@ -1375,6 +1444,43 @@
     </div>
   </div>
 
+  <!-- ========================================================
+       ★ P5X 렌주룰 오목 미니게임 모달 ★
+  ======================================================== -->
+  <div id="omok-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="justify-content: space-between;">
+        <span>♟️ PHANTOM GOMOKU</span>
+        <button class="btn-cancel" onclick="closeOmokModal()" style="padding:2px 8px; font-size:0.75rem;">닫기 ✕</button>
+      </h3>
+
+      <!-- 소명이 반응 말풍선 -->
+      <div class="omok-comment-card">
+        <img class="omok-avatar" src="사진1.jpg" alt="소명 프로필">
+        <div id="omok-dialogue" class="omok-speech-bubble">"성주야, 준비됐어? 렌주룰이니까 흑돌은 3·3 조심해!"</div>
+      </div>
+
+      <!-- 상단 컨트롤러: 룰 선택 / 선공 후공 / 새 게임 -->
+      <div class="omok-controls-bar">
+        <div style="display: flex; gap: 4px;">
+          <button id="omok-rule-btn" class="omok-ctrl-btn active" onclick="toggleOmokRule()">룰: 렌주룰(공식)</button>
+          <button id="omok-turn-btn" class="omok-ctrl-btn active" onclick="toggleOmokPlayerTurn()">턴: ⚫ 성주 선공(흑)</button>
+        </div>
+        <button class="omok-ctrl-btn" onclick="startNewOmokGame()" style="background:#e60012; border-color:#fff;">🔄 새 게임</button>
+      </div>
+
+      <!-- 15x15 캔버스 바둑판 -->
+      <div class="omok-board-wrap">
+        <canvas id="omok-canvas" width="330" height="330"></canvas>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #aaa; padding: 0 4px;">
+        <span id="omok-status-text">⚫ 성주의 차례입니다.</span>
+        <span>교차점을 가볍게 터치하세요.</span>
+      </div>
+    </div>
+  </div>
+
   <!-- P5X 스마트폰 메뉴 모달 -->
   <div id="p5x-menu-modal">
     <div class="p5x-phone-body">
@@ -1392,7 +1498,6 @@
 
       <div class="p5x-hero-card">
         <div class="p5x-star-badge">
-          <!-- ★ 프로필 사진1.jpg 고정 ★ -->
           <img id="menu-avatar-img" class="p5x-star-avatar" src="사진1.jpg" alt="소명 프로필">
           <div class="p5x-star-tag">★MAX</div>
         </div>
@@ -1456,20 +1561,19 @@
           <span class="p5x-app-label">감상모드</span>
         </button>
 
-        <button class="p5x-app-item" onclick="launchApp('diary')">
-          <div class="p5x-icon-box" style="border-style: dashed; opacity: 0.85;">
-            <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
-            <span class="p5x-badge-new">MEMO</span>
+        <!-- ★ 8번째 슬롯: P5X 렌주룰 오목 대결 ★ -->
+        <button class="p5x-app-item" onclick="launchApp('omok')">
+          <div class="p5x-icon-box" style="border-color:#5ce1e6;">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="#5ce1e6"/></svg>
+            <span class="p5x-badge-new">GAME</span>
           </div>
-          <span class="p5x-app-label">소명메모</span>
+          <span class="p5x-app-label" style="border-color:#5ce1e6;">오목대결</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ========================================================
-       ★ 개선: 년월일 미래 날짜 & 시간 예약 모달 ★
-  ======================================================== -->
+  <!-- 루틴 & 시간 설정 모달 -->
   <div id="schedule-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>📅 ROUTINE & MISSION</h3>
@@ -1532,9 +1636,7 @@
     </div>
   </div>
 
-  <!-- ========================================================
-       ★ 개선: 삼성 뮤직 스타일 플레이리스트 모음집 & 트랙 순서 편집 모달 ★
-  ======================================================== -->
+  <!-- 삼성 뮤직 스타일 플레이리스트 모음집 모달 -->
   <div id="music-modal" class="modal-overlay">
     <div class="modal-content">
       <h3 style="justify-content: space-between;">
@@ -1545,7 +1647,6 @@
         <button id="music-back-folder-btn" onclick="backToFolderView()" style="display:none; background:#000; border:1.5px solid #fff; color:#fff; font-size:0.72rem; padding:2px 6px; transform:skewX(-8deg); cursor:pointer;">◀ 모음집</button>
       </h3>
 
-      <!-- 상단 미니 플레이어 데스크 -->
       <div class="p5x-player-card">
         <div class="p5x-tape-header">
           <span class="p5x-tape-tag">NOW PLAYING</span>
@@ -1580,7 +1681,6 @@
         </div>
       </div>
 
-      <!-- 뷰 1: 플레이리스트 모음집 목록 -->
       <div id="music-view-folders">
         <label>📁 플레이리스트 모음집</label>
         <div id="folders-container" class="playlist-folder-box"></div>
@@ -1594,7 +1694,6 @@
         </div>
       </div>
 
-      <!-- 뷰 2: 특정 모음집 내부 트랙 목록 & 순서 변경 -->
       <div id="music-view-tracks" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <label id="current-folder-label">🎵 트랙 목록</label>
@@ -1655,7 +1754,6 @@
   </div>
 
   <script>
-    /* ★ 14종 감정 태그가 완전히 반영된 캐릭터 프롬프트 ★ */
     const DEFAULT_PROMPT = `[캐릭터 기본 프로필: 유소명]
 - 나이/신분: 이성주와 같은 대학교에 재학 중인 간호학과 대학생 (간호사를 꿈꿈).
 - 외모/분위기: 단정하고 차분한 인상. 감정 기복이 크지 않고 담담하지만 묘하게 사람을 끌어당기는 분위기.
@@ -1695,7 +1793,6 @@
 1. 행동, 시선, 호흡, 스킨십 상황 묘사는 반드시 별표(*...*)로 감싸세요.
 2. 실제 대사는 따옴표("...")로 묶어서 말하세요.`;
 
-    /* ★ 14종 동영상 파일 매핑 ★ */
     const EMOTION_VIDEO_MAP = {
       '기본': '기본.mp4',
       '기쁨': '기쁨.mp4',
@@ -1714,7 +1811,6 @@
       '노래': '노래.mp4'
     };
 
-    /* ★ 기본 8곡이 포함된 플레이리스트 모음집 구조 ★ */
     const DEFAULT_MUSIC_COLLECTIONS = [
       {
         id: 1,
@@ -1764,11 +1860,10 @@
     let schedHistory = [];
     let schedules = [];
 
-    /* 모음집 & 플레이어 상태 */
     let musicCollections = DEFAULT_MUSIC_COLLECTIONS;
-    let selectedFolderIndex = 0; // 현재 보고 있는 모음집
-    let playingFolderIndex = 0;  // 현재 재생 중인 모음집
-    let currentTrackIndex = 0;   // 현재 재생 중인 트랙 인덱스
+    let selectedFolderIndex = 0;
+    let playingFolderIndex = 0;
+    let currentTrackIndex = 0;
     let repeatMode = 'all';
     let isSeeking = false;
     let audio = null;
@@ -1853,13 +1948,459 @@
         exportData();
       } else if (appId === 'clean') {
         toggleCleanMode();
-      } else if (appId === 'diary') {
-        alert('📖 [소명 메모]\n성주에게 해주고 싶은 말이나 장루 관리 팁을 소명이가 매일 기록해두는 공간입니다.');
+      } else if (appId === 'omok') {
+        openOmokModal();
       }
     }
 
     /* ========================================================
-       ★ 개선: 년월일 미래 일정 & 루틴 설정 로직 ★
+       ★ P5X 렌주룰 오목 엔진 및 UI 시스템 ★
+    ======================================================== */
+    const OMOK_SIZE = 15;
+    let omokBoard = []; // 0: empty, 1: Black, 2: White
+    let omokRule = 'renju'; // 'renju' | 'free'
+    let omokPlayerStone = 1; // 1: Black(선공), 2: White(후공)
+    let omokCurrentTurn = 1; // 1: Black, 2: White
+    let omokGameOver = false;
+    let omokLastMove = null;
+
+    function openOmokModal() {
+      document.getElementById('omok-modal').style.display = 'flex';
+      initOmokCanvasEvents();
+      startNewOmokGame();
+    }
+
+    function closeOmokModal() {
+      document.getElementById('omok-modal').style.display = 'none';
+      setBackgroundByTag(currentRoom === 'sched' ? '혼냄' : '기본');
+    }
+
+    function toggleOmokRule() {
+      omokRule = (omokRule === 'renju') ? 'free' : 'renju';
+      const btn = document.getElementById('omok-rule-btn');
+      btn.innerText = (omokRule === 'renju') ? '룰: 렌주룰(공식)' : '룰: 일반룰(자유)';
+      btn.classList.toggle('active', omokRule === 'renju');
+      startNewOmokGame();
+    }
+
+    function toggleOmokPlayerTurn() {
+      omokPlayerStone = (omokPlayerStone === 1) ? 2 : 1;
+      const btn = document.getElementById('omok-turn-btn');
+      btn.innerText = (omokPlayerStone === 1) ? '턴: ⚫ 성주 선공(흑)' : '턴: ⚪ 성주 후공(백)';
+      startNewOmokGame();
+    }
+
+    function startNewOmokGame() {
+      omokBoard = Array.from({ length: OMOK_SIZE }, () => Array(OMOK_SIZE).fill(0));
+      omokCurrentTurn = 1; // Black always first
+      omokGameOver = false;
+      omokLastMove = null;
+
+      const dialogue = document.getElementById('omok-dialogue');
+      if (omokPlayerStone === 1) {
+        dialogue.innerText = (omokRule === 'renju')
+          ? '"성주야, 네가 흑돌이야! 렌주룰이니까 3·3 조심해서 먼저 둬."'
+          : '"성주야, 네가 먼저 둬! 일반룰이니까 자유롭게 공격해 봐."';
+        setBackgroundByTag('기본');
+      } else {
+        dialogue.innerText = '"내가 흑돌이니까 먼저 둘게? 중앙에 뒀으니까 잘 막아봐!"';
+        setBackgroundByTag('장난');
+        // AI places first stone in the center (7, 7)
+        placeStone(7, 7, 1);
+        omokCurrentTurn = 2;
+      }
+
+      updateOmokStatusText();
+      drawOmokBoard();
+    }
+
+    function updateOmokStatusText() {
+      const status = document.getElementById('omok-status-text');
+      if (omokGameOver) return;
+      if (omokCurrentTurn === omokPlayerStone) {
+        status.innerText = (omokPlayerStone === 1) ? '⚫ 성주의 차례입니다. (흑돌)' : '⚪ 성주의 차례입니다. (백돌)';
+        status.style.color = '#5ce1e6';
+      } else {
+        status.innerText = '소명이가 생각하는 중...';
+        status.style.color = '#ffdd59';
+      }
+    }
+
+    function initOmokCanvasEvents() {
+      const canvas = document.getElementById('omok-canvas');
+      if (canvas._hasEvent) return;
+      canvas._hasEvent = true;
+
+      const handleBoardClick = (e) => {
+        if (omokGameOver || omokCurrentTurn !== omokPlayerStone) return;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        if (!clientX || !clientY) return;
+
+        const scale = 330 / rect.width;
+        const x = (clientX - rect.left) * scale;
+        const y = (clientY - rect.top) * scale;
+
+        const step = 330 / (OMOK_SIZE + 1);
+        const col = Math.round(x / step) - 1;
+        const row = Math.round(y / step) - 1;
+
+        if (col >= 0 && col < OMOK_SIZE && row >= 0 && row < OMOK_SIZE) {
+          if (omokBoard[row][col] === 0) {
+            handlePlayerMove(col, row);
+          }
+        }
+      };
+
+      canvas.addEventListener('click', handleBoardClick);
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleBoardClick(e);
+      }, { passive: false });
+    }
+
+    function handlePlayerMove(col, row) {
+      // 렌주룰 흑돌 금수 검사
+      if (omokRule === 'renju' && omokPlayerStone === 1) {
+        const foul = checkRenjuFoul(col, row, 1);
+        if (foul) {
+          document.getElementById('omok-dialogue').innerText = `"${foul}! 렌주룰에선 거긴 금수라 둘 수 없어, 성주야!"`;
+          setBackgroundByTag('혼냄');
+          return;
+        }
+      }
+
+      placeStone(col, row, omokPlayerStone);
+      drawOmokBoard();
+
+      // 성주 승리 체크
+      if (checkWin(col, row, omokPlayerStone, omokRule)) {
+        omokGameOver = true;
+        document.getElementById('omok-dialogue').innerText = '"으... 졌네. 다음엔 안 봐줄 거니까 각오해, 성주야!"';
+        document.getElementById('omok-status-text').innerText = '🎉 성주의 승리!';
+        setBackgroundByTag('토라짐');
+        return;
+      }
+
+      // 턴 소명에게 넘김
+      omokCurrentTurn = (omokPlayerStone === 1) ? 2 : 1;
+      updateOmokStatusText();
+
+      // 소명(AI) 착수
+      setTimeout(makeAiMove, 350);
+    }
+
+    function placeStone(x, y, color) {
+      omokBoard[y][x] = color;
+      omokLastMove = { x, y, color };
+    }
+
+    /* 소명 AI 오목 착수 알고리즘 */
+    function makeAiMove() {
+      if (omokGameOver) return;
+      const aiColor = (omokPlayerStone === 1) ? 2 : 1;
+      const bestMove = getBestMove(aiColor);
+
+      if (!bestMove) {
+        document.getElementById('omok-status-text').innerText = '무승부입니다!';
+        omokGameOver = true;
+        return;
+      }
+
+      placeStone(bestMove.x, bestMove.y, aiColor);
+      drawOmokBoard();
+
+      // AI 승리 체크
+      if (checkWin(bestMove.x, bestMove.y, aiColor, omokRule)) {
+        omokGameOver = true;
+        document.getElementById('omok-dialogue').innerText = '"내가 이겼다! 성주야, 오늘 루틴 턱걸이 1세트 더 추가하는 거 잊지 마?"';
+        document.getElementById('omok-status-text').innerText = '소명의 승리!';
+        setBackgroundByTag('기쁨');
+        return;
+      }
+
+      // 소명 대사 리액션
+      const aiThreat = evaluateThreatLevel(bestMove.x, bestMove.y, aiColor);
+      const playerThreat = checkBoardThreat(omokPlayerStone);
+
+      if (aiThreat >= 4) {
+        document.getElementById('omok-dialogue').innerText = '"후후, 이번 공격은 좀 매서울 걸? 막을 수 있겠어?"';
+        setBackgroundByTag('장난');
+      } else if (playerThreat >= 4) {
+        document.getElementById('omok-dialogue').innerText = '"성주야... 거기 두면 위험하잖아. 얼른 막아야겠다."';
+        setBackgroundByTag('걱정');
+      } else {
+        const casualReplies = [
+          '"음, 그렇게 나온다면 난 여기에 둘래."',
+          '"제법인데? 하지만 아직 내 판인걸."',
+          '"빈틈을 잘 노려야지, 성주야."'
+        ];
+        document.getElementById('omok-dialogue').innerText = casualReplies[Math.floor(Math.random() * casualReplies.length)];
+      }
+
+      omokCurrentTurn = omokPlayerStone;
+      updateOmokStatusText();
+    }
+
+    /* 최적의 수 계산 (가중치 휴리스틱) */
+    function getBestMove(aiColor) {
+      const oppColor = (aiColor === 1) ? 2 : 1;
+      let maxScore = -Infinity;
+      let candidates = [];
+
+      for (let y = 0; y < OMOK_SIZE; y++) {
+        for (let x = 0; x < OMOK_SIZE; x++) {
+          if (omokBoard[y][x] === 0) {
+            // 만약 AI가 흑돌이고 렌주룰이면 금수 자리는 제외
+            if (omokRule === 'renju' && aiColor === 1) {
+              if (checkRenjuFoul(x, y, 1)) continue;
+            }
+
+            const attack = evaluatePos(x, y, aiColor);
+            const defense = evaluatePos(x, y, oppColor);
+            // 중앙 선호 가중치
+            const centerDist = Math.abs(x - 7) + Math.abs(y - 7);
+            const score = attack * 1.1 + defense - centerDist * 2;
+
+            if (score > maxScore) {
+              maxScore = score;
+              candidates = [{ x, y }];
+            } else if (score === maxScore) {
+              candidates.push({ x, y });
+            }
+          }
+        }
+      }
+
+      if (candidates.length === 0) return null;
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    function evaluatePos(x, y, color) {
+      omokBoard[y][x] = color;
+      let score = 0;
+      const dirs = [[1, 0], [0, 1], [1, 1], [1, -1]];
+
+      for (const [dx, dy] of dirs) {
+        const count = countConsecutive(x, y, color, dx, dy);
+        const openEnds = countOpenEnds(x, y, color, dx, dy);
+
+        if (count >= 5) score += 200000;
+        else if (count === 4) {
+          if (openEnds === 2) score += 40000;
+          else if (openEnds === 1) score += 8000;
+        } else if (count === 3) {
+          if (openEnds === 2) score += 5000;
+          else if (openEnds === 1) score += 800;
+        } else if (count === 2) {
+          if (openEnds === 2) score += 500;
+          else if (openEnds === 1) score += 80;
+        }
+      }
+
+      omokBoard[y][x] = 0;
+      return score;
+    }
+
+    function countConsecutive(x, y, color, dx, dy) {
+      let count = 1;
+      let nx = x + dx; let ny = y + dy;
+      while (nx >= 0 && nx < OMOK_SIZE && ny >= 0 && ny < OMOK_SIZE && omokBoard[ny][nx] === color) {
+        count++; nx += dx; ny += dy;
+      }
+      nx = x - dx; ny = y - dy;
+      while (nx >= 0 && nx < OMOK_SIZE && ny >= 0 && ny < OMOK_SIZE && omokBoard[ny][nx] === color) {
+        count++; nx -= dx; ny -= dy;
+      }
+      return count;
+    }
+
+    function countOpenEnds(x, y, color, dx, dy) {
+      let open = 0;
+      let nx = x + dx; let ny = y + dy;
+      while (nx >= 0 && nx < OMOK_SIZE && ny >= 0 && ny < OMOK_SIZE && omokBoard[ny][nx] === color) {
+        nx += dx; ny += dy;
+      }
+      if (nx >= 0 && nx < OMOK_SIZE && ny >= 0 && ny < OMOK_SIZE && omokBoard[ny][nx] === 0) open++;
+
+      nx = x - dx; ny = y - dy;
+      while (nx >= 0 && nx < OMOK_SIZE && ny >= 0 && ny < OMOK_SIZE && omokBoard[ny][nx] === color) {
+        nx -= dx; ny -= dy;
+      }
+      if (nx >= 0 && nx < OMOK_SIZE && ny >= 0 && ny < OMOK_SIZE && omokBoard[ny][nx] === 0) open++;
+      return open;
+    }
+
+    function checkWin(x, y, color, rule) {
+      const dirs = [[1, 0], [0, 1], [1, 1], [1, -1]];
+      for (const [dx, dy] of dirs) {
+        const count = countConsecutive(x, y, color, dx, dy);
+        if (rule === 'renju' && color === 1) {
+          if (count === 5) return true; // 흑은 정확히 5목
+        } else {
+          if (count >= 5) return true; // 백 또는 일반룰은 5목 이상 승리
+        }
+      }
+      return false;
+    }
+
+    /* 렌주룰 흑돌 금수 검사 (장목, 4-4, 3-3) */
+    function checkRenjuFoul(x, y, color) {
+      if (color !== 1) return null;
+      omokBoard[y][x] = 1;
+      const dirs = [[1, 0], [0, 1], [1, 1], [1, -1]];
+
+      // 1. 장목 (6목 이상)
+      for (const [dx, dy] of dirs) {
+        if (countConsecutive(x, y, 1, dx, dy) > 5) {
+          omokBoard[y][x] = 0;
+          return "장목(6목 이상) 금수";
+        }
+      }
+
+      // 5목 완성 시 승리이므로 금수 면제
+      for (const [dx, dy] of dirs) {
+        if (countConsecutive(x, y, 1, dx, dy) === 5) {
+          omokBoard[y][x] = 0;
+          return null;
+        }
+      }
+
+      // 2. 4-4 (사사) 금수
+      let fourCount = 0;
+      for (const [dx, dy] of dirs) {
+        const count = countConsecutive(x, y, 1, dx, dy);
+        const open = countOpenEnds(x, y, 1, dx, dy);
+        if (count === 4 && open >= 1) fourCount++;
+      }
+      if (fourCount >= 2) {
+        omokBoard[y][x] = 0;
+        return "4·4(사사) 금수";
+      }
+
+      // 3. 3-3 (삼삼) 금수
+      let threeCount = 0;
+      for (const [dx, dy] of dirs) {
+        const count = countConsecutive(x, y, 1, dx, dy);
+        const open = countOpenEnds(x, y, 1, dx, dy);
+        if (count === 3 && open === 2) threeCount++;
+      }
+      if (threeCount >= 2) {
+        omokBoard[y][x] = 0;
+        return "3·3(삼삼) 금수";
+      }
+
+      omokBoard[y][x] = 0;
+      return null;
+    }
+
+    function evaluateThreatLevel(x, y, color) {
+      const dirs = [[1, 0], [0, 1], [1, 1], [1, -1]];
+      let maxLen = 0;
+      for (const [dx, dy] of dirs) {
+        const c = countConsecutive(x, y, color, dx, dy);
+        if (c > maxLen) maxLen = c;
+      }
+      return maxLen;
+    }
+
+    function checkBoardThreat(color) {
+      let maxT = 0;
+      for (let y = 0; y < OMOK_SIZE; y++) {
+        for (let x = 0; x < OMOK_SIZE; x++) {
+          if (omokBoard[y][x] === color) {
+            const t = evaluateThreatLevel(x, y, color);
+            if (t > maxT) maxT = t;
+          }
+        }
+      }
+      return maxT;
+    }
+
+    /* 캔버스 바둑판 그리기 */
+    function drawOmokBoard() {
+      const canvas = document.getElementById('omok-canvas');
+      const ctx = canvas.getContext('2d');
+      const w = 330;
+      const step = w / (OMOK_SIZE + 1);
+
+      ctx.clearRect(0, 0, w, w);
+
+      // 격자선
+      ctx.strokeStyle = '#3d260f';
+      ctx.lineWidth = 1.2;
+      for (let i = 1; i <= OMOK_SIZE; i++) {
+        ctx.beginPath();
+        ctx.moveTo(step * i, step);
+        ctx.lineTo(step * i, step * OMOK_SIZE);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(step, step * i);
+        ctx.lineTo(step * OMOK_SIZE, step * i);
+        ctx.stroke();
+      }
+
+      // 화점 (천원 및 4귀)
+      const stars = [3, 7, 11];
+      ctx.fillStyle = '#3d260f';
+      for (const sx of stars) {
+        for (const sy of stars) {
+          ctx.beginPath();
+          ctx.arc(step * (sx + 1), step * (sy + 1), 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // 돌 그리기
+      for (let y = 0; y < OMOK_SIZE; y++) {
+        for (let x = 0; x < OMOK_SIZE; x++) {
+          const val = omokBoard[y][x];
+          if (val !== 0) {
+            const px = step * (x + 1);
+            const py = step * (y + 1);
+            const r = step * 0.44;
+
+            ctx.beginPath();
+            ctx.arc(px, py, r, 0, Math.PI * 2);
+
+            if (val === 1) { // 흑돌
+              const grad = ctx.createRadialGradient(px - r/3, py - r/3, r/6, px, py, r);
+              grad.addColorStop(0, '#555');
+              grad.addColorStop(1, '#050505');
+              ctx.fillStyle = grad;
+              ctx.fill();
+              ctx.strokeStyle = '#000';
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            } else { // 백돌
+              const grad = ctx.createRadialGradient(px - r/3, py - r/3, r/6, px, py, r);
+              grad.addColorStop(0, '#ffffff');
+              grad.addColorStop(1, '#cccccc');
+              ctx.fillStyle = grad;
+              ctx.fill();
+              ctx.strokeStyle = '#999';
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      // 마지막 착수 위치 표시
+      if (omokLastMove) {
+        const lx = step * (omokLastMove.x + 1);
+        const ly = step * (omokLastMove.y + 1);
+        ctx.beginPath();
+        ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#e60012';
+        ctx.fill();
+      }
+    }
+
+    /* ========================================================
+       ★ 일정 및 플레이어 기본 시스템 ★
     ======================================================== */
     function initScheduleDateDefault() {
       const today = new Date();
@@ -1942,17 +2483,15 @@
 
       schedules.push({
         id: Date.now(),
-        date: dateVal,       // YYYY-MM-DD
-        time: timeVal,       // HH:mm
+        date: dateVal,
+        time: timeVal,
         category: cat,
         title: title,
         done: false,
         notified: false
       });
 
-      // 날짜 순 정렬
       schedules.sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
-
       saveSchedules();
       document.getElementById('sched-title').value = '';
       alert(`[${dateVal} ${timeVal}] 일정이 등록 및 예약되었습니다!`);
@@ -2007,7 +2546,6 @@
       }).catch(e => console.log('구글 싱크:', e));
     }
 
-    /* 날짜 + 시간 정밀 알림 체커 */
     function startScheduleAlarmChecker() {
       setInterval(() => {
         const now = new Date();
@@ -2038,9 +2576,7 @@
       }, 10000);
     }
 
-    /* ========================================================
-       ★ 개선: 삼성 뮤직 스타일 플레이리스트 모음집 & 순서 변경 로직 ★
-    ======================================================== */
+    /* 뮤직 플레이어 */
     function initMusicPlayer() {
       audio = document.getElementById('bgm-player');
       try {
@@ -2179,7 +2715,6 @@
       });
     }
 
-    /* 곡 순서 자유 변경 */
     function moveTrackOrder(folderIdx, trackIdx, direction) {
       const folder = musicCollections[folderIdx];
       const targetIdx = trackIdx + direction;
@@ -2189,7 +2724,6 @@
       folder.tracks[trackIdx] = folder.tracks[targetIdx];
       folder.tracks[targetIdx] = temp;
 
-      // 만약 재생 중인 곡이 이동된 경우 인덱스 보정
       if (playingFolderIndex === folderIdx) {
         if (currentTrackIndex === trackIdx) currentTrackIndex = targetIdx;
         else if (currentTrackIndex === targetIdx) currentTrackIndex = trackIdx;
@@ -2355,9 +2889,7 @@
     function openMusicPlayer() { document.getElementById('music-modal').style.display = 'flex'; }
     function closeMusicPlayer() { document.getElementById('music-modal').style.display = 'none'; }
 
-    /* ========================================================
-       ★ 탭 전환 및 일정케어방 '혼냄' 기본값 설정 ★
-    ======================================================== */
+    /* 탭 전환 */
     function switchChatRoom(room) {
       if (currentRoom === room) return;
       currentRoom = room;
@@ -2369,8 +2901,6 @@
       input.placeholder = room === 'daily' ? '소명이에게 일상 메시지 보내기...' : '일정 보고하거나 투정부리기...';
 
       renderChatRoom();
-
-      // ★ 일정 케어방의 기본 배경값은 '혼냄'으로 설정 ★
       if (room === 'sched') {
         setBackgroundByTag('혼냄');
       } else {
@@ -2393,7 +2923,6 @@
         if (currentRoom === 'daily') {
           welcome = `[감정:기본] *강의실 앞 벤치에 앉아 전공 책을 읽다가 당신을 올려다보며 은은하게 미소 짓는다.* "성주야, 왔어? 보고 싶었어."`;
         } else {
-          // 일정케어방 첫 멘트: 혼냄 기본값
           welcome = `[감정:혼냄] *플래너를 툭 소리 나게 덮으며 당신을 매섭게 쳐다본다.* "성주야, 이제 왔어? 오늘 하기로 약속한 미션들 제대로 지켰는지 확인부터 할 거야."`;
         }
         chatBox.appendChild(renderMessage('ai', welcome));
@@ -2453,9 +2982,6 @@
       };
     }
 
-    /* ========================================================
-       ★ 메시지 렌더러 (프로필 사진1.jpg 고정) ★
-    ======================================================== */
     function renderMessage(role, text) {
       const group = document.createElement('div');
       group.className = `msg-group ${role}-group`;
@@ -2470,7 +2996,6 @@
       if (role === 'ai') {
         const avatarAnchor = document.createElement('div');
         avatarAnchor.className = 'ai-avatar-anchor';
-        // ★ 원 안의 아바타를 사진1.jpg로 고정 ★
         avatarAnchor.innerHTML = `
           <img class="ai-avatar-img" src="사진1.jpg" alt="소명 프로필">
           <div class="ai-star-badge">★MAX</div>
@@ -2600,9 +3125,6 @@
       }
     }
 
-    /* ========================================================
-       ★ 대화 전송 (슬라이딩 윈도우 속도 최적화 적용) ★
-    ======================================================== */
     async function sendMessage() {
       const inputEl = document.getElementById('user-input');
       const sendBtn = document.getElementById('send-btn');
@@ -2656,11 +3178,10 @@
 ${schedSummary}
 [★ 소명이의 일정 케어 코칭 지침]
 - 기본 태도는 엄하고 단호한 [감정:혼냄]입니다.
-- 성주가 게으름을 피우거나 핑계를 대면 따끔하게 나무라고, 정해진 날짜와 시간에 맞춰 루틴을 완수하도록 등을 떠미세요.
-- 잘 해냈을 때만 살짝 누그러져 칭찬해 주세요.`;
+- 성주가 게으름을 피우거나 핑계를 대면 따끔하게 나무라고, 정해진 날짜와 시간에 맞춰 루틴을 완수하도록 등을 떠미세요.`;
       }
 
-      /* ★ 속도 최적화: 최근 12개 대화만 슬라이딩 윈도우로 압축 전송 ★ */
+      // 슬라이딩 윈도우 (최근 12턴)
       const payloadContents = currentHistory.slice(-12);
 
       try {
@@ -2904,7 +3425,6 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
 - 문장 맨 앞에는 14종 감정 태그([감정:기본/기쁨/화남/슬픔/걱정/혼냄/장난/놀러가자/잘자/잘잤어?/사랑/궁금/흥분/노래]) 중 하나를 필수 출력하세요.
 - 대사 끝에는 성주가 고를 수 있는 2~3개의 선택지를 [선택지: 옵션1 | 옵션2 | 옵션3] 형태로 제안하세요.`;
 
-      // 슬라이딩 윈도우 (최근 12턴)
       const payload = coopState.history.slice(-12);
 
       try {
@@ -3020,7 +3540,7 @@ ${coopSettings.customLore || DEFAULT_COOP_PROMPT}
     /* 백업 & 복원 */
     function exportData() {
       const payload = {
-        version: 21,
+        version: 22,
         settings,
         dailyHistory,
         schedHistory,
