@@ -1,6 +1,7 @@
 {
   "name": "유소명 - P5X CHAT",
   "short_name": "유소명",
+  "description": "유소명과의 P5X 스타일 AI 메신저, 일정 케어 및 렌주룰 오목 앱",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
@@ -8,10 +9,22 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "사진1.jpg",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
