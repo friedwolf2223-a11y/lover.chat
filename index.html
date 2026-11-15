@@ -123,7 +123,7 @@
       box-shadow: 2px 2px 0 #000; font-size: 0.72rem; letter-spacing: -0.3px;
     }
 
-    /* ★ 음악 전용 채팅방 상단 실시간 곡 & 가사 배너 ★ */
+    /* 음악 전용 채팅방 상단 실시간 곡 & 가사 배너 */
     #music-chat-banner {
       display: none;
       background: rgba(10, 14, 24, 0.88);
@@ -156,7 +156,7 @@
       transform: skewX(-8deg);
     }
 
-    /* ★ 음악 전용 채팅방 하단 가사 AI 퀵 액션 바 ★ */
+    /* 음악 전용 채팅방 하단 가사 AI 퀵 액션 바 */
     #music-quick-actions {
       display: none;
       padding: 6px 10px 2px;
@@ -263,7 +263,7 @@
     body.clean-mode .bg-gradient-overlay { opacity: 0.05; }
 
     /* ========================================================
-       ★ 풀스크린 전용 음악 앱 UI (P5X SOUND STUDIO) ★
+       풀스크린 전용 음악 앱 UI (P5X SOUND STUDIO)
     ======================================================== */
     #music-screen {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
@@ -333,7 +333,7 @@
       border: 1px solid #5ce1e6; color: #5ce1e6; transform: skewX(-8deg);
     }
 
-    /* 실시간 싱크 가사 박스 */
+    /* 실시간 싱크 가사 카드 */
     .live-lyric-card {
       background: rgba(0, 0, 0, 0.72); border: 1.5px solid rgba(255, 221, 89, 0.5);
       border-radius: 6px; padding: 8px 10px; text-align: center;
@@ -445,7 +445,7 @@
     .ms-nav-btn.active { color: #5ce1e6; background: rgba(92, 225, 230, 0.12); border-top: 3px solid #e60012; }
 
     /* ========================================================
-       ★ P5X 미연시 코옵, 메뉴, 모달 스타일 ★
+       P5X 미연시 코옵, 메뉴, 모달 스타일
     ======================================================== */
     #coop-screen {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
@@ -688,7 +688,7 @@
         <div class="p5-chat-badge">CHAT</div>
       </div>
 
-      <!-- ★ 3채널 탭: 일상 | 일정 | 음악 ★ -->
+      <!-- 3채널 탭: 일상 | 일정 | 음악 -->
       <div class="tab-switch">
         <button id="tab-btn-daily" class="tab-btn active" onclick="switchChatRoom('daily')">일상</button>
         <button id="tab-btn-sched" class="tab-btn" onclick="switchChatRoom('sched')">일정</button>
@@ -703,7 +703,7 @@
       </div>
     </header>
 
-    <!-- ★ 음악 전용 채팅방 상단 실시간 곡 & 가사 배너 ★ -->
+    <!-- 음악 전용 채팅방 상단 실시간 곡 & 가사 배너 -->
     <div id="music-chat-banner">
       <img id="mcb-cover-img" class="mcb-cover" src="사진1.jpg" alt="Cover" onclick="openMusicScreen()">
       <div class="mcb-info" onclick="openMusicScreen()">
@@ -718,7 +718,7 @@
 
     <div id="chat-box"></div>
 
-    <!-- ★ 음악 전용 채팅방 하단 가사 AI 퀵 액션 바 ★ -->
+    <!-- 음악 전용 채팅방 하단 가사 AI 퀵 액션 바 -->
     <div id="music-quick-actions">
       <button class="mqa-chip" onclick="triggerMusicChatAction('translate')">🌐 가사 번역/해설</button>
       <button class="mqa-chip" onclick="triggerMusicChatAction('react')">💭 가사 감상/리액션</button>
@@ -736,7 +736,7 @@
   </div>
 
   <!-- ========================================================
-       ★ 풀스크린 전용 음악 앱: P5X SOUND STUDIO ★
+       풀스크린 전용 음악 앱: P5X SOUND STUDIO
   ======================================================== -->
   <div id="music-screen">
     <div class="ms-header">
@@ -763,8 +763,8 @@
         </div>
 
         <div class="np-meta-box">
-          <div id="current-track-title" class="np-track-title">재생 중인 곡 없음</div>
-          <div id="current-track-artist" class="np-artist-txt">아티스트 미상</div>
+          <div id="current-track-title" class="np-track-title">재생 대기열이 비어 있습니다</div>
+          <div id="current-track-artist" class="np-artist-txt">상단 [🔄 깃허브 동기화]를 눌러 곡을 불러오세요</div>
           <div class="np-sub-badges">
             <span id="np-folder-badge" class="np-badge">기본 플레이리스트</span>
             <span id="np-mood-badge" class="np-badge" style="border-color:#ffdd59; color:#ffdd59;">#감성/새벽</span>
@@ -773,7 +773,7 @@
           </div>
         </div>
 
-        <!-- 실시간 싱크 가사 카드 (터치 시 전체 가사 보기) -->
+        <!-- 실시간 싱크 가사 카드 -->
         <div class="live-lyric-card" onclick="openFullLyricsModal()" title="터치하면 전체 가사를 봅니다">
           <div id="lyric-prev-txt" class="lyric-line-prev">...</div>
           <div id="lyric-curr-txt" class="lyric-line-curr">♪ 가사 데이터 대기 중</div>
@@ -807,7 +807,7 @@
           <button id="repeat-mode-btn" class="btn-np-sub active" onclick="toggleRepeatMode()">🔁 ALL</button>
         </div>
 
-        <!-- 음악 채팅방으로 바로 이동 버튼 -->
+        <!-- 음악 채팅방 이동 버튼 -->
         <button class="btn-save" style="padding:8px; font-size:0.82rem; background:#0d1b2a; border-color:#ffdd59; color:#ffdd59;" onclick="closeMusicScreen(); switchChatRoom('music');">
           💬 이 곡 가사로 소명이와 대화·번역하기 ▸
         </button>
@@ -904,7 +904,7 @@
     </div>
   </div>
 
-  <!-- ★ 곡 정보(가수·제목) 수정 및 공식 커버/가사 재검색 모달 ★ -->
+  <!-- 곡 정보(가수·제목) 수정 및 공식 커버/가사 재검색 모달 -->
   <div id="edit-track-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>✏️ 곡 정보 & 커버·가사 자동 검색</h3>
@@ -930,7 +930,7 @@
     </div>
   </div>
 
-  <!-- ★ 전체 가사 보기 모달 ★ -->
+  <!-- 전체 가사 보기 모달 -->
   <div id="full-lyrics-modal" class="modal-overlay">
     <div class="modal-content">
       <h3 id="full-lyrics-title">📜 전체 가사</h3>
@@ -1265,16 +1265,7 @@
         id: 1,
         name: '기본 플레이리스트',
         cover: '사진1.jpg',
-        tracks: [
-          { id: 101, title: 'Changing Seasons (-Reload-)', artist: 'P3R', file: 'Changing Seasons -Reload-.mp3', mood: 'P5X/게임', art: '사진1.jpg', lyrics: '', syncedLyrics: [], plays: 0, seconds: 0 },
-          { id: 102, title: 'Airdrive', artist: 'DPR LIVE', file: 'Airdrive.mp3', mood: '드라이브/운동', art: '사진1.jpg', lyrics: '', syncedLyrics: [], plays: 0, seconds: 0 },
-          { id: 103, title: 'HELLO', artist: '조용필', file: 'HELLO.mp3', mood: '신남/텐션', art: '사진1.jpg', lyrics: '', syncedLyrics: [], plays: 0, seconds: 0 },
-          { id: 104, title: 'Rising Sun (순수)', artist: '동방신기', file: 'Rising Sun(순수).mp3', mood: '신남/텐션', art: '사진1.jpg', lyrics: '', syncedLyrics: [], plays: 0, seconds: 0 },
-          { id: 105, title: '눈사람', artist: '정승환', file: '눈사람.mp3', mood: '감성/새벽', art: '사진1.jpg', lyrics: '', syncedLyrics: [], plays: 0, seconds: 0 },
-          { id: 106, title: '시공을 달리다', artist: '윤하', file: '시공을 달리다.mp3', mood: '추억', art: '사진1.jpg', lyrics: '', syncedLyrics: [], plays: 0, seconds: 0 },
-          { id: 107, title: '오늘만 I love you', artist: 'BOYNEXTDOOR', file: '오늘만 I love you.mp3', mood: '신남/텐션', art: '사진1.jpg', lyrics: '', syncedLyrics: [], plays: 0, seconds: 0 },
-          { id: 108, title: '춘람', artist: '한로로', file: '춘람.mp3', mood: '감성/새벽', art: '사진1.jpg', lyrics: '', syncedLyrics: [], plays: 0, seconds: 0 }
-        ]
+        tracks: []
       }
     ];
 
@@ -1301,7 +1292,7 @@
     const STORAGE_KEY_MUSIC_CHAT = 'novel_chat_music_room_v1';
     const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v2';
     const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v2';
-    const STORAGE_KEY_COLLECTIONS = 'novel_music_collections_v5';
+    const STORAGE_KEY_COLLECTIONS = 'novel_music_collections_v6';
     const STORAGE_KEY_COOP_SAVE = 'novel_coop_saves_v1';
     const STORAGE_KEY_COOP_SETTINGS = 'novel_coop_settings_v1';
 
@@ -1387,7 +1378,7 @@
     }
 
     /* ========================================================
-       ★ 1. GitHub `music/` 폴더 자동 스캔 & ID3 태그 추출 ★
+       1. GitHub `music/` 폴더 자동 스캔 & ID3 태그 추출
     ======================================================== */
     async function syncGithubMusicLibrary() {
       const repoStr = (settings.githubRepo || 'friedwolf2223-a11y/lover.chat').trim();
@@ -1396,7 +1387,6 @@
       btn.innerText = '⏳ 스캔 중...';
 
       try {
-        // main 또는 master 브랜치 트리 조회
         let treeData = null;
         for (const branch of ['main', 'master']) {
           const res = await fetch(`https://api.github.com/repos/${repoStr}/git/trees/${branch}?recursive=1`);
@@ -1409,14 +1399,12 @@
           throw new Error('깃허브 저장소를 읽을 수 없습니다. 설정에서 저장소 경로를 확인하세요.');
         }
 
-        // .mp3 파일 필터링
         const mp3Files = treeData.tree.filter(item => item.type === 'blob' && item.path.toLowerCase().endsWith('.mp3'));
         if (mp3Files.length === 0) {
           alert('깃허브 저장소에서 .mp3 파일을 찾지 못했습니다.');
           return;
         }
 
-        // 기존 트랙 캐시 맵 (재생횟수, 수동커버, 기존가사 보존용)
         const existingMap = new Map();
         musicCollections.forEach(col => {
           col.tracks.forEach(t => existingMap.set(t.file, t));
@@ -1426,11 +1414,11 @@
         let newCount = 0;
 
         for (const item of mp3Files) {
-          const path = item.path; // 예: "music/감성/눈사람.mp3" 또는 "music/눈사람.mp3"
+          const path = item.path;
           const parts = path.split('/');
           let folderName = '기본 플레이리스트';
           if (parts[0].toLowerCase() === 'music' && parts.length >= 3) {
-            folderName = parts[1]; // music/폴더명/파일.mp3 -> 폴더명 모음집
+            folderName = parts[1];
           }
 
           if (!folderGroups.has(folderName)) {
@@ -1457,7 +1445,6 @@
         saveCollectionsToStorage();
         renderLibraryView();
 
-        // 현재 대기열 갱신
         if (playQueue.length === 0 && musicCollections[0]?.tracks.length > 0) {
           playQueue = musicCollections[0].tracks.map(t => ({ ...t, folderName: musicCollections[0].name }));
           queueIndex = 0;
@@ -1473,7 +1460,6 @@
       }
     }
 
-    /* 1순위: MP3 ID3 태그 읽기 -> 2순위: 파일명 파싱 -> 3순위: 공식 커버 & 가사 API */
     async function buildTrackMetadataFromUrl(filePath) {
       const fileName = filePath.split('/').pop().replace(/\.mp3$/i, '');
       let fallbackArtist = '';
@@ -1492,12 +1478,10 @@
       const artist = (id3.artist && id3.artist.trim()) ? id3.artist.trim() : fallbackArtist;
       let art = id3.art || '';
 
-      // 내장 커버가 없으면 iTunes API로 공식 커버 검색
       if (!art) {
         art = await fetchItunesArtwork(artist, title) || '사진1.jpg';
       }
 
-      // LRCLIB API로 싱크 가사 및 전체 가사 검색
       const lyricData = await fetchLrclibLyrics(artist, title);
       const mood = inferMoodFromText(`${title} ${lyricData.plainLyrics}`);
 
@@ -1600,7 +1584,7 @@
     }
 
     /* ========================================================
-       ★ 2. 곡 정보 수정 모달 & 전체 가사 모달 ★
+       2. 곡 정보 수정 모달 & 전체 가사 모달
     ======================================================== */
     function openEditTrackMetaModal() {
       const track = playQueue[queueIndex];
@@ -1669,7 +1653,7 @@
     function closeFullLyricsModal() { document.getElementById('full-lyrics-modal').style.display = 'none'; }
 
     /* ========================================================
-       ★ 3. 음악 플레이어 & 실시간 싱크 가사 업데이트 ★
+       3. 음악 플레이어 & 실시간 싱크 가사 업데이트
     ======================================================== */
     function initMusicSystem() {
       audio = document.getElementById('bgm-player');
@@ -1793,6 +1777,7 @@
       trackCountedInCurrentPlay = false;
       if (playQueue.length === 0) {
         document.getElementById('current-track-title').innerText = '재생 대기열이 비어 있습니다';
+        document.getElementById('current-track-artist').innerText = '상단 [🔄 깃허브 동기화]를 눌러 곡을 불러오세요';
         return;
       }
       if (queueIndex >= playQueue.length) queueIndex = 0;
@@ -1806,7 +1791,6 @@
       document.getElementById('np-playcount-badge').innerText = `▶ ${track.plays || 0}회`;
       document.getElementById('np-cover-img').src = track.art || '사진1.jpg';
 
-      // 음악 채팅방 상단 배너 동기화
       document.getElementById('mcb-cover-img').src = track.art || '사진1.jpg';
       document.getElementById('mcb-title-txt').innerText = `${track.title}${track.artist ? ' - ' + track.artist : ''}`;
 
@@ -1814,7 +1798,6 @@
       updateMediaSessionMetadata(track);
       updateLiveSyncedLyrics(0);
 
-      // 아직 가사나 커버가 한 번도 조회되지 않은 기본 곡이라면 백그라운드 자동 보완
       if (!track.lyrics && track.artist) {
         fetchLrclibLyrics(track.artist, track.title).then(lyricData => {
           if (lyricData.plainLyrics) {
@@ -2067,6 +2050,10 @@
       document.getElementById('folder-detail-title').innerText = `📁 ${folder.name} (${folder.tracks.length})`;
       const container = document.getElementById('folder-tracks-container');
       container.style.display = 'flex'; container.innerHTML = '';
+      if (folder.tracks.length === 0) {
+        container.innerHTML = '<div style="color:#888; font-size:0.82rem; text-align:center; padding:24px 0;">수록곡이 없습니다. 상단 [🔄 깃허브 동기화]를 눌러주세요.</div>';
+        return;
+      }
       const curPlayingId = playQueue[queueIndex]?.id;
       folder.tracks.forEach((track, idx) => {
         const div = document.createElement('div');
@@ -2084,7 +2071,7 @@
     }
     function playEntireFolder(folderIdx) {
       const folder = musicCollections[folderIdx];
-      if (!folder || folder.tracks.length === 0) return;
+      if (!folder || folder.tracks.length === 0) return alert('재생할 곡이 없습니다.');
       playQueue = folder.tracks.map(t => ({ ...t, folderName: folder.name }));
       queueIndex = 0; loadCurrentQueueTrack(true); switchMusicTab('now');
     }
@@ -2125,6 +2112,10 @@
       let tracks = getAllUniqueTracks();
       if (currentMoodFilter !== '전체') tracks = tracks.filter(t => (t.mood || '감성/새벽') === currentMoodFilter);
       tracks.sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+      if (tracks.length === 0) {
+        container.innerHTML = '<div style="color:#888; font-size:0.82rem; text-align:center; padding:24px 0;">표시할 곡이 없습니다.</div>';
+        return;
+      }
       const curPlayingId = playQueue[queueIndex]?.id, seen = new Set();
       tracks.forEach((track, idx) => {
         const ch = getInitialChosung(track.title);
@@ -2162,6 +2153,10 @@
       const container = document.getElementById('queue-list-container');
       document.getElementById('queue-count-txt').innerText = playQueue.length;
       container.innerHTML = '';
+      if (playQueue.length === 0) {
+        container.innerHTML = '<div style="color:#888; font-size:0.82rem; text-align:center; padding:24px 0;">재생 대기열이 비어 있습니다.</div>';
+        return;
+      }
       playQueue.forEach((track, idx) => {
         const isCur = (idx === queueIndex);
         const div = document.createElement('div');
@@ -2216,6 +2211,10 @@
       window._topFavoriteTracks = sorted;
       const maxPlays = Math.max(1, sorted[0]?.plays || 1);
       const container = document.getElementById('top-tracks-container'); container.innerHTML = '';
+      if (sorted.length === 0) {
+        container.innerHTML = '<div style="color:#888; font-size:0.8rem; text-align:center; padding:12px 0;">동기화된 곡이 없습니다.</div>';
+        return;
+      }
       sorted.forEach((t, idx) => {
         const pct = Math.round(((t.plays || 0) / maxPlays) * 100);
         container.innerHTML += `<div class="stat-row"><span class="stat-rank">${idx + 1}</span><div style="flex:1; min-width:0; cursor:pointer;" onclick="playQueue=[getSyncedTrackById(${t.id})]; queueIndex=0; loadCurrentQueueTrack(true); switchMusicTab('now');"><div style="display:flex; justify-content:space-between; font-size:0.82rem; font-weight:800;"><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</span><span style="color:#5ce1e6;">${t.plays || 0}회</span></div><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%;"></div></div></div></div>`;
@@ -2261,7 +2260,7 @@
     function saveCollectionsToStorage() { localStorage.setItem(STORAGE_KEY_COLLECTIONS, JSON.stringify(musicCollections)); }
 
     /* ========================================================
-       ★ 4. [🎵 음악] 전용 채팅방 & 가사 AI 퀵 액션 ★
+       4. [🎵 음악] 전용 채팅방 & 가사 AI 퀵 액션
     ======================================================== */
     function switchChatRoom(room) {
       if (currentRoom === room) return;
@@ -2490,7 +2489,7 @@
     }
 
     /* ========================================================
-       ★ 기존 일정, 오목, 미연시 코옵, 백업 로직 유지 ★
+       일정, 오목, 미연시 코옵, 백업 로직
     ======================================================== */
     function initScheduleDateDefault() {
       const today = new Date();
@@ -2791,7 +2790,7 @@
     }
 
     function exportData() {
-      const payload = { version: 26, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
+      const payload = { version: 27, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
       try {
         const b64 = btoa(encodeURIComponent(JSON.stringify(payload)).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => alert('✅ 전체 백업 코드가 복사되었습니다!')).catch(() => prompt('백업 코드:', b64));
