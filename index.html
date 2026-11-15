@@ -1292,11 +1292,53 @@
     const STORAGE_KEY_MUSIC_CHAT = 'novel_chat_music_room_v1';
     const STORAGE_KEY_SETTINGS = 'novel_settings_somyeong_v2';
     const STORAGE_KEY_SCHEDULES = 'novel_schedules_somyeong_v2';
-    const STORAGE_KEY_COLLECTIONS = 'novel_music_collections_v6';
     const STORAGE_KEY_COOP_SAVE = 'novel_coop_saves_v1';
     const STORAGE_KEY_COOP_SETTINGS = 'novel_coop_settings_v1';
 
-    let currentRoom = 'daily'; // 'daily' | 'sched' | 'music'
+    /* ========================================================
+       ★ IndexedDB 기반 대용량 음악 라이브러리 저장소 (5MB 한도 해결) ★
+    ======================================================== */
+    const MusicStorageDB = {
+      dbName: 'P5XSoundStudioDB',
+      storeName: 'collections',
+      open() {
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open(this.dbName, 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(this.storeName)) {
+              db.createObjectStore(this.storeName);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      },
+      async get() {
+        try {
+          const db = await this.open();
+          return await new Promise((resolve, reject) => {
+            const tx = db.transaction(this.storeName, 'readonly');
+            const req = tx.objectStore(this.storeName).get('main_collections');
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => reject(req.error);
+          });
+        } catch (e) {
+          return null;
+        }
+      },
+      async set(data) {
+        const db = await this.open();
+        return await new Promise((resolve, reject) => {
+          const tx = db.transaction(this.storeName, 'readwrite');
+          const req = tx.objectStore(this.storeName).put(data, 'main_collections');
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
+      }
+    };
+
+    let currentRoom = 'daily';
     let dailyHistory = [];
     let schedHistory = [];
     let musicChatHistory = [];
@@ -1333,13 +1375,18 @@
     let coopSaves = [null, null, null];
     let coopSettings = { customLore: DEFAULT_COOP_PROMPT };
 
-    window.onload = function() {
+    window.onload = async function() {
+      // 이전 localStorage 용량 초과 잔여 키 정리
+      ['novel_music_collections_v3', 'novel_music_collections_v4', 'novel_music_collections_v5', 'novel_music_collections_v6'].forEach(k => {
+        try { localStorage.removeItem(k); } catch(e) {}
+      });
+
       loadSettings();
       initScheduleDateDefault();
       initTimePickerOptions();
       loadSchedules();
       loadChatHistories();
-      initMusicSystem();
+      await initMusicSystem();
       initLiveClock();
       loadCoopSaves();
       loadCoopSettings();
@@ -1378,7 +1425,7 @@
     }
 
     /* ========================================================
-       1. GitHub `music/` 폴더 자동 스캔 & ID3 태그 추출
+       1. GitHub `music/` 폴더 자동 스캔 & ID3 태그 추출 (커버 압축 포함)
     ======================================================== */
     async function syncGithubMusicLibrary() {
       const repoStr = (settings.githubRepo || 'friedwolf2223-a11y/lover.chat').trim();
@@ -1442,7 +1489,7 @@
         }
 
         musicCollections = Array.from(folderGroups.values());
-        saveCollectionsToStorage();
+        await saveCollectionsToStorage();
         renderLibraryView();
 
         if (playQueue.length === 0 && musicCollections[0]?.tracks.length > 0) {
@@ -1451,7 +1498,7 @@
           loadCurrentQueueTrack(false);
         }
 
-        alert(`✅ 깃허브 동기화 완료!\n총 ${mp3Files.length}곡 (신규 분석 ${newCount}곡, 모음집 ${musicCollections.length}개)`);
+        alert(`✅ 깃허브 동기화 및 저장 완료!\n총 ${mp3Files.length}곡 (신규 분석 ${newCount}곡, 모음집 ${musicCollections.length}개)`);
       } catch (err) {
         alert('⚠️ 동기화 오류: ' + err.message);
       } finally {
@@ -1499,14 +1546,43 @@
       };
     }
 
+    /* 이미지 경량 압축 헬퍼 (용량 초과 방지) */
+    function compressImageBlobToDataUrl(blob, maxSize = 180, quality = 0.7) {
+      return new Promise((resolve) => {
+        const blobUrl = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = maxSize;
+            canvas.height = maxSize;
+            const ctx = canvas.getContext('2d');
+            const minSide = Math.min(img.width, img.height);
+            ctx.drawImage(img, (img.width - minSide) / 2, (img.height - minSide) / 2, minSide, minSide, 0, 0, maxSize, maxSize);
+            const compressed = canvas.toDataURL('image/jpeg', quality);
+            URL.revokeObjectURL(blobUrl);
+            resolve(compressed);
+          } catch (e) {
+            URL.revokeObjectURL(blobUrl);
+            resolve('');
+          }
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(blobUrl);
+          resolve('');
+        };
+        img.src = blobUrl;
+      });
+    }
+
     function readId3TagsSafe(url) {
       return new Promise((resolve) => {
         if (!window.jsmediatags) return resolve({});
         let settled = false;
-        const timer = setTimeout(() => { if (!settled) { settled = true; resolve({}); } }, 4000);
+        const timer = setTimeout(() => { if (!settled) { settled = true; resolve({}); } }, 4500);
 
         window.jsmediatags.read(url, {
-          onSuccess: function(tag) {
+          onSuccess: async function(tag) {
             if (settled) return;
             settled = true;
             clearTimeout(timer);
@@ -1514,11 +1590,9 @@
             let artDataUrl = '';
             if (t.picture && t.picture.data) {
               try {
-                let base64 = '';
-                for (let i = 0; i < t.picture.data.length; i++) {
-                  base64 += String.fromCharCode(t.picture.data[i]);
-                }
-                artDataUrl = `data:${t.picture.format || 'image/jpeg'};base64,${btoa(base64)}`;
+                const byteArray = new Uint8Array(t.picture.data);
+                const blob = new Blob([byteArray], { type: t.picture.format || 'image/jpeg' });
+                artDataUrl = await compressImageBlobToDataUrl(blob, 180, 0.7);
               } catch (e) {}
             }
             resolve({ title: t.title || '', artist: t.artist || '', art: artDataUrl });
@@ -1536,7 +1610,7 @@
         const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=1`);
         const data = await res.json();
         if (data.results && data.results.length > 0 && data.results[0].artworkUrl100) {
-          return data.results[0].artworkUrl100.replace('100x100bb', '400x400bb');
+          return data.results[0].artworkUrl100.replace('100x100bb', '300x300bb');
         }
       } catch (e) {}
       return null;
@@ -1622,7 +1696,7 @@
           }
         });
       });
-      saveCollectionsToStorage();
+      await saveCollectionsToStorage();
 
       playQueue[queueIndex] = {
         ...track,
@@ -1655,11 +1729,13 @@
     /* ========================================================
        3. 음악 플레이어 & 실시간 싱크 가사 업데이트
     ======================================================== */
-    function initMusicSystem() {
+    async function initMusicSystem() {
       audio = document.getElementById('bgm-player');
       try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_COLLECTIONS));
-        if (saved && Array.isArray(saved) && saved.length > 0) musicCollections = saved;
+        const saved = await MusicStorageDB.get();
+        if (saved && Array.isArray(saved) && saved.length > 0) {
+          musicCollections = saved;
+        }
       } catch(e) {}
 
       if (musicCollections[0]?.tracks.length > 0) {
@@ -1981,29 +2057,20 @@
     function handleCoverImageSelected(event) {
       const file = event.target.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas'); canvas.width = 240; canvas.height = 240;
-          const ctx = canvas.getContext('2d');
-          const minSide = Math.min(img.width, img.height);
-          ctx.drawImage(img, (img.width - minSide)/2, (img.height - minSide)/2, minSide, minSide, 0, 0, 240, 240);
-          const url = canvas.toDataURL('image/jpeg', 0.78);
-          if (coverPickerTarget === 'track' && playQueue[queueIndex]) {
-            updateTrackProperty(playQueue[queueIndex].id, 'art', url);
-            playQueue[queueIndex].art = url;
-            document.getElementById('np-cover-img').src = url;
-            document.getElementById('mcb-cover-img').src = url;
-            updateMediaSessionMetadata(playQueue[queueIndex]);
-          } else if (coverPickerTarget === 'folder' && musicCollections[selectedFolderIndex]) {
-            musicCollections[selectedFolderIndex].cover = url;
-            saveCollectionsToStorage(); renderLibraryView();
-          }
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file); event.target.value = '';
+      compressImageBlobToDataUrl(file, 200, 0.75).then(url => {
+        if (!url) return;
+        if (coverPickerTarget === 'track' && playQueue[queueIndex]) {
+          updateTrackProperty(playQueue[queueIndex].id, 'art', url);
+          playQueue[queueIndex].art = url;
+          document.getElementById('np-cover-img').src = url;
+          document.getElementById('mcb-cover-img').src = url;
+          updateMediaSessionMetadata(playQueue[queueIndex]);
+        } else if (coverPickerTarget === 'folder' && musicCollections[selectedFolderIndex]) {
+          musicCollections[selectedFolderIndex].cover = url;
+          saveCollectionsToStorage(); renderLibraryView();
+        }
+      });
+      event.target.value = '';
     }
 
     /* 라이브러리 & 초성 바 */
@@ -2257,7 +2324,13 @@
       finally { btn.disabled = false; }
     }
 
-    function saveCollectionsToStorage() { localStorage.setItem(STORAGE_KEY_COLLECTIONS, JSON.stringify(musicCollections)); }
+    async function saveCollectionsToStorage() {
+      try {
+        await MusicStorageDB.set(musicCollections);
+      } catch (e) {
+        console.error('IndexedDB 저장 오류:', e);
+      }
+    }
 
     /* ========================================================
        4. [🎵 음악] 전용 채팅방 & 가사 AI 퀵 액션
@@ -2790,13 +2863,13 @@
     }
 
     function exportData() {
-      const payload = { version: 27, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
+      const payload = { version: 28, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
       try {
         const b64 = btoa(encodeURIComponent(JSON.stringify(payload)).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => alert('✅ 전체 백업 코드가 복사되었습니다!')).catch(() => prompt('백업 코드:', b64));
       } catch (e) { alert('백업 실패: ' + e.message); }
     }
-    function importData() {
+    async function importData() {
       const code = prompt('백업 코드를 붙여넣어 주세요:');
       if (!code?.trim()) return;
       try {
@@ -2809,7 +2882,7 @@
         localStorage.setItem(STORAGE_KEY_SCHED_CHAT, JSON.stringify(schedHistory));
         localStorage.setItem(STORAGE_KEY_MUSIC_CHAT, JSON.stringify(musicChatHistory));
         localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
-        localStorage.setItem(STORAGE_KEY_COLLECTIONS, JSON.stringify(musicCollections));
+        await saveCollectionsToStorage();
         loadSettings(); renderChatRoom(); closeSettings(); alert('🎉 복원 완료!');
       } catch (e) { alert('⚠️ 올바른 백업 코드가 아닙니다.'); }
     }
