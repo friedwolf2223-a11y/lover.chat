@@ -375,7 +375,7 @@
     }
 
     /* 라이브러리 뷰 */
-    .lib-mode-switch { display: flex; gap: 6px; background: #000; padding: 4px; border: 2px solid #5ce1e6; transform: skewX(-6deg); }
+    .lib-mode-switch { display: flex; gap: 6px; background: #000; padding: 4px; border: 2px solid #5ce1e6; transform: skewX(-6deg); flex-shrink: 0; }
     .lib-mode-btn {
       flex: 1; padding: 6px; background: transparent; border: none; color: #aaa;
       font-weight: 900; font-size: 0.8rem; cursor: pointer; transform: skewX(6deg);
@@ -402,9 +402,43 @@
 
     .track-card {
       display: flex; align-items: center; justify-content: space-between;
-      background: #11131c; border: 1.5px solid #333; padding: 7px 8px; gap: 8px; border-radius: 4px;
+      background: #11131c; border: 1.5px solid #333; padding: 7px 8px; gap: 7px; border-radius: 4px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+      user-select: none;
     }
     .track-card.playing { border-color: #5ce1e6; background: #0c1f33; box-shadow: 2px 2px 0 #5ce1e6; }
+    /* 꾹 누르기(Long-Press) 드래그 활성화 스타일 */
+    .track-card.dragging-active {
+      border-color: #ffdd59 !important;
+      background: #1e273d !important;
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 221, 89, 0.6) !important;
+      z-index: 30;
+      position: relative;
+    }
+    .drag-handle {
+      color: #888; font-size: 1rem; font-weight: 900; padding: 4px 5px;
+      cursor: grab; touch-action: none; flex-shrink: 0;
+    }
+    .track-card.dragging-active .drag-handle { color: #ffdd59; }
+
+    #drag-reorder-toast {
+      display: none;
+      position: fixed;
+      top: 56px;
+      left: 50%;
+      transform: translateX(-50%) skewX(-8deg);
+      background: #e60012;
+      color: #fff;
+      border: 2px solid #ffdd59;
+      box-shadow: 4px 4px 0 #000;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      font-weight: 900;
+      z-index: 999;
+      pointer-events: none;
+    }
+
     .track-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1.5px solid #555; flex-shrink: 0; background: #000; }
     .track-info-col { flex: 1; min-width: 0; cursor: pointer; }
     .track-name-txt { font-size: 0.85rem; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -419,7 +453,7 @@
 
     .folder-card {
       display: flex; align-items: center; justify-content: space-between;
-      background: #11131c; border: 2px solid #444; padding: 9px 10px; gap: 10px; transform: skewX(-4deg);
+      background: #11131c; border: 2px solid #444; padding: 9px 10px; gap: 8px; transform: skewX(-4deg);
     }
     .folder-thumb { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; border: 2px solid #ffdd59; flex-shrink: 0; background: #000; }
 
@@ -577,29 +611,50 @@
       transform: rotate(12deg); box-shadow: 1px 1px 0 #000;
     }
 
+    /* ★ 일반 모달 (키보드 올라와도 입력창 찌그러짐 방지: flex-shrink: 0 적용) ★ */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85); z-index: 200; align-items: center; justify-content: center; padding: 20px;
+      background: rgba(0, 0, 0, 0.85); z-index: 200; align-items: center; justify-content: center; padding: 16px;
     }
     .modal-content {
       background: #0d0d14; border: 3px solid #e60012; box-shadow: 6px 6px 0 #000;
-      border-radius: 4px; width: 100%; max-width: 420px; padding: 18px;
-      display: flex; flex-direction: column; gap: 10px; max-height: 85vh; overflow-y: auto; color: #fff;
+      border-radius: 4px; width: 100%; max-width: 420px; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px; max-height: 88dvh; overflow-y: auto; color: #fff;
     }
+    .modal-content > * { flex-shrink: 0; }
     .modal-content h3 {
-      background: #e60012; color: #fff; padding: 4px 8px; transform: skewX(-10deg);
-      font-weight: 900; font-size: 1.05rem; box-shadow: 2px 2px 0 #000; display: flex; align-items: center; gap: 6px;
+      background: #e60012; color: #fff; padding: 5px 8px; transform: skewX(-10deg);
+      font-weight: 900; font-size: 1.02rem; box-shadow: 2px 2px 0 #000; display: flex; align-items: center; gap: 6px;
     }
     .modal-content label { font-size: 0.8rem; color: #5ce1e6; font-weight: 800; }
     .modal-content input, .modal-content select, .modal-content textarea {
-      width: 100%; padding: 8px 10px; border: 2px solid #5ce1e6; background: #000;
-      color: #fff; font-size: 0.88rem; outline: none; font-weight: 600;
+      width: 100%; padding: 9px 10px; border: 2px solid #5ce1e6; background: #000;
+      color: #fff; font-size: 0.88rem; outline: none; font-weight: 600; flex-shrink: 0;
+    }
+    .modal-content textarea {
+      min-height: 185px;
+      line-height: 1.55;
+      resize: vertical;
     }
     .btn-save { padding: 10px; background: #e60012; border: 2px solid #fff; color: #fff; font-weight: 900; cursor: pointer; transform: skewX(-8deg); }
     .btn-cancel { padding: 10px; background: #222; border: 2px solid #666; color: #fff; cursor: pointer; transform: skewX(-8deg); }
     .btn-sync {
       flex: 1; padding: 8px 6px; background: #000; border: 2px solid #5ce1e6;
       color: #5ce1e6; font-size: 0.78rem; font-weight: 800; cursor: pointer; text-align: center;
+    }
+
+    /* 전체화면 프롬프트 전용 에디터 모달 */
+    #fullscreen-prompt-modal .modal-content {
+      max-width: 440px;
+      height: 88dvh;
+      max-height: 88dvh;
+    }
+    #fullscreen-prompt-textarea {
+      flex: 1 1 auto !important;
+      min-height: 220px;
+      height: 100%;
+      font-size: 0.9rem;
+      line-height: 1.6;
     }
 
     .p5x-routine-card {
@@ -659,6 +714,9 @@
   </style>
 </head>
 <body>
+
+  <!-- 꾹 누르기 순서 변경 안내 배너 -->
+  <div id="drag-reorder-toast">↕️ 위·아래로 드래그하여 순서 변경</div>
 
   <!-- 배경 영상 레이어 -->
   <div id="bg-container">
@@ -821,14 +879,27 @@
         </div>
 
         <div id="lib-folders-section" style="display:flex; flex-direction:column; gap:8px;">
-          <div id="folder-detail-header" style="display:none; justify-content:space-between; align-items:center; background:#000; padding:6px 10px; border:1.5px solid #ffdd59;">
-            <span id="folder-detail-title" style="font-weight:900; color:#ffdd59; font-size:0.9rem;">모음집 이름</span>
-            <div style="display:flex; gap:5px;">
-              <button class="mini-action-btn" onclick="triggerCoverPicker('folder')" style="border-color:#ffdd59; color:#ffdd59;">🖼️ 커버</button>
-              <button class="mini-action-btn" onclick="playEntireFolder(selectedFolderIndex)" style="background:#e60012; border-color:#fff;">▶ 전체재생</button>
+          <!-- 모음집 목록 상단 헤더: 새 플레이리스트 생성 -->
+          <div id="folders-top-bar" style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.78rem; color:#5ce1e6; font-weight:800;">모음집을 눌러 곡 관리 · 꾹 눌러 순서 이동</span>
+            <button class="mini-action-btn" onclick="createNewPlaylistPrompt()" style="background:#e60012; border-color:#fff; color:#fff; padding:4px 8px;">+ 새 모음집</button>
+          </div>
+
+          <!-- 선택된 모음집 상세 상단 바 -->
+          <div id="folder-detail-header" style="display:none; flex-direction:column; gap:6px; background:#000; padding:8px 10px; border:1.5px solid #ffdd59;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span id="folder-detail-title" style="font-weight:900; color:#ffdd59; font-size:0.92rem;">모음집 이름</span>
               <button class="mini-action-btn" onclick="closeFolderDetail()">◀ 목록</button>
             </div>
+            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+              <button class="mini-action-btn" onclick="playEntireFolder(selectedFolderIndex)" style="background:#e60012; border-color:#fff;">▶ 전체재생</button>
+              <button class="mini-action-btn" onclick="openPlaylistTracksPicker()" style="border-color:#5ce1e6; color:#5ce1e6;">+ 곡 담기/편집</button>
+              <button class="mini-action-btn" onclick="renameCurrentPlaylist()" style="border-color:#ffdd59; color:#ffdd59;">✏️ 이름수정</button>
+              <button class="mini-action-btn" onclick="triggerCoverPicker('folder')">🖼️ 커버</button>
+              <button class="mini-action-btn" onclick="deleteCurrentPlaylist()" style="border-color:#e60012; color:#ff6b6b;">🗑️ 삭제</button>
+            </div>
           </div>
+
           <div id="folders-list-container" style="display:flex; flex-direction:column; gap:7px;"></div>
           <div id="folder-tracks-container" style="display:none; flex-direction:column; gap:6px;"></div>
         </div>
@@ -852,8 +923,8 @@
       <!-- [뷰 3] 재생 대기열 (Queue) -->
       <div id="ms-tab-queue" style="display:none; flex-direction:column; gap:8px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.86rem; font-weight:900; color:#5ce1e6;">📑 현재 재생 대기열 (<span id="queue-count-txt">0</span>곡)</span>
-          <button class="mini-action-btn" onclick="resetQueueToCurrentFolder()" style="border-color:#ffdd59; color:#ffdd59;">현재 모음집으로 초기화</button>
+          <span style="font-size:0.82rem; font-weight:900; color:#5ce1e6;">📑 대기열 (<span id="queue-count-txt">0</span>곡) · 꾹 눌러 순서 이동</span>
+          <button class="mini-action-btn" onclick="resetQueueToCurrentFolder()" style="border-color:#ffdd59; color:#ffdd59;">모음집으로 초기화</button>
         </div>
         <div id="queue-list-container" style="display:flex; flex-direction:column; gap:6px;"></div>
       </div>
@@ -901,6 +972,19 @@
       <button id="ms-nav-library" class="ms-nav-btn" onclick="switchMusicTab('library')"><span>📁</span><span>라이브러리</span></button>
       <button id="ms-nav-queue" class="ms-nav-btn" onclick="switchMusicTab('queue')"><span>📑</span><span>대기열</span></button>
       <button id="ms-nav-ai-stats" class="ms-nav-btn" onclick="switchMusicTab('ai-stats')"><span>🤖</span><span>AI·통계</span></button>
+    </div>
+  </div>
+
+  <!-- ★ 플레이리스트 곡 담기/편집 체크리스트 모달 ★ -->
+  <div id="playlist-picker-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 id="playlist-picker-title">🎵 모음집 수록곡 편집</h3>
+      <input type="text" id="playlist-picker-search" placeholder="곡 제목 또는 가수 검색..." oninput="renderPlaylistPickerList()">
+      <div id="playlist-picker-list" style="max-height: 48vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;"></div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-save" style="flex:1;" onclick="savePlaylistPickerSelection()">선택 완료</button>
+        <button class="btn-cancel" onclick="closePlaylistTracksPicker()">취소</button>
+      </div>
     </div>
   </div>
 
@@ -992,7 +1076,7 @@
   <div id="coop-settings-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>📜 CO-OP SCENARIO & LORE</h3>
-      <textarea id="coop-custom-lore" style="height: 150px; font-size: 0.82rem; line-height: 1.45;"></textarea>
+      <textarea id="coop-custom-lore" style="min-height: 200px; font-size: 0.86rem; line-height: 1.5;"></textarea>
       <div style="display: flex; gap: 8px; margin-top: 6px;">
         <button class="btn-save" style="flex:1;" onclick="saveCoopSettings()">저장</button>
         <button class="btn-cancel" style="width:80px;" onclick="resetCoopSettings()">기본값</button>
@@ -1195,8 +1279,11 @@
       <label>🔗 구글 앱스 스크립트 웹 앱 URL (텔레그램 연동)</label>
       <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec">
 
-      <label>캐릭터 프롬프트 & 지침</label>
-      <textarea id="setting-prompt" style="height: 110px;"></textarea>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>캐릭터 프롬프트 & 지침</label>
+        <button type="button" class="mini-action-btn" onclick="openFullscreenPromptEditor()" style="border-color:#ffdd59; color:#ffdd59;">⛶ 전체화면 편집</button>
+      </div>
+      <textarea id="setting-prompt" style="min-height: 190px;"></textarea>
 
       <div style="border-top: 2px dashed #444; padding-top: 8px; margin-top: 4px;">
         <label>📱💻 데이터 백업 (전체 대화+일정+음악+커버)</label>
@@ -1209,6 +1296,21 @@
       <div style="display: flex; gap: 8px; margin-top: 6px;">
         <button class="btn-save" style="flex:1;" onclick="saveSettings()">저장</button>
         <button class="btn-cancel" onclick="closeSettings()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ★ 전체화면 캐릭터 프롬프트 전용 에디터 모달 ★ -->
+  <div id="fullscreen-prompt-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="justify-content: space-between;">
+        <span>📝 캐릭터 프롬프트 전체 편집</span>
+        <button type="button" class="mini-action-btn" onclick="resetPromptToDefaultInEditor()" style="border-color:#ffdd59; color:#ffdd59;">기본값 복원</button>
+      </h3>
+      <textarea id="fullscreen-prompt-textarea" placeholder="캐릭터 성격, 말투, 규칙을 자유롭게 수정하세요..."></textarea>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-save" style="flex:1;" onclick="applyFullscreenPrompt()">적용 후 닫기</button>
+        <button class="btn-cancel" onclick="closeFullscreenPromptEditor()">취소</button>
       </div>
     </div>
   </div>
@@ -1296,7 +1398,7 @@
     const STORAGE_KEY_COOP_SETTINGS = 'novel_coop_settings_v1';
 
     /* ========================================================
-       ★ IndexedDB 기반 대용량 음악 라이브러리 저장소 (5MB 한도 해결) ★
+       IndexedDB 기반 대용량 음악 라이브러리 저장소
     ======================================================== */
     const MusicStorageDB = {
       dbName: 'P5XSoundStudioDB',
@@ -1376,7 +1478,6 @@
     let coopSettings = { customLore: DEFAULT_COOP_PROMPT };
 
     window.onload = async function() {
-      // 이전 localStorage 용량 초과 잔여 키 정리
       ['novel_music_collections_v3', 'novel_music_collections_v4', 'novel_music_collections_v5', 'novel_music_collections_v6'].forEach(k => {
         try { localStorage.removeItem(k); } catch(e) {}
       });
@@ -1425,7 +1526,7 @@
     }
 
     /* ========================================================
-       1. GitHub `music/` 폴더 자동 스캔 & ID3 태그 추출 (커버 압축 포함)
+       1. GitHub `music/` 폴더 자동 스캔 & ID3 태그 추출 (커스텀 모음집/순서 보존)
     ======================================================== */
     async function syncGithubMusicLibrary() {
       const repoStr = (settings.githubRepo || 'friedwolf2223-a11y/lover.chat').trim();
@@ -1452,43 +1553,62 @@
           return;
         }
 
-        const existingMap = new Map();
+        const validFileSet = new Set(mp3Files.map(i => i.path));
+        const existingTrackByFile = new Map();
         musicCollections.forEach(col => {
-          col.tracks.forEach(t => existingMap.set(t.file, t));
+          col.tracks.forEach(t => {
+            if (!existingTrackByFile.has(t.file)) existingTrackByFile.set(t.file, t);
+          });
         });
 
-        const folderGroups = new Map();
         let newCount = 0;
+        const analyzedByFile = new Map();
 
         for (const item of mp3Files) {
           const path = item.path;
+          if (existingTrackByFile.has(path)) {
+            analyzedByFile.set(path, existingTrackByFile.get(path));
+          } else {
+            newCount++;
+            btn.innerText = `⏳ 분석 (${newCount}곡)...`;
+            const newTrack = await buildTrackMetadataFromUrl(path);
+            analyzedByFile.set(path, newTrack);
+          }
+        }
+
+        // 기존 모음집 구조와 사용자 정렬 순서를 유지하면서 업데이트
+        const updatedCollections = musicCollections.map(col => {
+          const keptTracks = col.tracks
+            .filter(t => validFileSet.has(t.file))
+            .map(t => analyzedByFile.get(t.file) || t);
+          return { ...col, tracks: keptTracks };
+        });
+
+        // 신규 곡들을 해당 GitHub 폴더명 모음집(또는 기본 플레이리스트)에 추가
+        for (const item of mp3Files) {
+          const path = item.path;
+          if (existingTrackByFile.has(path)) continue; // 이미 존재하던 곡은 기존 위치 유지
+
           const parts = path.split('/');
           let folderName = '기본 플레이리스트';
           if (parts[0].toLowerCase() === 'music' && parts.length >= 3) {
             folderName = parts[1];
           }
 
-          if (!folderGroups.has(folderName)) {
-            const oldCol = musicCollections.find(c => c.name === folderName);
-            folderGroups.set(folderName, {
-              id: oldCol ? oldCol.id : Date.now() + Math.floor(Math.random() * 10000),
+          let targetCol = updatedCollections.find(c => c.name === folderName);
+          if (!targetCol) {
+            targetCol = {
+              id: Date.now() + Math.floor(Math.random() * 10000),
               name: folderName,
-              cover: oldCol ? oldCol.cover : '사진1.jpg',
+              cover: '사진1.jpg',
               tracks: []
-            });
+            };
+            updatedCollections.push(targetCol);
           }
-
-          if (existingMap.has(path)) {
-            folderGroups.get(folderName).tracks.push(existingMap.get(path));
-          } else {
-            newCount++;
-            btn.innerText = `⏳ 분석 (${newCount}곡)...`;
-            const newTrack = await buildTrackMetadataFromUrl(path);
-            folderGroups.get(folderName).tracks.push(newTrack);
-          }
+          targetCol.tracks.push(analyzedByFile.get(path));
         }
 
-        musicCollections = Array.from(folderGroups.values());
+        musicCollections = updatedCollections;
         await saveCollectionsToStorage();
         renderLibraryView();
 
@@ -1546,7 +1666,6 @@
       };
     }
 
-    /* 이미지 경량 압축 헬퍼 (용량 초과 방지) */
     function compressImageBlobToDataUrl(blob, maxSize = 180, quality = 0.7) {
       return new Promise((resolve) => {
         const blobUrl = URL.createObjectURL(blob);
@@ -1658,7 +1777,233 @@
     }
 
     /* ========================================================
-       2. 곡 정보 수정 모달 & 전체 가사 모달
+       2. 플레이리스트 추가 · 수정 · 삭제 & 수록곡 편집 모달
+    ======================================================== */
+    async function createNewPlaylistPrompt() {
+      const name = prompt('새로 만들 플레이리스트 모음집 이름을 입력하세요:');
+      if (!name || !name.trim()) return;
+      musicCollections.push({
+        id: Date.now(),
+        name: name.trim(),
+        cover: '사진1.jpg',
+        tracks: []
+      });
+      await saveCollectionsToStorage();
+      selectedFolderIndex = musicCollections.length - 1;
+      isFolderDetailOpen = true;
+      renderLibraryView();
+    }
+
+    async function renameCurrentPlaylist() {
+      const folder = musicCollections[selectedFolderIndex];
+      if (!folder) return;
+      const newName = prompt('새 모음집 이름을 입력하세요:', folder.name);
+      if (!newName || !newName.trim() || newName.trim() === folder.name) return;
+      const oldName = folder.name;
+      folder.name = newName.trim();
+      playQueue.forEach(t => { if (t.folderName === oldName) t.folderName = folder.name; });
+      await saveCollectionsToStorage();
+      renderLibraryView();
+      renderQueueView();
+    }
+
+    async function deleteCurrentPlaylist() {
+      const folder = musicCollections[selectedFolderIndex];
+      if (!folder) return;
+      if (musicCollections.length <= 1) {
+        alert('최소 1개의 플레이리스트 모음집은 유지되어야 합니다.');
+        return;
+      }
+      if (!confirm(`[${folder.name}] 모음집을 삭제하시겠습니까?\n(원본 곡 파일은 전체 곡 라이브러리에 남아 있습니다.)`)) return;
+      musicCollections.splice(selectedFolderIndex, 1);
+      selectedFolderIndex = 0;
+      isFolderDetailOpen = false;
+      await saveCollectionsToStorage();
+      renderLibraryView();
+    }
+
+    let pickerSelectedIds = new Set();
+
+    function openPlaylistTracksPicker() {
+      const folder = musicCollections[selectedFolderIndex];
+      if (!folder) return;
+      const allTracks = getAllUniqueTracks();
+      if (allTracks.length === 0) {
+        alert('먼저 우측 상단 [🔄 깃허브 동기화]를 눌러 전체 곡을 불러와 주세요!');
+        return;
+      }
+      pickerSelectedIds = new Set(folder.tracks.map(t => t.id));
+      document.getElementById('playlist-picker-title').innerText = `🎵 [${folder.name}] 곡 담기`;
+      document.getElementById('playlist-picker-search').value = '';
+      renderPlaylistPickerList();
+      document.getElementById('playlist-picker-modal').style.display = 'flex';
+    }
+
+    function closePlaylistTracksPicker() {
+      document.getElementById('playlist-picker-modal').style.display = 'none';
+    }
+
+    function renderPlaylistPickerList() {
+      const keyword = document.getElementById('playlist-picker-search').value.trim().toLowerCase();
+      const container = document.getElementById('playlist-picker-list');
+      container.innerHTML = '';
+
+      const allTracks = getAllUniqueTracks().filter(t =>
+        !keyword ||
+        (t.title || '').toLowerCase().includes(keyword) ||
+        (t.artist || '').toLowerCase().includes(keyword)
+      );
+
+      allTracks.forEach(track => {
+        const checked = pickerSelectedIds.has(track.id);
+        const label = document.createElement('label');
+        label.style.cssText = 'display:flex; align-items:center; gap:8px; background:#000; border:1.5px solid #444; padding:7px 9px; cursor:pointer; color:#fff;';
+        label.innerHTML = `
+          <input type="checkbox" ${checked ? 'checked' : ''} style="width:18px; height:18px; accent-color:#e60012;" onchange="togglePickerTrack(${track.id}, this.checked)">
+          <img src="${track.art || '사진1.jpg'}" style="width:34px; height:34px; border-radius:4px; object-fit:cover;">
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:0.84rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${track.title}</div>
+            <div style="font-size:0.7rem; color:#aaa;">${track.artist || '아티스트 미상'}</div>
+          </div>
+        `;
+        container.appendChild(label);
+      });
+    }
+
+    function togglePickerTrack(id, isChecked) {
+      if (isChecked) pickerSelectedIds.add(id);
+      else pickerSelectedIds.delete(id);
+    }
+
+    async function savePlaylistPickerSelection() {
+      const folder = musicCollections[selectedFolderIndex];
+      if (!folder) return;
+
+      // 기존에 들어있던 곡들의 순서는 유지
+      const kept = folder.tracks.filter(t => pickerSelectedIds.has(t.id));
+      const keptIds = new Set(kept.map(t => t.id));
+
+      // 새로 체크된 곡들을 뒤에 추가
+      const allTracks = getAllUniqueTracks();
+      const added = allTracks.filter(t => pickerSelectedIds.has(t.id) && !keptIds.has(t.id));
+
+      folder.tracks = [...kept, ...added];
+      await saveCollectionsToStorage();
+      closePlaylistTracksPicker();
+      renderFolderDetailTracks();
+    }
+
+    /* ========================================================
+       3. 꾹 누르기(Long-Press) 드래그 순서 변경 엔진 (플레이리스트 & 대기열 공용)
+    ======================================================== */
+    function attachLongPressReorder(containerEl, getArrayFn, onCommitOrderFn) {
+      const cards = Array.from(containerEl.querySelectorAll('.track-card'));
+      cards.forEach((cardEl) => {
+        let pressTimer = null;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        const toast = document.getElementById('drag-reorder-toast');
+
+        const activateDrag = () => {
+          isDragging = true;
+          cardEl.classList.add('dragging-active');
+          if (toast) toast.style.display = 'block';
+          if (navigator.vibrate) {
+            try { navigator.vibrate(35); } catch (e) {}
+          }
+        };
+
+        const cleanupDrag = () => {
+          if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+          }
+          if (isDragging) {
+            isDragging = false;
+            cardEl.classList.remove('dragging-active');
+            if (toast) toast.style.display = 'none';
+
+            // 현재 DOM 순서대로 배열 재구성
+            const currentArr = getArrayFn();
+            const domCards = Array.from(containerEl.querySelectorAll('.track-card'));
+            const reordered = domCards.map(el => currentArr[parseInt(el.dataset.index, 10)]).filter(Boolean);
+            onCommitOrderFn(reordered);
+          }
+        };
+
+        const onStart = (clientX, clientY, targetEl) => {
+          if (targetEl.closest('button')) return; // 삭제/대기열 버튼 클릭 시 무시
+          startX = clientX;
+          startY = clientY;
+          const isHandle = !!targetEl.closest('.drag-handle');
+          pressTimer = setTimeout(activateDrag, isHandle ? 100 : 350);
+        };
+
+        const onMove = (clientX, clientY, preventDefaultFn) => {
+          if (!isDragging) {
+            if (pressTimer && (Math.abs(clientX - startX) > 10 || Math.abs(clientY - startY) > 10)) {
+              clearTimeout(pressTimer);
+              pressTimer = null;
+            }
+            return;
+          }
+
+          if (preventDefaultFn) preventDefaultFn();
+
+          const siblings = Array.from(containerEl.querySelectorAll('.track-card'));
+          for (const sib of siblings) {
+            if (sib === cardEl) continue;
+            const rect = sib.getBoundingClientRect();
+            if (clientY >= rect.top && clientY <= rect.bottom) {
+              const allNow = Array.from(containerEl.querySelectorAll('.track-card'));
+              const curIdx = allNow.indexOf(cardEl);
+              const targetIdx = allNow.indexOf(sib);
+              if (curIdx < targetIdx) {
+                sib.after(cardEl);
+              } else {
+                sib.before(cardEl);
+              }
+              if (navigator.vibrate) {
+                try { navigator.vibrate(15); } catch (e) {}
+              }
+              break;
+            }
+          }
+        };
+
+        // 터치 이벤트 (모바일)
+        cardEl.addEventListener('touchstart', (e) => {
+          if (e.touches.length !== 1) return;
+          onStart(e.touches[0].clientX, e.touches[0].clientY, e.target);
+        }, { passive: true });
+
+        cardEl.addEventListener('touchmove', (e) => {
+          if (e.touches.length !== 1) return;
+          onMove(e.touches[0].clientX, e.touches[0].clientY, () => e.preventDefault());
+        }, { passive: false });
+
+        cardEl.addEventListener('touchend', cleanupDrag);
+        cardEl.addEventListener('touchcancel', cleanupDrag);
+
+        // 마우스 이벤트 (PC 테스트용)
+        cardEl.addEventListener('mousedown', (e) => {
+          if (e.button !== 0) return;
+          onStart(e.clientX, e.clientY, e.target);
+          const mouseMoveHandler = (me) => onMove(me.clientX, me.clientY, () => me.preventDefault());
+          const mouseUpHandler = () => {
+            window.removeEventListener('mousemove', mouseMoveHandler);
+            window.removeEventListener('mouseup', mouseUpHandler);
+            cleanupDrag();
+          };
+          window.addEventListener('mousemove', mouseMoveHandler);
+          window.addEventListener('mouseup', mouseUpHandler);
+        });
+      });
+    }
+
+    /* ========================================================
+       4. 곡 정보 수정 모달 & 전체 가사 모달
     ======================================================== */
     function openEditTrackMetaModal() {
       const track = playQueue[queueIndex];
@@ -1727,7 +2072,7 @@
     function closeFullLyricsModal() { document.getElementById('full-lyrics-modal').style.display = 'none'; }
 
     /* ========================================================
-       3. 음악 플레이어 & 실시간 싱크 가사 업데이트
+       5. 음악 플레이어 & 실시간 싱크 가사 업데이트
     ======================================================== */
     async function initMusicSystem() {
       audio = document.getElementById('bgm-player');
@@ -2088,6 +2433,7 @@
       } else renderAllTracksFiltered();
     }
     function renderFoldersGrid() {
+      document.getElementById('folders-top-bar').style.display = 'flex';
       document.getElementById('folder-detail-header').style.display = 'none';
       document.getElementById('folder-tracks-container').style.display = 'none';
       const container = document.getElementById('folders-list-container');
@@ -2109,33 +2455,58 @@
     }
     function openFolderDetail(idx) { selectedFolderIndex = idx; isFolderDetailOpen = true; renderFolderDetailTracks(); }
     function closeFolderDetail() { isFolderDetailOpen = false; renderFoldersGrid(); }
+
     function renderFolderDetailTracks() {
       const folder = musicCollections[selectedFolderIndex];
       if (!folder) return closeFolderDetail();
+      document.getElementById('folders-top-bar').style.display = 'none';
       document.getElementById('folders-list-container').style.display = 'none';
       document.getElementById('folder-detail-header').style.display = 'flex';
-      document.getElementById('folder-detail-title').innerText = `📁 ${folder.name} (${folder.tracks.length})`;
+      document.getElementById('folder-detail-title').innerText = `📁 ${folder.name} (${folder.tracks.length}곡)`;
+
       const container = document.getElementById('folder-tracks-container');
       container.style.display = 'flex'; container.innerHTML = '';
       if (folder.tracks.length === 0) {
-        container.innerHTML = '<div style="color:#888; font-size:0.82rem; text-align:center; padding:24px 0;">수록곡이 없습니다. 상단 [🔄 깃허브 동기화]를 눌러주세요.</div>';
+        container.innerHTML = '<div style="color:#888; font-size:0.82rem; text-align:center; padding:24px 0;">수록곡이 없습니다.<br>상단 [+ 곡 담기/편집] 또는 [🔄 깃허브 동기화]를 눌러주세요.</div>';
         return;
       }
+
       const curPlayingId = playQueue[queueIndex]?.id;
       folder.tracks.forEach((track, idx) => {
         const div = document.createElement('div');
         div.className = `track-card ${track.id === curPlayingId ? 'playing' : ''}`;
+        div.dataset.index = idx;
         div.innerHTML = `
+          <span class="drag-handle" title="꾹 눌러 순서 이동">☰</span>
           <img class="track-thumb" src="${track.art || folder.cover || '사진1.jpg'}" alt="Art">
           <div class="track-info-col" onclick="playFromFolderAt(${selectedFolderIndex}, ${idx})">
             <div class="track-name-txt">${track.title}</div>
             <div class="track-sub-txt">${track.artist || '아티스트 미상'} · ${track.lyrics ? '가사O' : '가사없음'}</div>
           </div>
           <button class="mini-action-btn" onclick="enqueueTrackNext(${track.id})">+대기열</button>
+          <button onclick="removeTrackFromFolder(${selectedFolderIndex}, ${idx})" style="background:none; border:none; color:#e60012; font-weight:900; cursor:pointer; padding:2px 4px;">✕</button>
         `;
         container.appendChild(div);
       });
+
+      // ★ 플레이리스트 상세 목록 꾹 누르기 순서 변경 활성화 ★
+      attachLongPressReorder(
+        container,
+        () => musicCollections[selectedFolderIndex].tracks,
+        async (reorderedTracks) => {
+          musicCollections[selectedFolderIndex].tracks = reorderedTracks;
+          await saveCollectionsToStorage();
+          renderFolderDetailTracks();
+        }
+      );
     }
+
+    async function removeTrackFromFolder(folderIdx, trackIdx) {
+      musicCollections[folderIdx].tracks.splice(trackIdx, 1);
+      await saveCollectionsToStorage();
+      renderFolderDetailTracks();
+    }
+
     function playEntireFolder(folderIdx) {
       const folder = musicCollections[folderIdx];
       if (!folder || folder.tracks.length === 0) return alert('재생할 곡이 없습니다.');
@@ -2207,7 +2578,7 @@
       queueIndex = idx; loadCurrentQueueTrack(true); switchMusicTab('now');
     }
 
-    /* 대기열 */
+    /* 대기열 (Queue) + 꾹 누르기 순서 변경 */
     function enqueueTrackNext(trackId) {
       const track = getSyncedTrackById(trackId);
       if (!track) return;
@@ -2228,17 +2599,42 @@
         const isCur = (idx === queueIndex);
         const div = document.createElement('div');
         div.className = `track-card ${isCur ? 'playing' : ''}`;
+        div.dataset.index = idx;
         div.innerHTML = `
-          <span style="font-size:0.75rem; font-family:monospace; color:${isCur ? '#ffdd59' : '#888'}; font-weight:900; width:20px;">${isCur ? '▶' : idx + 1}</span>
+          <span class="drag-handle" title="꾹 눌러 순서 이동">☰</span>
+          <span style="font-size:0.75rem; font-family:monospace; color:${isCur ? '#ffdd59' : '#888'}; font-weight:900; width:18px;">${isCur ? '▶' : idx + 1}</span>
           <div class="track-info-col" onclick="queueIndex=${idx}; loadCurrentQueueTrack(true);">
             <div class="track-name-txt">${track.title}</div>
             <div class="track-sub-txt">${track.artist || track.folderName || ''}</div>
           </div>
-          <button onclick="playQueue.splice(${idx},1); renderQueueView();" style="background:none; border:none; color:#e60012; font-weight:900; cursor:pointer;">✕</button>
+          <button onclick="removeFromQueue(${idx})" style="background:none; border:none; color:#e60012; font-weight:900; cursor:pointer; padding:2px 4px;">✕</button>
         `;
         container.appendChild(div);
       });
+
+      // ★ 재생 대기열 꾹 누르기 순서 변경 활성화 ★
+      attachLongPressReorder(
+        container,
+        () => playQueue,
+        (reorderedQueue) => {
+          const currentPlayingTrack = playQueue[queueIndex];
+          playQueue = reorderedQueue;
+          if (currentPlayingTrack) {
+            const newIdx = playQueue.findIndex(t => t === currentPlayingTrack || t.id === currentPlayingTrack.id);
+            if (newIdx !== -1) queueIndex = newIdx;
+          }
+          renderQueueView();
+        }
+      );
     }
+
+    function removeFromQueue(idx) {
+      playQueue.splice(idx, 1);
+      if (idx < queueIndex) queueIndex--;
+      else if (queueIndex >= playQueue.length) queueIndex = Math.max(0, playQueue.length - 1);
+      renderQueueView();
+    }
+
     function resetQueueToCurrentFolder() {
       const f = musicCollections[selectedFolderIndex] || musicCollections[0];
       if (!f) return;
@@ -2333,7 +2729,7 @@
     }
 
     /* ========================================================
-       4. [🎵 음악] 전용 채팅방 & 가사 AI 퀵 액션
+       6. [🎵 음악] 전용 채팅방 & 가사 AI 퀵 액션
     ======================================================== */
     function switchChatRoom(room) {
       if (currentRoom === room) return;
@@ -2562,8 +2958,25 @@
     }
 
     /* ========================================================
-       일정, 오목, 미연시 코옵, 백업 로직
+       일정, 오목, 미연시 코옵, 백업 및 전체화면 프롬프트 편집 로직
     ======================================================== */
+    function openFullscreenPromptEditor() {
+      document.getElementById('fullscreen-prompt-textarea').value = document.getElementById('setting-prompt').value;
+      document.getElementById('fullscreen-prompt-modal').style.display = 'flex';
+    }
+    function closeFullscreenPromptEditor() {
+      document.getElementById('fullscreen-prompt-modal').style.display = 'none';
+    }
+    function applyFullscreenPrompt() {
+      document.getElementById('setting-prompt').value = document.getElementById('fullscreen-prompt-textarea').value;
+      closeFullscreenPromptEditor();
+    }
+    function resetPromptToDefaultInEditor() {
+      if (confirm('캐릭터 프롬프트를 기본값으로 되돌리시겠습니까?')) {
+        document.getElementById('fullscreen-prompt-textarea').value = DEFAULT_PROMPT;
+      }
+    }
+
     function initScheduleDateDefault() {
       const today = new Date();
       document.getElementById('sched-date').value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
@@ -2863,7 +3276,7 @@
     }
 
     function exportData() {
-      const payload = { version: 28, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
+      const payload = { version: 29, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
       try {
         const b64 = btoa(encodeURIComponent(JSON.stringify(payload)).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => alert('✅ 전체 백업 코드가 복사되었습니다!')).catch(() => prompt('백업 코드:', b64));
