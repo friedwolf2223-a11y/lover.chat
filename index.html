@@ -407,7 +407,6 @@
       user-select: none;
     }
     .track-card.playing { border-color: #5ce1e6; background: #0c1f33; box-shadow: 2px 2px 0 #5ce1e6; }
-    /* 꾹 누르기(Long-Press) 드래그 활성화 스타일 */
     .track-card.dragging-active {
       border-color: #ffdd59 !important;
       background: #1e273d !important;
@@ -611,7 +610,7 @@
       transform: rotate(12deg); box-shadow: 1px 1px 0 #000;
     }
 
-    /* ★ 일반 모달 (키보드 올라와도 입력창 찌그러짐 방지: flex-shrink: 0 적용) ★ */
+    /* 일반 모달 (키보드 올라와도 입력창 찌그러짐 방지) */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.85); z-index: 200; align-items: center; justify-content: center; padding: 16px;
@@ -725,8 +724,8 @@
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- 오디오 태그 -->
-  <audio id="bgm-player" preload="metadata"></audio>
+  <!-- 네이티브 하드웨어 디코딩 오디오 태그 (AudioContext 가로채기 제거로 백그라운드 연속 재생 보장) -->
+  <audio id="bgm-player" preload="auto"></audio>
 
   <!-- 숨겨진 앨범 커버 파일 선택기 -->
   <input type="file" id="cover-file-input" accept="image/*" style="display:none;" onchange="handleCoverImageSelected(event)">
@@ -838,7 +837,7 @@
           <div id="lyric-next-txt" class="lyric-line-next">터치하여 전체 가사 및 AI 해설 보기</div>
         </div>
 
-        <!-- 실시간 스펙트럼 비주얼라이저 -->
+        <!-- 네온 스펙트럼 비주얼라이저 (화면 표시 시에만 구동) -->
         <div class="visualizer-wrap">
           <canvas id="audio-visualizer" width="380" height="42"></canvas>
         </div>
@@ -879,13 +878,11 @@
         </div>
 
         <div id="lib-folders-section" style="display:flex; flex-direction:column; gap:8px;">
-          <!-- 모음집 목록 상단 헤더: 새 플레이리스트 생성 -->
           <div id="folders-top-bar" style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:0.78rem; color:#5ce1e6; font-weight:800;">모음집을 눌러 곡 관리 · 꾹 눌러 순서 이동</span>
             <button class="mini-action-btn" onclick="createNewPlaylistPrompt()" style="background:#e60012; border-color:#fff; color:#fff; padding:4px 8px;">+ 새 모음집</button>
           </div>
 
-          <!-- 선택된 모음집 상세 상단 바 -->
           <div id="folder-detail-header" style="display:none; flex-direction:column; gap:6px; background:#000; padding:8px 10px; border:1.5px solid #ffdd59;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <span id="folder-detail-title" style="font-weight:900; color:#ffdd59; font-size:0.92rem;">모음집 이름</span>
@@ -975,7 +972,7 @@
     </div>
   </div>
 
-  <!-- ★ 플레이리스트 곡 담기/편집 체크리스트 모달 ★ -->
+  <!-- 플레이리스트 곡 담기/편집 체크리스트 모달 -->
   <div id="playlist-picker-modal" class="modal-overlay">
     <div class="modal-content">
       <h3 id="playlist-picker-title">🎵 모음집 수록곡 편집</h3>
@@ -1300,7 +1297,7 @@
     </div>
   </div>
 
-  <!-- ★ 전체화면 캐릭터 프롬프트 전용 에디터 모달 ★ -->
+  <!-- 전체화면 캐릭터 프롬프트 전용 에디터 모달 -->
   <div id="fullscreen-prompt-modal" class="modal-overlay">
     <div class="modal-content">
       <h3 style="justify-content: space-between;">
@@ -1397,9 +1394,7 @@
     const STORAGE_KEY_COOP_SAVE = 'novel_coop_saves_v1';
     const STORAGE_KEY_COOP_SETTINGS = 'novel_coop_settings_v1';
 
-    /* ========================================================
-       IndexedDB 기반 대용량 음악 라이브러리 저장소
-    ======================================================== */
+    /* IndexedDB 기반 대용량 음악 라이브러리 저장소 */
     const MusicStorageDB = {
       dbName: 'P5XSoundStudioDB',
       storeName: 'collections',
@@ -1461,8 +1456,6 @@
     let coverPickerTarget = null;
     let trackCountedInCurrentPlay = false;
 
-    let audioCtx = null, analyser = null, dataArray = null, visualizerInitialized = false;
-
     let settings = {
       name: '유소명',
       apiKey: '',
@@ -1488,6 +1481,7 @@
       loadSchedules();
       loadChatHistories();
       await initMusicSystem();
+      setupBackgroundLifecycleHandlers();
       initLiveClock();
       loadCoopSaves();
       loadCoopSettings();
@@ -1498,6 +1492,26 @@
       startScheduleAlarmChecker();
       document.getElementById('bg-video-1').play().catch(() => {});
     };
+
+    /* ★ 백그라운드 진입 시 동영상 절전 정지 & 오디오 연속성 유지 ★ */
+    function setupBackgroundLifecycleHandlers() {
+      document.addEventListener('visibilitychange', () => {
+        const v1 = document.getElementById('bg-video-1');
+        const v2 = document.getElementById('bg-video-2');
+        if (document.hidden) {
+          // 화면이 꺼지거나 다른 앱으로 전환 시 무거운 배경 동영상만 일시정지하여 OS 백그라운드 오디오 제한 회피
+          v1.pause();
+          v2.pause();
+          if (audio && !audio.paused && 'mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+          }
+        } else {
+          // 다시 앱 화면으로 돌아오면 활성 배경 동영상 재개
+          const activeVid = activeLayer === 1 ? v1 : v2;
+          activeVid.play().catch(() => {});
+        }
+      });
+    }
 
     function initLiveClock() {
       setInterval(() => {
@@ -1576,7 +1590,6 @@
           }
         }
 
-        // 기존 모음집 구조와 사용자 정렬 순서를 유지하면서 업데이트
         const updatedCollections = musicCollections.map(col => {
           const keptTracks = col.tracks
             .filter(t => validFileSet.has(t.file))
@@ -1584,10 +1597,9 @@
           return { ...col, tracks: keptTracks };
         });
 
-        // 신규 곡들을 해당 GitHub 폴더명 모음집(또는 기본 플레이리스트)에 추가
         for (const item of mp3Files) {
           const path = item.path;
-          if (existingTrackByFile.has(path)) continue; // 이미 존재하던 곡은 기존 위치 유지
+          if (existingTrackByFile.has(path)) continue;
 
           const parts = path.split('/');
           let folderName = '기본 플레이리스트';
@@ -1879,11 +1891,9 @@
       const folder = musicCollections[selectedFolderIndex];
       if (!folder) return;
 
-      // 기존에 들어있던 곡들의 순서는 유지
       const kept = folder.tracks.filter(t => pickerSelectedIds.has(t.id));
       const keptIds = new Set(kept.map(t => t.id));
 
-      // 새로 체크된 곡들을 뒤에 추가
       const allTracks = getAllUniqueTracks();
       const added = allTracks.filter(t => pickerSelectedIds.has(t.id) && !keptIds.has(t.id));
 
@@ -1924,7 +1934,6 @@
             cardEl.classList.remove('dragging-active');
             if (toast) toast.style.display = 'none';
 
-            // 현재 DOM 순서대로 배열 재구성
             const currentArr = getArrayFn();
             const domCards = Array.from(containerEl.querySelectorAll('.track-card'));
             const reordered = domCards.map(el => currentArr[parseInt(el.dataset.index, 10)]).filter(Boolean);
@@ -1933,7 +1942,7 @@
         };
 
         const onStart = (clientX, clientY, targetEl) => {
-          if (targetEl.closest('button')) return; // 삭제/대기열 버튼 클릭 시 무시
+          if (targetEl.closest('button')) return;
           startX = clientX;
           startY = clientY;
           const isHandle = !!targetEl.closest('.drag-handle');
@@ -1972,7 +1981,6 @@
           }
         };
 
-        // 터치 이벤트 (모바일)
         cardEl.addEventListener('touchstart', (e) => {
           if (e.touches.length !== 1) return;
           onStart(e.touches[0].clientX, e.touches[0].clientY, e.target);
@@ -1986,7 +1994,6 @@
         cardEl.addEventListener('touchend', cleanupDrag);
         cardEl.addEventListener('touchcancel', cleanupDrag);
 
-        // 마우스 이벤트 (PC 테스트용)
         cardEl.addEventListener('mousedown', (e) => {
           if (e.button !== 0) return;
           onStart(e.clientX, e.clientY, e.target);
@@ -2072,7 +2079,7 @@
     function closeFullLyricsModal() { document.getElementById('full-lyrics-modal').style.display = 'none'; }
 
     /* ========================================================
-       5. 음악 플레이어 & 실시간 싱크 가사 업데이트
+       5. 네이티브 백그라운드 오디오 플레이어 & 실시간 싱크 가사
     ======================================================== */
     async function initMusicSystem() {
       audio = document.getElementById('bgm-player');
@@ -2099,7 +2106,9 @@
           document.getElementById('seek-bar').value = (audio.currentTime / audio.duration) * 100;
           document.getElementById('current-time-txt').innerText = formatTime(audio.currentTime);
           updateMediaSessionPosition();
-          updateLiveSyncedLyrics(audio.currentTime);
+          if (!document.hidden) {
+            updateLiveSyncedLyrics(audio.currentTime);
+          }
         }
 
         if (!audio.paused && playQueue[queueIndex]) {
@@ -2123,17 +2132,29 @@
         updateMediaSessionPosition();
       });
 
+      audio.addEventListener('play', () => updatePlayStateUI(true));
+      audio.addEventListener('pause', () => {
+        if (!audio.ended) updatePlayStateUI(false);
+      });
+
+      /* ★ 백그라운드에서도 다음 곡이 끊기지 않고 즉시 재생되는 ended 핸들러 ★ */
       audio.addEventListener('ended', () => {
         if (repeatMode === 'one') {
-          audio.currentTime = 0; trackCountedInCurrentPlay = false; audio.play();
+          audio.currentTime = 0;
+          trackCountedInCurrentPlay = false;
+          if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+          audio.play().catch(() => {});
         } else if (isShuffle && playQueue.length > 1) {
           let nextIdx = Math.floor(Math.random() * playQueue.length);
           if (nextIdx === queueIndex) nextIdx = (queueIndex + 1) % playQueue.length;
-          queueIndex = nextIdx; loadCurrentQueueTrack(true);
+          queueIndex = nextIdx;
+          loadCurrentQueueTrack(true);
         } else if (queueIndex < playQueue.length - 1) {
-          queueIndex++; loadCurrentQueueTrack(true);
+          queueIndex++;
+          loadCurrentQueueTrack(true);
         } else if (repeatMode === 'all' && playQueue.length > 0) {
-          queueIndex = 0; loadCurrentQueueTrack(true);
+          queueIndex = 0;
+          loadCurrentQueueTrack(true);
         } else {
           updatePlayStateUI(false);
         }
@@ -2194,7 +2215,7 @@
       if (tabName === 'ai-stats') renderStatsView();
     }
 
-    async function loadCurrentQueueTrack(autoPlay = false) {
+    function loadCurrentQueueTrack(autoPlay = false) {
       trackCountedInCurrentPlay = false;
       if (playQueue.length === 0) {
         document.getElementById('current-track-title').innerText = '재생 대기열이 비어 있습니다';
@@ -2215,9 +2236,28 @@
       document.getElementById('mcb-cover-img').src = track.art || '사진1.jpg';
       document.getElementById('mcb-title-txt').innerText = `${track.title}${track.artist ? ' - ' + track.artist : ''}`;
 
+      // 오디오 소스 즉시 교체 및 로드 (동기 실행으로 백그라운드 재생 권한 유지)
       audio.src = encodeURI(track.file);
+      audio.load();
       updateMediaSessionMetadata(track);
       updateLiveSyncedLyrics(0);
+
+      if (autoPlay) {
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => updatePlayStateUI(true))
+            .catch(() => {
+              // 백그라운드 네트워크 전환 지연 시 0.6초 후 1회 재시도
+              setTimeout(() => {
+                audio.play().then(() => updatePlayStateUI(true)).catch(() => updatePlayStateUI(false));
+              }, 600);
+            });
+        }
+      } else {
+        updatePlayStateUI(!audio.paused);
+      }
 
       if (!track.lyrics && track.artist) {
         fetchLrclibLyrics(track.artist, track.title).then(lyricData => {
@@ -2233,18 +2273,11 @@
         });
       }
 
-      if (autoPlay) {
-        initAudioVisualizerContext();
-        audio.play().then(() => updatePlayStateUI(true)).catch(() => updatePlayStateUI(false));
-      } else {
-        updatePlayStateUI(!audio.paused);
-      }
       renderQueueView();
     }
 
     function togglePlayPause() {
       if (playQueue.length === 0) return alert('재생할 곡이 없습니다. 상단 [🔄 깃허브 동기화]를 눌러보세요!');
-      initAudioVisualizerContext();
       if (audio.paused) {
         if (!audio.src || audio.src === window.location.href) { loadCurrentQueueTrack(true); return; }
         audio.play().then(() => updatePlayStateUI(true)).catch(() => alert('음원 파일을 불러올 수 없습니다.'));
@@ -2330,6 +2363,9 @@
         navigator.mediaSession.setActionHandler('pause', () => togglePlayPause());
         navigator.mediaSession.setActionHandler('previoustrack', () => playPrevTrack());
         navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack());
+        navigator.mediaSession.setActionHandler('seekto', (details) => {
+          if (details.seekTime != null && audio.duration) audio.currentTime = details.seekTime;
+        });
       } catch (e) {}
     }
     function updateMediaSessionMetadata(track) {
@@ -2354,41 +2390,22 @@
       } catch (e) {}
     }
 
-    /* 스펙트럼 비주얼라이저 */
-    function initAudioVisualizerContext() {
-      if (visualizerInitialized) { if (audioCtx?.state === 'suspended') audioCtx.resume().catch(() => {}); return; }
-      visualizerInitialized = true;
-      try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContextClass();
-        const source = audioCtx.createMediaElementSource(audio);
-        analyser = audioCtx.createAnalyser(); analyser.fftSize = 64;
-        source.connect(analyser); analyser.connect(audioCtx.destination);
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-      } catch (e) { analyser = null; }
-    }
+    /* 네온 스펙트럼 비주얼라이저 (AudioContext 가로채기 없이 화면 활성 시에만 동작) */
     function startVisualizerLoop() {
       const canvas = document.getElementById('audio-visualizer');
       const ctx = canvas.getContext('2d');
       let phase = 0;
       function draw() {
         requestAnimationFrame(draw);
-        if (document.getElementById('music-screen').style.display !== 'flex') return;
+        if (document.hidden || document.getElementById('music-screen').style.display !== 'flex') return;
         const w = canvas.width, h = canvas.height;
         ctx.clearRect(0, 0, w, h);
         const bars = 32, barW = (w / bars) - 3;
-        let hasLiveSignal = false;
-        if (analyser && dataArray && !audio.paused) {
-          analyser.getByteFrequencyData(dataArray);
-          for (let i = 0; i < bars; i++) if (dataArray[i] > 0) { hasLiveSignal = true; break; }
-        }
         phase += 0.14;
         for (let i = 0; i < bars; i++) {
           let val = 4;
-          if (!audio.paused) {
-            val = hasLiveSignal
-              ? Math.max(5, (dataArray[i] / 255) * (h - 5))
-              : 8 + Math.abs(Math.sin(phase + i * 0.45) * Math.cos(phase * 0.7 - i * 0.2)) * (h - 12);
+          if (audio && !audio.paused) {
+            val = 8 + Math.abs(Math.sin(phase + i * 0.45) * Math.cos(phase * 0.7 - i * 0.2)) * (h - 12);
           }
           ctx.fillStyle = (i % 3 === 0) ? '#e60012' : (i % 2 === 0 ? '#5ce1e6' : '#ffdd59');
           ctx.fillRect(i * (barW + 3) + 2, h - val, barW, val);
@@ -2489,7 +2506,6 @@
         container.appendChild(div);
       });
 
-      // ★ 플레이리스트 상세 목록 꾹 누르기 순서 변경 활성화 ★
       attachLongPressReorder(
         container,
         () => musicCollections[selectedFolderIndex].tracks,
@@ -2612,7 +2628,6 @@
         container.appendChild(div);
       });
 
-      // ★ 재생 대기열 꾹 누르기 순서 변경 활성화 ★
       attachLongPressReorder(
         container,
         () => playQueue,
@@ -2819,13 +2834,18 @@
       if (fileName === currentVideoSrc) return;
       const v1 = document.getElementById('bg-video-1'), v2 = document.getElementById('bg-video-2');
       const nextVideo = activeLayer === 1 ? v2 : v1, currentVideo = activeLayer === 1 ? v1 : v2;
-      nextVideo.src = fileName; nextVideo.load(); nextVideo.play().catch(() => {});
+      nextVideo.src = fileName; nextVideo.load();
+      if (!document.hidden) nextVideo.play().catch(() => {});
       nextVideo.oncanplay = () => {
         nextVideo.classList.add('active'); currentVideo.classList.remove('active');
         activeLayer = activeLayer === 1 ? 2 : 1; currentVideoSrc = fileName; nextVideo.oncanplay = null;
       };
       nextVideo.onerror = () => {
-        if (currentVideoSrc !== '기본.mp4') { nextVideo.src = '기본.mp4'; nextVideo.load(); nextVideo.play().catch(() => {}); currentVideoSrc = '기본.mp4'; }
+        if (currentVideoSrc !== '기본.mp4') {
+          nextVideo.src = '기본.mp4'; nextVideo.load();
+          if (!document.hidden) nextVideo.play().catch(() => {});
+          currentVideoSrc = '기본.mp4';
+        }
       };
     }
 
@@ -3276,7 +3296,7 @@
     }
 
     function exportData() {
-      const payload = { version: 29, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
+      const payload = { version: 30, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
       try {
         const b64 = btoa(encodeURIComponent(JSON.stringify(payload)).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => alert('✅ 전체 백업 코드가 복사되었습니다!')).catch(() => prompt('백업 코드:', b64));
