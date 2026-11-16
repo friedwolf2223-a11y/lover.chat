@@ -724,7 +724,7 @@
   </div>
   <div class="bg-gradient-overlay" onclick="handleBgClick()"></div>
 
-  <!-- 네이티브 하드웨어 디코딩 오디오 태그 (AudioContext 가로채기 제거로 백그라운드 연속 재생 보장) -->
+  <!-- 네이티브 하드웨어 디코딩 오디오 태그 -->
   <audio id="bgm-player" preload="auto"></audio>
 
   <!-- 숨겨진 앨범 커버 파일 선택기 -->
@@ -837,7 +837,7 @@
           <div id="lyric-next-txt" class="lyric-line-next">터치하여 전체 가사 및 AI 해설 보기</div>
         </div>
 
-        <!-- 네온 스펙트럼 비주얼라이저 (화면 표시 시에만 구동) -->
+        <!-- 네온 스펙트럼 비주얼라이저 -->
         <div class="visualizer-wrap">
           <canvas id="audio-visualizer" width="380" height="42"></canvas>
         </div>
@@ -1435,6 +1435,92 @@
       }
     };
 
+    /* ★ MP3 전체 파일 로컬 사전 캐싱 (백그라운드 다음 곡 네트워크 끊김/음소거 원천 차단) ★ */
+    const TrackBlobCache = {
+      cacheName: 'p5x-mp3-offline-v1',
+      blobUrlMap: new Map(),
+      inFlightMap: new Map(),
+      async getPlayableUrl(filePath) {
+        const encoded = encodeURI(filePath);
+        if (this.blobUrlMap.has(encoded)) {
+          return this.blobUrlMap.get(encoded);
+        }
+        try {
+          if ('caches' in window) {
+            const cache = await caches.open(this.cacheName);
+            const cachedResp = await cache.match(encoded);
+            if (cachedResp) {
+              const blob = await cachedResp.blob();
+              const objUrl = URL.createObjectURL(blob);
+              this.blobUrlMap.set(encoded, objUrl);
+              return objUrl;
+            }
+          }
+        } catch (e) {}
+        this.prefetch(filePath);
+        return encoded;
+      },
+      prefetch(filePath) {
+        if (!filePath || !('caches' in window)) return;
+        const encoded = encodeURI(filePath);
+        if (this.blobUrlMap.has(encoded) || this.inFlightMap.has(encoded)) return;
+        const p = (async () => {
+          try {
+            const cache = await caches.open(this.cacheName);
+            const hit = await cache.match(encoded);
+            if (hit) {
+              const blob = await hit.blob();
+              this.blobUrlMap.set(encoded, URL.createObjectURL(blob));
+              return;
+            }
+            const resp = await fetch(encoded);
+            if (resp && resp.ok) {
+              await cache.put(encoded, resp.clone());
+              const blob = await resp.blob();
+              this.blobUrlMap.set(encoded, URL.createObjectURL(blob));
+            }
+          } catch (e) {
+          } finally {
+            this.inFlightMap.delete(encoded);
+          }
+        })();
+        this.inFlightMap.set(encoded, p);
+      }
+    };
+
+    /* ★ 독립형 Audio Focus 유지 엔진 (곡 전환 틈새에서 Android Audio Focus 이탈 방지) ★ */
+    const AudioFocusAnchor = {
+      ctx: null,
+      active: false,
+      start() {
+        try {
+          if (!this.ctx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AC();
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.value = 30;
+            gain.gain.value = 0.00001; // 귀에 들리지 않는 극미세 신호로 오디오 채널 유지
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+          }
+          if (this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+          this.active = true;
+        } catch (e) {}
+      },
+      stop() {
+        try {
+          if (this.ctx && this.ctx.state === 'running') {
+            this.ctx.suspend().catch(() => {});
+          }
+          this.active = false;
+        } catch (e) {}
+      }
+    };
+
     let currentRoom = 'daily';
     let dailyHistory = [];
     let schedHistory = [];
@@ -1449,6 +1535,9 @@
     let repeatMode = 'all';
     let isSeeking = false;
     let audio = null;
+    let userWantsPlaying = false;
+    let statsDirty = false;
+    let prefetchedCurrentTrack = false;
 
     let selectedFolderIndex = 0;
     let isFolderDetailOpen = false;
@@ -1493,20 +1582,23 @@
       document.getElementById('bg-video-1').play().catch(() => {});
     };
 
-    /* ★ 백그라운드 진입 시 동영상 절전 정지 & 오디오 연속성 유지 ★ */
+    /* 백그라운드 진입 시 동영상 일시정지 & 누적 통계 안전 저장 */
     function setupBackgroundLifecycleHandlers() {
       document.addEventListener('visibilitychange', () => {
         const v1 = document.getElementById('bg-video-1');
         const v2 = document.getElementById('bg-video-2');
         if (document.hidden) {
-          // 화면이 꺼지거나 다른 앱으로 전환 시 무거운 배경 동영상만 일시정지하여 OS 백그라운드 오디오 제한 회피
           v1.pause();
           v2.pause();
-          if (audio && !audio.paused && 'mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'playing';
+          if (statsDirty) {
+            statsDirty = false;
+            saveCollectionsToStorage();
+          }
+          if (userWantsPlaying && audio && !audio.paused) {
+            AudioFocusAnchor.start();
+            if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
           }
         } else {
-          // 다시 앱 화면으로 돌아오면 활성 배경 동영상 재개
           const activeVid = activeLayer === 1 ? v1 : v2;
           activeVid.play().catch(() => {});
         }
@@ -1540,7 +1632,7 @@
     }
 
     /* ========================================================
-       1. GitHub `music/` 폴더 자동 스캔 & ID3 태그 추출 (커스텀 모음집/순서 보존)
+       1. GitHub `music/` 폴더 자동 스캔 & ID3 태그 추출
     ======================================================== */
     async function syncGithubMusicLibrary() {
       const repoStr = (settings.githubRepo || 'friedwolf2223-a11y/lover.chat').trim();
@@ -1627,7 +1719,7 @@
         if (playQueue.length === 0 && musicCollections[0]?.tracks.length > 0) {
           playQueue = musicCollections[0].tracks.map(t => ({ ...t, folderName: musicCollections[0].name }));
           queueIndex = 0;
-          loadCurrentQueueTrack(false);
+          await loadCurrentQueueTrack(false);
         }
 
         alert(`✅ 깃허브 동기화 및 저장 완료!\n총 ${mp3Files.length}곡 (신규 분석 ${newCount}곡, 모음집 ${musicCollections.length}개)`);
@@ -1904,7 +1996,7 @@
     }
 
     /* ========================================================
-       3. 꾹 누르기(Long-Press) 드래그 순서 변경 엔진 (플레이리스트 & 대기열 공용)
+       3. 꾹 누르기(Long-Press) 드래그 순서 변경 엔진
     ======================================================== */
     function attachLongPressReorder(containerEl, getArrayFn, onCommitOrderFn) {
       const cards = Array.from(containerEl.querySelectorAll('.track-card'));
@@ -2060,7 +2152,7 @@
         syncedLyrics: lyricData.syncedLyrics
       };
 
-      loadCurrentQueueTrack(false);
+      await loadCurrentQueueTrack(false);
       btn.disabled = false;
       btn.innerText = '🔍 저장 + 커버·가사 자동검색';
       closeEditTrackMetaModal();
@@ -2079,7 +2171,7 @@
     function closeFullLyricsModal() { document.getElementById('full-lyrics-modal').style.display = 'none'; }
 
     /* ========================================================
-       5. 네이티브 백그라운드 오디오 플레이어 & 실시간 싱크 가사
+       5. 네이티브 백그라운드 오디오 플레이어 (로컬 Blob 사전 캐싱 + 무음 끊김 방지)
     ======================================================== */
     async function initMusicSystem() {
       audio = document.getElementById('bgm-player');
@@ -2096,18 +2188,26 @@
       queueIndex = 0;
 
       buildChosungIndexBar();
-      loadCurrentQueueTrack(false);
+      await loadCurrentQueueTrack(false);
       setupMediaSessionHandlers();
       startVisualizerLoop();
 
       let lastTickTime = 0;
       audio.addEventListener('timeupdate', () => {
         if (!isSeeking && audio.duration) {
-          document.getElementById('seek-bar').value = (audio.currentTime / audio.duration) * 100;
-          document.getElementById('current-time-txt').innerText = formatTime(audio.currentTime);
-          updateMediaSessionPosition();
           if (!document.hidden) {
+            document.getElementById('seek-bar').value = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('current-time-txt').innerText = formatTime(audio.currentTime);
             updateLiveSyncedLyrics(audio.currentTime);
+          }
+
+          // 현재 곡이 5초 이상 재생되면 다음 곡 전체 MP3를 로컬 캐시에 미리 다운로드
+          if (!prefetchedCurrentTrack && audio.currentTime >= 5 && playQueue.length > 1) {
+            prefetchedCurrentTrack = true;
+            const nextTrack = playQueue[(queueIndex + 1) % playQueue.length];
+            if (nextTrack && nextTrack.file) {
+              TrackBlobCache.prefetch(nextTrack.file);
+            }
           }
         }
 
@@ -2132,13 +2232,45 @@
         updateMediaSessionPosition();
       });
 
-      audio.addEventListener('play', () => updatePlayStateUI(true));
-      audio.addEventListener('pause', () => {
-        if (!audio.ended) updatePlayStateUI(false);
+      audio.addEventListener('seeked', () => updateMediaSessionPosition());
+
+      audio.addEventListener('play', () => {
+        updatePlayStateUI(true);
+        updateMediaSessionPosition();
       });
 
-      /* ★ 백그라운드에서도 다음 곡이 끊기지 않고 즉시 재생되는 ended 핸들러 ★ */
-      audio.addEventListener('ended', () => {
+      audio.addEventListener('pause', () => {
+        if (!audio.ended) {
+          updatePlayStateUI(false);
+          updateMediaSessionPosition();
+          if (statsDirty) {
+            statsDirty = false;
+            saveCollectionsToStorage();
+          }
+        }
+      });
+
+      /* 백그라운드 네트워크 지연(stalled/waiting) 시 캐시된 로컬 Blob으로 즉시 복구 */
+      audio.addEventListener('stalled', async () => {
+        if (userWantsPlaying && playQueue[queueIndex]) {
+          const cachedUrl = await TrackBlobCache.getPlayableUrl(playQueue[queueIndex].file);
+          if (cachedUrl.startsWith('blob:') && audio.src !== cachedUrl) {
+            const savedTime = audio.currentTime;
+            audio.src = cachedUrl;
+            audio.currentTime = savedTime;
+            audio.play().catch(() => {});
+          }
+        }
+      });
+
+      /* 백그라운드에서도 다음 곡이 즉시 로컬 Blob으로 끊김 없이 재생되는 ended 핸들러 */
+      audio.addEventListener('ended', async () => {
+        if (statsDirty) {
+          statsDirty = false;
+          saveCollectionsToStorage();
+        }
+        AudioFocusAnchor.start();
+
         if (repeatMode === 'one') {
           audio.currentTime = 0;
           trackCountedInCurrentPlay = false;
@@ -2148,14 +2280,16 @@
           let nextIdx = Math.floor(Math.random() * playQueue.length);
           if (nextIdx === queueIndex) nextIdx = (queueIndex + 1) % playQueue.length;
           queueIndex = nextIdx;
-          loadCurrentQueueTrack(true);
+          await loadCurrentQueueTrack(true);
         } else if (queueIndex < playQueue.length - 1) {
           queueIndex++;
-          loadCurrentQueueTrack(true);
+          await loadCurrentQueueTrack(true);
         } else if (repeatMode === 'all' && playQueue.length > 0) {
           queueIndex = 0;
-          loadCurrentQueueTrack(true);
+          await loadCurrentQueueTrack(true);
         } else {
+          userWantsPlaying = false;
+          AudioFocusAnchor.stop();
           updatePlayStateUI(false);
         }
       });
@@ -2215,8 +2349,10 @@
       if (tabName === 'ai-stats') renderStatsView();
     }
 
-    function loadCurrentQueueTrack(autoPlay = false) {
+    async function loadCurrentQueueTrack(autoPlay = false) {
       trackCountedInCurrentPlay = false;
+      prefetchedCurrentTrack = false;
+
       if (playQueue.length === 0) {
         document.getElementById('current-track-title').innerText = '재생 대기열이 비어 있습니다';
         document.getElementById('current-track-artist').innerText = '상단 [🔄 깃허브 동기화]를 눌러 곡을 불러오세요';
@@ -2236,24 +2372,24 @@
       document.getElementById('mcb-cover-img').src = track.art || '사진1.jpg';
       document.getElementById('mcb-title-txt').innerText = `${track.title}${track.artist ? ' - ' + track.artist : ''}`;
 
-      // 오디오 소스 즉시 교체 및 로드 (동기 실행으로 백그라운드 재생 권한 유지)
-      audio.src = encodeURI(track.file);
-      audio.load();
+      // 사전 캐시된 로컬 Blob URL이 있으면 즉시 연결 (백그라운드 스트리밍 끊김 방지)
+      const playableUrl = await TrackBlobCache.getPlayableUrl(track.file);
+      audio.src = playableUrl;
       updateMediaSessionMetadata(track);
       updateLiveSyncedLyrics(0);
 
       if (autoPlay) {
+        userWantsPlaying = true;
+        AudioFocusAnchor.start();
         if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => updatePlayStateUI(true))
-            .catch(() => {
-              // 백그라운드 네트워크 전환 지연 시 0.6초 후 1회 재시도
-              setTimeout(() => {
-                audio.play().then(() => updatePlayStateUI(true)).catch(() => updatePlayStateUI(false));
-              }, 600);
-            });
+        try {
+          await audio.play();
+          updatePlayStateUI(true);
+        } catch (err) {
+          // 전환 직후 일시 지연 시 0.4초 후 1회 재시도
+          setTimeout(() => {
+            audio.play().then(() => updatePlayStateUI(true)).catch(() => updatePlayStateUI(false));
+          }, 400);
         }
       } else {
         updatePlayStateUI(!audio.paused);
@@ -2279,10 +2415,18 @@
     function togglePlayPause() {
       if (playQueue.length === 0) return alert('재생할 곡이 없습니다. 상단 [🔄 깃허브 동기화]를 눌러보세요!');
       if (audio.paused) {
-        if (!audio.src || audio.src === window.location.href) { loadCurrentQueueTrack(true); return; }
+        userWantsPlaying = true;
+        AudioFocusAnchor.start();
+        if (!audio.src || audio.src === window.location.href) {
+          loadCurrentQueueTrack(true);
+          return;
+        }
         audio.play().then(() => updatePlayStateUI(true)).catch(() => alert('음원 파일을 불러올 수 없습니다.'));
       } else {
-        audio.pause(); updatePlayStateUI(false);
+        userWantsPlaying = false;
+        AudioFocusAnchor.stop();
+        audio.pause();
+        updatePlayStateUI(false);
       }
     }
 
@@ -2355,7 +2499,7 @@
       isSeeking = false;
     }
 
-    /* Media Session API */
+    /* Media Session API (Android Binder IPC 용량 초과 방지 처리 포함) */
     function setupMediaSessionHandlers() {
       if (!('mediaSession' in navigator)) return;
       try {
@@ -2372,12 +2516,17 @@
       if (!('mediaSession' in navigator) || !track) return;
       try {
         let artUrl = track.art || '사진1.jpg';
-        if (!artUrl.startsWith('data:') && !artUrl.startsWith('http')) artUrl = new URL(artUrl, window.location.href).href;
+        // data: base64 이미지는 Android Binder IPC 한도로 세션이 끊길 수 있으므로 가벼운 HTTP 이미지 URL로 전달
+        if (artUrl.startsWith('data:')) {
+          artUrl = new URL('사진1.jpg', window.location.href).href;
+        } else if (!artUrl.startsWith('http')) {
+          artUrl = new URL(artUrl, window.location.href).href;
+        }
         navigator.mediaSession.metadata = new MediaMetadata({
           title: track.title,
           artist: track.artist || '유소명 DJ',
           album: track.folderName || 'P5X SOUND STUDIO',
-          artwork: [{ src: artUrl, sizes: '512x512', type: 'image/png' }]
+          artwork: [{ src: artUrl, sizes: '512x512', type: 'image/jpeg' }]
         });
       } catch (e) {}
     }
@@ -2385,12 +2534,16 @@
       if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
       try {
         if (audio.duration && !isNaN(audio.duration)) {
-          navigator.mediaSession.setPositionState({ duration: audio.duration, playbackRate: 1, position: Math.min(audio.currentTime, audio.duration) });
+          navigator.mediaSession.setPositionState({
+            duration: audio.duration,
+            playbackRate: audio.playbackRate || 1,
+            position: Math.min(audio.currentTime, audio.duration)
+          });
         }
       } catch (e) {}
     }
 
-    /* 네온 스펙트럼 비주얼라이저 (AudioContext 가로채기 없이 화면 활성 시에만 동작) */
+    /* 네온 스펙트럼 비주얼라이저 (화면 활성 시에만 동작) */
     function startVisualizerLoop() {
       const canvas = document.getElementById('audio-visualizer');
       const ctx = canvas.getContext('2d');
@@ -2599,6 +2752,7 @@
       const track = getSyncedTrackById(trackId);
       if (!track) return;
       playQueue.splice(playQueue.length > 0 ? queueIndex + 1 : 0, 0, { ...track });
+      TrackBlobCache.prefetch(track.file);
       if (playQueue.length === 1) loadCurrentQueueTrack(true);
       renderQueueView();
       alert(`📑 [${track.title}] 곡이 다음 대기열에 추가되었습니다.`);
@@ -2671,13 +2825,13 @@
     }
     function incrementTrackPlayCount(id) {
       musicCollections.forEach(f => f.tracks.forEach(t => { if (t.id === id) t.plays = (t.plays || 0) + 1; }));
-      saveCollectionsToStorage();
+      statsDirty = true;
       const cur = getSyncedTrackById(id);
       if (cur) document.getElementById('np-playcount-badge').innerText = `▶ ${cur.plays}회`;
     }
     function addListeningSeconds(id, sec) {
       musicCollections.forEach(f => f.tracks.forEach(t => { if (t.id === id) t.seconds = (t.seconds || 0) + sec; }));
-      if (Math.random() < 0.15) saveCollectionsToStorage();
+      statsDirty = true;
     }
     function renderStatsView() {
       const tracks = getAllUniqueTracks();
@@ -3296,7 +3450,7 @@
     }
 
     function exportData() {
-      const payload = { version: 30, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
+      const payload = { version: 31, settings, dailyHistory, schedHistory, musicChatHistory, schedules, musicCollections, coopState, coopSaves, coopSettings };
       try {
         const b64 = btoa(encodeURIComponent(JSON.stringify(payload)).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
         navigator.clipboard.writeText(b64).then(() => alert('✅ 전체 백업 코드가 복사되었습니다!')).catch(() => prompt('백업 코드:', b64));
